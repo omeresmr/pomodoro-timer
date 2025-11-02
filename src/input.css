@@ -1,1 +1,72 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Raleway');
+@import 'tailwindcss';
+
+@theme {
+  --font-raleway: 'Raleway', sans-serif;
+  --color-primary: #424b54;
+  --color-text: #f5f5f5;
+  --color-accent: #f67e7d;
+}
+
+@layer base {
+  * {
+    font-family: var(--font-raleway);
+    color: var(--color-text);
+  }
+}
+
+.menu-element {
+  @apply hover:text-accent duration-300 active:scale-105;
+}
+
+.selected-menu {
+  @apply text-accent font-bold;
+}
+
+.remaining-time {
+  @apply text-accent text-[56px] font-bold;
+}
+
+.timer-state-text {
+  @apply absolute top-42 text-2xl font-medium;
+}
+
+.svg-button {
+  @apply duration-100 hover:scale-105 active:scale-110;
+}
+
+.button {
+  @apply bg-accent rounded-sm text-lg duration-200 hover:scale-101 active:scale-97;
+}
+
+.toggle-button {
+  @apply border-text relative h-6.5 w-13 rounded-full border-[1.75px] duration-300;
+}
+
+.toggle-button-circle {
+  @apply border-text bg-text absolute top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border transition-all duration-300;
+}
+
+.toggle-inactive {
+  @apply left-0.5;
+}
+
+.toggle-active {
+  @apply left-[calc(100%-1.4rem)];
+}
+
+.number-input {
+  @apply border-text text-accent w-20 rounded border bg-transparent px-2 py-1 text-left;
+}
+
+.settings-modal {
+  @apply bg-primary border-text absolute top-1/2 left-1/2 -z-2 flex w-[333px] max-w-[90vw] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center border duration-200;
+}
+
+.modal-visible {
+  @apply z-50 opacity-100;
+}
+
+.modal-hidden {
+  @apply opacity-0;
+}

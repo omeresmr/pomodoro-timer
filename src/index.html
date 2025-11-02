@@ -4,7 +4,161 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./output.css" />
+    <title>Pomodoro Timer</title>
+    <script defer src="script.js"></script>
   </head>
-  <body>
+  <body class="bg-primary relative flex min-h-screen flex-col">
+    <header class="mt-8.5 flex items-center justify-center">
+      <ul class="flex gap-2 text-2xl font-medium">
+        <li class="menu-element selected-menu">
+          <a href="#">pomodoro</a>
+        </li>
+        |
+        <li class="menu-element"><a href="#">tasks</a></li>
+        |
+        <li class="menu-element"><a href="#">stats</a></li>
+      </ul>
+    </header>
+    <main class="relative flex flex-1 flex-col items-center justify-center">
+      <!-- Container for Circle and Buttons -->
+      <div class="flex flex-col items-center gap-4">
+        <!-- Pomodoro Timer -->
+        <!-- Outer Circle -->
+        <div
+          class="border-text relative flex h-[300px] w-[300px] items-center justify-center rounded-full border-[20px]"
+        >
+          <!-- Remaining Time -->
+          <p class="remaining-time">25:00</p>
+          <!-- Timer State -->
+          <p class="timer-state-text">focus.</p>
+        </div>
+
+        <!-- Skip Timer Button -->
+        <button class="svg-button">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-arrow-right-icon lucide-arrow-right"
+          >
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </button>
+
+        <!-- Start/Stop Timer Button-->
+        <button class="button px-10 py-0.5">start</button>
+      </div>
+
+      <!-- "Get into flow." -->
+      <h1 class="absolute bottom-6 left-6 mt-8 text-3xl md:text-4xl font-bold">
+        Get into <span class="text-accent">flow</span>.
+      </h1>
+
+      <!-- Settings Button -->
+      <button class="settings-button svg-button absolute right-6 bottom-7">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-7 w-7"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-settings-icon lucide-settings"
+        >
+          <path
+            d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"
+          />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+      </button>
+    </main>
+    <div
+      class="overlay absolute z-40 min-h-screen min-w-screen bg-[rgba(0,0,0,0.4)] backdrop-blur-xs hidden"
+    ></div>
+    <div
+      class="settings-modal modal-hidden"
+    >
+    <!-- Settings Header -->
+      <h1 class="text-2xl font-bold mt-4.5">Settings</h1>
+      <!-- Timer (Settings) Header -->
+      <h2 class="text-accent mt-1.25 font-semibold mb-4">Timer</h2>
+      <!-- Close Window Button (X) -->
+       <button class="close-settings-modal svg-button absolute top-2 right-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x-icon lucide-x"><path d="M18 6 6 18"/>
+          <path d="m6 6 12 12"/>
+        </svg>
+      </button>
+    <div class="grid w-full grid-rows-5 gap-6 px-4">
+
+  <!-- Row 1: Time Inputs -->
+  <div class="flex items-center justify-center gap-4 w-full">
+    <div class="flex flex-col">
+      <label for="pomodoro-time" class="mb-0.25 text-sm">pomodoro</label>
+      <input 
+        type="number" 
+        id="pomodoro-time" 
+        value="25"
+        class="number-input"
+      />
+    </div>
+    <div class="flex flex-col">
+      <label for="short-break-time" class="mb-0.25 text-sm">short break</label>
+      <input 
+        type="number" 
+        id="short-break-time" 
+        value="5"
+        class="number-input"
+      />
+    </div>
+    <div class="flex flex-col">
+      <label for="long-break-time" class="mb-0.25 text-sm">long break</label>
+      <input 
+        type="number" 
+        id="long-break-time" 
+        value="15"
+        class="number-input"
+      />
+    </div>
+  </div>
+
+  <!-- Row 2: Auto Start Breaks -->
+  <div class="flex items-center justify-between">
+    <p>Auto Start Breaks</p>
+    <button class="toggle-button">
+      <div class="toggle-button-circle toggle-inactive"></div>
+    </button>
+  </div>
+
+  <!-- Row 3: Auto Start Pomodoros -->
+  <div class="flex items-center justify-between">
+    <p>Auto Start Pomodoros</p>
+    <button class="toggle-button">
+      <div class="toggle-button-circle toggle-inactive"></div>
+    </button>
+  </div>
+
+  <!-- Row 4: Long Break Interval -->
+  <div class="flex items-center justify-between">
+    <label for="longb-interval">Long Break Interval</label>
+    <input 
+      type="number" 
+      id="longb-interval" 
+      value="4"
+      class="number-input"
+    />
+  </div>
+
+  <!-- Row 5: Save Button -->
+  <button class="button rounded bg-accent px-12 max-h-2/3 font-medium justify-self-center">save</button>
+</div>
   </body>
 </html>
