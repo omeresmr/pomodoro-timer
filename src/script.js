@@ -2,122 +2,207 @@
 
 ////////////////////////////////////
 // DOM Elements
-const settingsButton = document.querySelector('.settings-button');
-const closeSettingsButton = document.querySelector('.close-settings-modal');
-const startTimerButton = document.querySelector('.start-timer');
-const skipTimerButton = document.querySelector('.skip-timer');
+const settingsBtn = document.querySelector('.settings-button');
+const closeSettingsBtn = document.querySelector('.close-settings-modal');
+const startBtn = document.querySelector('.start-timer');
+const skipBtn = document.querySelector('.skip-timer');
 
-const remainingTimeLabel = document.querySelector('.remaining-time');
+const timeLabel = document.querySelector('.remaining-time');
 
-const blurOverlay = document.querySelector('.overlay');
-const settingsModal = document.querySelector('.settings-modal');
+const overlay = document.querySelector('.overlay');
+const settingsDialog = document.querySelector('.settings-modal');
 
 ////////////////////////////////////
 // Constants
 
 ////////////////////////////////////
 // Variables
-const settings = {
-  timerTimes: { pomodoroTime: 25, shortBreakTime: 5, longBreakTime: 15 },
+const appSettings = {
+  durations: { pomodoro: 25, shortBreak: 5, longBreak: 15 },
   autoStartBreaks: false,
-  autoStartPomos: false,
+  autoStartPomodoros: false,
   longBreakInterval: 4,
 };
 
-const pomodoro = {
-  isBreakTime: false,
+const timer = {
+  currentDuration: appSettings.durations.pomodoro * 60,
+  elapsedSeconds: 0,
   pomodoroCount: 0,
-  isTimerRunning: false,
-  updateTimerTime() {
-    if (this.isBreakTime) {
-      remainingSeconds =
-        this.pomodoroCount % settings.longBreakInterval === 0
-          ? settings.timerTimes.longBreakTime * 60
-          : settings.timerTimes.shortBreakTime * 60;
-    } else remainingSeconds = settings.timerTimes.pomodoroTime * 60;
+  isBreak: false,
+  isRunning: false,
+  remainingSeconds: 0,
+  updateDuration() {
+    if (this.isBreak) {
+      this.currentDuration =
+        this.pomodoroCount % appSettings.longBreakInterval === 0
+          ? appSettings.durations.longBreak * 60
+          : appSettings.durations.shortBreak * 60;
+    } else this.currentDuration = appSettings.durations.pomodoro * 60;
   },
 };
 
-let timer, remainingSeconds;
+let timerInterval;
 
 ////////////////////////////////////
 // Functions
-const formatSecondsToTime = (seconds) =>
+const formatSeconds = (seconds) =>
   `${String(Math.floor(seconds / 60)).padStart(2, 0)}:${String(seconds % 60).padStart(2, 0)}`;
 
-const toggleSettingsModal = function () {
-  blurOverlay.classList.toggle('hidden');
-  settingsModal.classList.toggle('modal-hidden');
-  settingsModal.classList.toggle('modal-visible');
-
-  console.log(settingsModal.clientWidth);
+const toggleSettingsDialog = function () {
+  overlay.classList.toggle('hidden');
+  settingsDialog.classList.toggle('modal-hidden');
+  settingsDialog.classList.toggle('modal-visible');
 };
 
-const displayTime = function (seconds) {
-  remainingTimeLabel.textContent = formatSecondsToTime(seconds);
+const renderTime = function (seconds) {
+  timeLabel.textContent = formatSeconds(seconds);
 };
 
 const stopTimer = function () {
-  clearInterval(timer);
-  startTimerButton.textContent = 'start';
+  clearInterval(timerInterval);
+  startBtn.textContent = 'start';
 };
 
-const switchTimerType = function () {
-  pomodoro.isBreakTime = !pomodoro.isBreakTime;
-  pomodoro.isTimerRunning = !pomodoro.isTimerRunning;
-  if (pomodoro.isBreakTime) pomodoro.pomodoroCount++;
-  pomodoro.updateTimerTime();
+const switchPhase = function () {
+  timer.isBreak = !timer.isBreak;
+  timer.isRunning = !timer.isRunning;
+  timer.elapsedSeconds = 0;
+  if (timer.isBreak) timer.pomodoroCount++;
+  timer.updateDuration();
   stopTimer();
-  displayTime(remainingSeconds);
-  skipTimerButton.classList.toggle('collapse');
+  renderTime(timer.currentDuration);
+  skipBtn.classList.toggle('collapse');
+};
+
+const startNextPhase = function () {
+  timer.isBreak = !timer.isBreak;
+  timer.elapsedSeconds = 0;
+  if (timer.isBreak) timer.pomodoroCount++;
+  timer.updateDuration();
 };
 
 ////////////////////////////////////
 // Events
-settingsButton.addEventListener('click', toggleSettingsModal);
+settingsBtn.addEventListener('click', toggleSettingsDialog);
 
-settingsModal.addEventListener('click', function (e) {
+settingsDialog.addEventListener('click', function (e) {
   const clickedElement = e.target;
   // Select Toggle Button
-  const toggleButton = clickedElement.closest('.toggle-button');
+  const toggleBtn = clickedElement.closest('.toggle-button');
 
-  // Check if the Toggle Button got clicked
-  if (toggleButton) {
+  // Select Save Settings Button
+  const saveBtn = clickedElement.closest('.save-settings');
+
+  // Update the Toggle Button UI
+  if (toggleBtn) {
     // Select the Circle in the Toggle Button
-    const circle = toggleButton.querySelector('.toggle-button-circle');
+    const knob = toggleBtn.querySelector('.toggle-button-circle');
 
     // Change the Position of the Circle (left or right)
-    circle.classList.toggle('toggle-inactive');
-    circle.classList.toggle('toggle-active');
+    knob.classList.toggle('toggle-inactive');
+    knob.classList.toggle('toggle-active');
 
     // Change the Background-Color
-    toggleButton.classList.toggle('bg-accent');
+    toggleBtn.classList.toggle('bg-accent');
+  }
+
+  // Save Settings
+  if (saveBtn) {
+    // Get all the Settings
+    const numberInputs = document.querySelectorAll('.number-input');
+
+    const pomodoroInput = document.getElementById('pomodoro-time');
+    const shortBreakInput = document.getElementById('short-break-time');
+    const longBreakInput = document.getElementById('long-break-time');
+    const longBreakIntervalInput = document.getElementById(
+      'long-break-interval',
+    );
+
+    const autoStartBreaksToggle = document.querySelector('.auto-start-breaks');
+    const autoStartPomodorosToggle =
+      document.querySelector('.auto-start-pomos');
+
+    // If the user entered a number bigger than 100, reduce it to 100
+    numberInputs.forEach((input) =>
+      input.value >= 100 ? (input.value = 100) : input.value,
+    );
+
+    // Get the Boolean Value of the Toggle Button Settings
+    const autoStartBreaks = autoStartBreaksToggle
+      .querySelector('.toggle-button-circle')
+      .classList.contains('toggle-active');
+
+    const autoStartPomodoros = autoStartPomodorosToggle
+      .querySelector('.toggle-button-circle')
+      .classList.contains('toggle-active');
+
+    // Overwrite Settings Object
+    appSettings.durations.pomodoro = pomodoroInput.value;
+    appSettings.durations.shortBreak = shortBreakInput.value;
+    appSettings.durations.longBreak = longBreakInput.value;
+    appSettings.longBreakInterval = longBreakIntervalInput.value;
+    appSettings.autoStartBreaks = autoStartBreaks;
+    appSettings.autoStartPomodoros = autoStartPomodoros;
+
+    // TODO Show Alert
+
+    // Update new Timer Time
+    timer.updateDuration();
+
+    // Update Time UI
+    renderTime(timer.remainingSeconds);
+
+    // Hide Settings Modal
+    toggleSettingsDialog();
   }
 });
 
-startTimerButton.addEventListener('click', function () {
+startBtn.addEventListener('click', function () {
   // Check Running State
-  if (!pomodoro.isTimerRunning) {
-    timer = setInterval(function () {
-      remainingSeconds--;
-      displayTime(remainingSeconds);
+  if (!timer.isRunning) {
+    timerInterval = setInterval(function () {
+      timer.elapsedSeconds++;
+      timer.remainingSeconds = timer.currentDuration - timer.elapsedSeconds;
+      renderTime(timer.remainingSeconds);
 
-      if (remainingSeconds <= 0) switchTimerType();
+      if (timer.remainingSeconds <= 0) {
+        if (timer.isBreak && appSettings.autoStartBreaks) {
+          startNextPhase();
+        } else if (!timer.isBreak && appSettings.autoStartPomodoros) {
+          startNextPhase();
+        } else switchPhase();
+      }
     }, 1000);
 
-    startTimerButton.textContent = 'stop';
+    startBtn.textContent = 'stop';
   } else stopTimer();
 
-  pomodoro.isTimerRunning = !pomodoro.isTimerRunning;
-  skipTimerButton.classList.toggle('collapse');
+  timer.isRunning = !timer.isRunning;
+  skipBtn.classList.toggle('collapse');
 });
 
-skipTimerButton.addEventListener('click', switchTimerType);
+skipBtn.addEventListener('click', function () {
+  if (timer.isBreak && appSettings.autoStartBreaks) startNextPhase();
+  else if (!timer.isBreak && appSettings.autoStartPomodoros) startNextPhase();
+  else switchPhase();
+});
 
-closeSettingsButton.addEventListener('click', toggleSettingsModal);
+closeSettingsBtn.addEventListener('click', toggleSettingsDialog);
 
 ////////////////////////////////////
 // Initialization
-displayTime(settings.timerTimes.pomodoroTime * 60);
+renderTime(appSettings.durations.pomodoro * 60);
 
-pomodoro.updateTimerTime();
+timer.updateDuration();
+
+// TODO
+// 1. Settings implementieren DONE
+// 2. LocalStorage implementieren
+// 2. Alerts implementieren
+// 3. Sounds implementieren
+// 4. Der Kreis soll sich füllen.. 💀💀💀
+// 5. Leertaste soll den Timer Starten/Beenden, Focusable von allen Elementen entfernen
+// 6. Code säubern, Kommentarzeilen hinzufügen
+
+// TODO Update Ideas
+// 1. Let the Timer "AutoStart" but stop it first and then start it in 5 seconds automatically
