@@ -3,7 +3,6 @@
 ////////////////////////////////////
 // DOM Elements
 const settingsBtn = document.querySelector('.settings-button');
-const closeSettingsBtn = document.querySelector('.close-settings-modal');
 const startBtn = document.querySelector('.start-timer');
 const skipBtn = document.querySelector('.skip-timer');
 const autoStartBreaksToggle = document.querySelector('.auto-start-breaks');
@@ -20,6 +19,8 @@ const timerStateLabel = document.querySelector('.timer-state-text');
 
 const overlay = document.querySelector('.overlay');
 const settingsDialog = document.querySelector('.settings-modal');
+
+const alertContainer = document.querySelector('.alert-container');
 
 ////////////////////////////////////
 // Constants
@@ -47,14 +48,15 @@ const timer = {
   updateDuration() {
     if (this.isBreak) {
       this.currentDuration =
-        this.pomodoroCount % appSettings.longBreakInterval === 0
-          ? appSettings.durations.longBreak * 60
-          : appSettings.durations.shortBreak * 60;
-    } else this.currentDuration = appSettings.durations.pomodoro * 60;
+        this.pomodoroCount % appSettings.longBreakInterval === 0 ? 5 : 5;
+    } else this.currentDuration = 5;
   },
 };
 
 let timerInterval;
+
+const ringSound = new Audio('../Sounds/ring-sound.mp3');
+const buttonSound = new Audio('../Sounds/button-sound.mp3');
 
 ////////////////////////////////////
 // Functions
@@ -78,10 +80,16 @@ const stopTimer = function () {
 
 const switchPhase = function () {
   timer.isBreak = !timer.isBreak;
+  if (!timer.isBreak) {
+    showAlert(`Break is over! 😑`);
+  } else {
+    showAlert(`Pomodoro is over! 🎉`);
+    timer.pomodoroCount++;
+  }
   updateTimerStateLabel();
   timer.isRunning = !timer.isRunning;
   timer.elapsedSeconds = 0;
-  if (timer.isBreak) timer.pomodoroCount++;
+  console.log(timer);
   timer.updateDuration();
   stopTimer();
   renderTime(timer.currentDuration);
@@ -89,10 +97,16 @@ const switchPhase = function () {
 };
 
 const startNextPhase = function () {
+  if (timer.isBreak) {
+    showAlert(`Break is over! 😑`);
+    timer.pomodoroCount++;
+  } else {
+    showAlert(`Pomodoro is over! 🎉`);
+  }
+
   timer.isBreak = !timer.isBreak;
   updateTimerStateLabel();
   timer.elapsedSeconds = 0;
-  if (timer.isBreak) timer.pomodoroCount++;
   timer.updateDuration();
 };
 
@@ -149,9 +163,23 @@ const loadAndRenderSettings = function () {
   }
 };
 
+const showAlert = function (text) {
+  alertContainer.textContent = text;
+  alertContainer.classList.remove('alert-hidden');
+  alertContainer.classList.add('alert-visible');
+
+  setTimeout(() => {
+    alertContainer.classList.toggle('alert-visible');
+    alertContainer.classList.toggle('alert-hidden');
+  }, 1500);
+};
+
 ////////////////////////////////////
 // Events
-settingsBtn.addEventListener('click', toggleSettingsDialog);
+settingsBtn.addEventListener('click', function () {
+  toggleSettingsDialog();
+  buttonSound.play();
+});
 
 settingsDialog.addEventListener('click', function (e) {
   const clickedElement = e.target;
@@ -160,6 +188,14 @@ settingsDialog.addEventListener('click', function (e) {
 
   // Select Save Settings Button
   const saveBtn = clickedElement.closest('.save-settings');
+
+  // Select Close Settings Button
+  const closeBtn = clickedElement.closest('.close-settings');
+
+  if (closeBtn) {
+    buttonSound.play();
+    toggleSettingsDialog();
+  }
 
   // Update the Toggle Button UI
   if (toggleBtn) {
@@ -176,6 +212,8 @@ settingsDialog.addEventListener('click', function (e) {
 
   // Save Settings
   if (saveBtn) {
+    buttonSound.play();
+
     // If the user entered a number bigger than 100, reduce it to 100
     numberInputs.forEach((input) =>
       input.value >= 100 ? (input.value = 100) : input.value,
@@ -216,11 +254,13 @@ settingsDialog.addEventListener('click', function (e) {
       ? renderTime(timer.remainingSeconds)
       : renderTime(timer.currentDuration);
 
-    // TODO Show Alert
+    // Show Alert
+    showAlert('Settings saved! ✅');
   }
 });
 
 startBtn.addEventListener('click', function () {
+  buttonSound.play();
   // Check Running State
   if (!timer.isRunning) {
     timerInterval = setInterval(function () {
@@ -229,6 +269,7 @@ startBtn.addEventListener('click', function () {
       renderTime(timer.remainingSeconds);
 
       if (timer.remainingSeconds <= 0) {
+        ringSound.play();
         if (timer.isBreak && appSettings.autoStartBreaks) {
           startNextPhase();
         } else if (!timer.isBreak && appSettings.autoStartPomodoros) {
@@ -245,12 +286,12 @@ startBtn.addEventListener('click', function () {
 });
 
 skipBtn.addEventListener('click', function () {
+  buttonSound.play();
+
   if (timer.isBreak && appSettings.autoStartBreaks) startNextPhase();
   else if (!timer.isBreak && appSettings.autoStartPomodoros) startNextPhase();
   else switchPhase();
 });
-
-closeSettingsBtn.addEventListener('click', toggleSettingsDialog);
 
 ////////////////////////////////////
 // Initialization
@@ -262,13 +303,14 @@ renderTime(appSettings.durations.pomodoro * 60);
 timer.updateDuration();
 
 // TODO
-// 1. Settings implementieren DONE
-// 2. LocalStorage implementieren
-// 2. Alerts implementieren
-// 3. Sounds implementieren
 // 4. Der Kreis soll sich füllen.. 💀💀💀
-// 5. Leertaste soll den Timer Starten/Beenden, Focusable von allen Elementen entfernen
+// 5. Leertaste soll den Timer Starten/Beenden
+// 5.1 Focusable von allen Elementen entfernen
+// 5.2 TabStops implementieren
 // 6. Code säubern, Kommentarzeilen hinzufügen
+// 6.1 Jeden DRY Code entfernen
+// 6.2 Große Zeilenblöcke in eigene Funktionen Packen (Lesbarkeit erhöhen)
+// 6.3 Kommentarzeilen hinzufügen
 
 // TODO Update Ideas
 // 1. Let the Timer "AutoStart" but stop it first and then start it in 5 seconds automatically

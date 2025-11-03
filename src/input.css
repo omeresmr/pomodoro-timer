@@ -70,3 +70,15 @@
 .modal-hidden {
   @apply opacity-0;
 }
+
+.alert-container {
+  @apply absolute mt-8 p-2 font-bold duration-500;
+}
+
+.alert-visible {
+  @apply -bottom-35 opacity-100;
+}
+
+.alert-hidden {
+  @apply -bottom-45 opacity-0;
+}

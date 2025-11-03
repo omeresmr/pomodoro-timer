@@ -526,6 +526,23 @@
 .modal-hidden {
   opacity: 0%;
 }
+.alert-container {
+  position: absolute;
+  margin-top: calc(var(--spacing) * 8);
+  padding: calc(var(--spacing) * 2);
+  --tw-font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-bold);
+  --tw-duration: 500ms;
+  transition-duration: 500ms;
+}
+.alert-visible {
+  bottom: calc(var(--spacing) * -35);
+  opacity: 100%;
+}
+.alert-hidden {
+  bottom: calc(var(--spacing) * -45);
+  opacity: 0%;
+}
 @property --tw-border-style {
   syntax: "*";
   inherits: false;
