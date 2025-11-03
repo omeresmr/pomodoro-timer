@@ -47,11 +47,11 @@
   @apply border-text bg-text absolute top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border transition-all duration-300;
 }
 
-.toggle-inactive {
+.toggle-false {
   @apply left-0.5;
 }
 
-.toggle-active {
+.toggle-true {
   @apply left-[calc(100%-1.4rem)];
 }
 

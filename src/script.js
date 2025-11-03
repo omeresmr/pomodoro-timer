@@ -6,8 +6,17 @@ const settingsBtn = document.querySelector('.settings-button');
 const closeSettingsBtn = document.querySelector('.close-settings-modal');
 const startBtn = document.querySelector('.start-timer');
 const skipBtn = document.querySelector('.skip-timer');
+const autoStartBreaksToggle = document.querySelector('.auto-start-breaks');
+const autoStartPomodorosToggle = document.querySelector('.auto-start-pomos');
+
+const pomodoroInput = document.getElementById('pomodoro-time');
+const shortBreakInput = document.getElementById('short-break-time');
+const longBreakInput = document.getElementById('long-break-time');
+const longBreakIntervalInput = document.getElementById('long-break-interval');
+const numberInputs = document.querySelectorAll('.number-input');
 
 const timeLabel = document.querySelector('.remaining-time');
+const timerStateLabel = document.querySelector('.timer-state-text');
 
 const overlay = document.querySelector('.overlay');
 const settingsDialog = document.querySelector('.settings-modal');
@@ -17,12 +26,16 @@ const settingsDialog = document.querySelector('.settings-modal');
 
 ////////////////////////////////////
 // Variables
-const appSettings = {
+const defaultSettings = {
   durations: { pomodoro: 25, shortBreak: 5, longBreak: 15 },
   autoStartBreaks: false,
   autoStartPomodoros: false,
   longBreakInterval: 4,
 };
+
+// If there are saved settings in the localStorage, use them. If not, use the Default Settings
+let appSettings =
+  JSON.parse(localStorage.getItem('settings')) || defaultSettings;
 
 const timer = {
   currentDuration: appSettings.durations.pomodoro * 60,
@@ -65,6 +78,7 @@ const stopTimer = function () {
 
 const switchPhase = function () {
   timer.isBreak = !timer.isBreak;
+  updateTimerStateLabel();
   timer.isRunning = !timer.isRunning;
   timer.elapsedSeconds = 0;
   if (timer.isBreak) timer.pomodoroCount++;
@@ -76,9 +90,63 @@ const switchPhase = function () {
 
 const startNextPhase = function () {
   timer.isBreak = !timer.isBreak;
+  updateTimerStateLabel();
   timer.elapsedSeconds = 0;
   if (timer.isBreak) timer.pomodoroCount++;
   timer.updateDuration();
+};
+
+const updateTimerStateLabel = function () {
+  timerStateLabel.textContent = timer.isBreak ? 'relax.' : 'focus.';
+};
+
+const updateLocalStorage = function () {
+  const settings = JSON.stringify(appSettings);
+  localStorage.setItem('settings', settings);
+};
+
+const loadLocalStorage = function () {
+  const settings = JSON.parse(localStorage.getItem('settings'));
+  if (settings) {
+    appSettings = settings;
+  }
+};
+
+const loadAndRenderSettings = function () {
+  if (appSettings && appSettings !== defaultSettings) {
+    const autoStartBreaksBtn = autoStartBreaksToggle.querySelector(
+      '.toggle-button-circle',
+    );
+
+    const autoStartPomodorosBtn = autoStartPomodorosToggle.querySelector(
+      '.toggle-button-circle',
+    );
+
+    pomodoroInput.value = appSettings.durations.pomodoro;
+    shortBreakInput.value = appSettings.durations.shortBreak;
+    longBreakInput.value = appSettings.durations.longBreak;
+    longBreakIntervalInput.value = appSettings.longBreakInterval;
+
+    if (appSettings.autoStartBreaks)
+      autoStartBreaksToggle.classList.add('bg-accent');
+    else autoStartBreaksToggle.classList.remove('bg-accent');
+
+    autoStartBreaksBtn.classList.add(`toggle-${appSettings.autoStartBreaks}`);
+    autoStartBreaksBtn.classList.remove(
+      `toggle-${!appSettings.autoStartBreaks}`,
+    );
+
+    if (appSettings.autoStartPomodoros)
+      autoStartPomodorosToggle.classList.add('bg-accent');
+    else autoStartPomodorosToggle.classList.remove('bg-accent');
+
+    autoStartPomodorosBtn.classList.add(
+      `toggle-${appSettings.autoStartPomodoros}`,
+    );
+    autoStartPomodorosBtn.classList.remove(
+      `toggle-${!appSettings.autoStartPomodoros}`,
+    );
+  }
 };
 
 ////////////////////////////////////
@@ -99,8 +167,8 @@ settingsDialog.addEventListener('click', function (e) {
     const knob = toggleBtn.querySelector('.toggle-button-circle');
 
     // Change the Position of the Circle (left or right)
-    knob.classList.toggle('toggle-inactive');
-    knob.classList.toggle('toggle-active');
+    knob.classList.toggle('toggle-false');
+    knob.classList.toggle('toggle-true');
 
     // Change the Background-Color
     toggleBtn.classList.toggle('bg-accent');
@@ -108,20 +176,6 @@ settingsDialog.addEventListener('click', function (e) {
 
   // Save Settings
   if (saveBtn) {
-    // Get all the Settings
-    const numberInputs = document.querySelectorAll('.number-input');
-
-    const pomodoroInput = document.getElementById('pomodoro-time');
-    const shortBreakInput = document.getElementById('short-break-time');
-    const longBreakInput = document.getElementById('long-break-time');
-    const longBreakIntervalInput = document.getElementById(
-      'long-break-interval',
-    );
-
-    const autoStartBreaksToggle = document.querySelector('.auto-start-breaks');
-    const autoStartPomodorosToggle =
-      document.querySelector('.auto-start-pomos');
-
     // If the user entered a number bigger than 100, reduce it to 100
     numberInputs.forEach((input) =>
       input.value >= 100 ? (input.value = 100) : input.value,
@@ -130,11 +184,11 @@ settingsDialog.addEventListener('click', function (e) {
     // Get the Boolean Value of the Toggle Button Settings
     const autoStartBreaks = autoStartBreaksToggle
       .querySelector('.toggle-button-circle')
-      .classList.contains('toggle-active');
+      .classList.contains('toggle-true');
 
     const autoStartPomodoros = autoStartPomodorosToggle
       .querySelector('.toggle-button-circle')
-      .classList.contains('toggle-active');
+      .classList.contains('toggle-true');
 
     // Overwrite Settings Object
     appSettings.durations.pomodoro = pomodoroInput.value;
@@ -144,16 +198,25 @@ settingsDialog.addEventListener('click', function (e) {
     appSettings.autoStartBreaks = autoStartBreaks;
     appSettings.autoStartPomodoros = autoStartPomodoros;
 
-    // TODO Show Alert
+    // Hide Settings Modal
+    toggleSettingsDialog();
+
+    // Save to localStorage
+    updateLocalStorage();
+
+    loadAndRenderSettings();
 
     // Update new Timer Time
     timer.updateDuration();
 
-    // Update Time UI
-    renderTime(timer.remainingSeconds);
+    renderTime(timer.currentDuration * 60);
 
-    // Hide Settings Modal
-    toggleSettingsDialog();
+    // Update Time UI
+    timer.remainingSeconds
+      ? renderTime(timer.remainingSeconds)
+      : renderTime(timer.currentDuration);
+
+    // TODO Show Alert
   }
 });
 
@@ -191,6 +254,9 @@ closeSettingsBtn.addEventListener('click', toggleSettingsDialog);
 
 ////////////////////////////////////
 // Initialization
+loadLocalStorage();
+loadAndRenderSettings();
+
 renderTime(appSettings.durations.pomodoro * 60);
 
 timer.updateDuration();
