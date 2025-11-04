@@ -22,8 +22,11 @@ const settingsDialog = document.querySelector('.settings-modal');
 
 const alertContainer = document.querySelector('.alert-container');
 
+const progressCircle = document.querySelector('.progress-circle');
+
 ////////////////////////////////////
 // Constants
+const CIRCUMFERENCE = 880;
 
 ////////////////////////////////////
 // Variables
@@ -89,6 +92,7 @@ const timerLogic = function () {
   timer.elapsedSeconds++;
   timer.remainingSeconds = timer.currentDuration - timer.elapsedSeconds;
   renderTime(timer.remainingSeconds);
+  updateCircleProgress(timer.currentDuration, timer.remainingSeconds);
 
   if (timer.remainingSeconds <= 0) {
     ringSound.play();
@@ -116,6 +120,7 @@ const switchPhase = function () {
   stopTimer();
   renderTime(timer.currentDuration);
   skipBtn.classList.toggle('collapse');
+  resetCircleProgress();
 };
 
 const startNextPhase = function () {
@@ -136,6 +141,7 @@ const startNextPhase = function () {
 
   // Stop Timer
   stopTimer();
+  resetCircleProgress();
 
   // Start it again after 5 seconds
   setTimeout(() => {
@@ -206,6 +212,15 @@ const showAlert = function (text) {
     alertContainer.classList.toggle('alert-hidden');
   }, 1500);
 };
+
+const updateCircleProgress = function (currentDuration, remainingDuration) {
+  const newOffset = CIRCUMFERENCE * (remainingDuration / currentDuration);
+
+  progressCircle.setAttribute('stroke-dashoffset', newOffset);
+};
+
+const resetCircleProgress = () =>
+  progressCircle.setAttribute('stroke-dashoffset', 880);
 
 ////////////////////////////////////
 // Events
@@ -320,7 +335,6 @@ renderTime(appSettings.durations.pomodoro * 60);
 timer.updateDuration();
 
 // TODO
-// 4. Der Kreis soll sich füllen.. 💀💀💀
 // 5. Leertaste soll den Timer Starten/Beenden
 // 5.1 Focusable von allen Elementen entfernen
 // 5.2 TabStops implementieren
