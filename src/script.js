@@ -48,8 +48,10 @@ const timer = {
   updateDuration() {
     if (this.isBreak) {
       this.currentDuration =
-        this.pomodoroCount % appSettings.longBreakInterval === 0 ? 5 : 5;
-    } else this.currentDuration = 5;
+        this.pomodoroCount % appSettings.longBreakInterval === 0
+          ? appSettings.durations.longBreak * 60
+          : appSettings.durations.shortBreak * 60;
+    } else this.currentDuration = appSettings.durations.pomodoro * 60;
   },
 };
 
@@ -78,6 +80,26 @@ const stopTimer = function () {
   startBtn.textContent = 'start';
 };
 
+const startTimer = function () {
+  timerInterval = setInterval(timerLogic, 1000);
+  startBtn.textContent = 'stop';
+};
+
+const timerLogic = function () {
+  timer.elapsedSeconds++;
+  timer.remainingSeconds = timer.currentDuration - timer.elapsedSeconds;
+  renderTime(timer.remainingSeconds);
+
+  if (timer.remainingSeconds <= 0) {
+    ringSound.play();
+    if (timer.isBreak && appSettings.autoStartBreaks) {
+      startNextPhase();
+    } else if (!timer.isBreak && appSettings.autoStartPomodoros) {
+      startNextPhase();
+    } else switchPhase();
+  }
+};
+
 const switchPhase = function () {
   timer.isBreak = !timer.isBreak;
   if (!timer.isBreak) {
@@ -97,17 +119,28 @@ const switchPhase = function () {
 };
 
 const startNextPhase = function () {
+  // Logic for Auto Starting next Phase
+
   if (timer.isBreak) {
     showAlert(`Break is over! 😑`);
-    timer.pomodoroCount++;
   } else {
     showAlert(`Pomodoro is over! 🎉`);
+    timer.pomodoroCount++;
   }
 
   timer.isBreak = !timer.isBreak;
   updateTimerStateLabel();
   timer.elapsedSeconds = 0;
   timer.updateDuration();
+  renderTime(timer.currentDuration);
+
+  // Stop Timer
+  stopTimer();
+
+  // Start it again after 5 seconds
+  setTimeout(() => {
+    startTimer();
+  }, 3000);
 };
 
 const updateTimerStateLabel = function () {
@@ -229,10 +262,10 @@ settingsDialog.addEventListener('click', function (e) {
       .classList.contains('toggle-true');
 
     // Overwrite Settings Object
-    appSettings.durations.pomodoro = pomodoroInput.value;
-    appSettings.durations.shortBreak = shortBreakInput.value;
-    appSettings.durations.longBreak = longBreakInput.value;
-    appSettings.longBreakInterval = longBreakIntervalInput.value;
+    appSettings.durations.pomodoro = +pomodoroInput.value;
+    appSettings.durations.shortBreak = +shortBreakInput.value;
+    appSettings.durations.longBreak = +longBreakInput.value;
+    appSettings.longBreakInterval = +longBreakIntervalInput.value;
     appSettings.autoStartBreaks = autoStartBreaks;
     appSettings.autoStartPomodoros = autoStartPomodoros;
 
@@ -262,24 +295,8 @@ settingsDialog.addEventListener('click', function (e) {
 startBtn.addEventListener('click', function () {
   buttonSound.play();
   // Check Running State
-  if (!timer.isRunning) {
-    timerInterval = setInterval(function () {
-      timer.elapsedSeconds++;
-      timer.remainingSeconds = timer.currentDuration - timer.elapsedSeconds;
-      renderTime(timer.remainingSeconds);
-
-      if (timer.remainingSeconds <= 0) {
-        ringSound.play();
-        if (timer.isBreak && appSettings.autoStartBreaks) {
-          startNextPhase();
-        } else if (!timer.isBreak && appSettings.autoStartPomodoros) {
-          startNextPhase();
-        } else switchPhase();
-      }
-    }, 1000);
-
-    startBtn.textContent = 'stop';
-  } else stopTimer();
+  if (!timer.isRunning) startTimer();
+  else stopTimer();
 
   timer.isRunning = !timer.isRunning;
   skipBtn.classList.toggle('collapse');
@@ -311,6 +328,3 @@ timer.updateDuration();
 // 6.1 Jeden DRY Code entfernen
 // 6.2 Große Zeilenblöcke in eigene Funktionen Packen (Lesbarkeit erhöhen)
 // 6.3 Kommentarzeilen hinzufügen
-
-// TODO Update Ideas
-// 1. Let the Timer "AutoStart" but stop it first and then start it in 5 seconds automatically

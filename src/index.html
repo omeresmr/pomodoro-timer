@@ -20,17 +20,19 @@
       </ul>
     </header>
     <main class="relative flex flex-1 flex-col items-center justify-center">
+      <!-- Pomodoro Timer -->
       <!-- Container for Circle and Buttons -->
       <div class="flex flex-col items-center gap-4 relative">
-        <!-- Pomodoro Timer -->
+
         <!-- Outer Circle -->
         <div
-          class="border-text relative flex h-[300px] w-[300px] items-center justify-center rounded-full border-[20px]"
+          class="border-text relative flex h-[300px] w-[300px] items-center justify-center rounded-full border-[20px] z-20"
         >
+        
           <!-- Remaining Time -->
-          <p class="remaining-time"></p>
+          <p class="remaining-time z-20"></p>
           <!-- Timer State -->
-          <p class="timer-state-text">focus.</p>
+          <p class="timer-state-text z-20">focus.</p>
         </div>
 
         <!-- Skip Timer Button -->
