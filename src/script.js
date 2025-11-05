@@ -5,6 +5,7 @@
 const settingsBtn = document.querySelector('.settings-button');
 const startBtn = document.querySelector('.start-timer');
 const skipBtn = document.querySelector('.skip-timer');
+
 const autoStartBreaksToggle = document.querySelector('.auto-start-breaks');
 const autoStartPomodorosToggle = document.querySelector('.auto-start-pomos');
 
@@ -21,12 +22,26 @@ const overlay = document.querySelector('.overlay');
 const settingsDialog = document.querySelector('.settings-modal');
 
 const alertContainer = document.querySelector('.alert-container');
-
 const progressCircle = document.querySelector('.progress-circle');
 
 ////////////////////////////////////
 // Constants
-const CIRCUMFERENCE = 880;
+const TIMER_INTERVAL = 1000;
+const AUTO_START_DELAY = 3000;
+const ALERT_DURATION = 1500;
+const CIRCLE_CIRCUMFERENCE = 880;
+const MAX_MINUTES = 100;
+const MIN_MINUTES = 1;
+
+const TIMER_STATES = {
+  START: 'start',
+  STOP: 'stop',
+};
+
+const SOUND_TYPES = {
+  CLICK: 'click',
+  RING: 'ring',
+};
 
 ////////////////////////////////////
 // Variables
@@ -37,95 +52,97 @@ const defaultSettings = {
   longBreakInterval: 4,
 };
 
-// If there are saved settings in the localStorage, use them. If not, use the Default Settings
+// If there are saved settings in the localStorage, use them. If not, use the Default Settings.
 let appSettings =
   JSON.parse(localStorage.getItem('settings')) || defaultSettings;
 
+// Declared a variable, so that I can clear the interval later in the code
+let timerInterval;
+
+// Sounds object, for the playSound Function
+const SOUNDS = {
+  click: new Audio('../Sounds/button-sound.mp3'),
+  ring: new Audio('../Sounds/ring-sound.mp3'),
+};
+
+////////////////////////////////////
+// Timer Object
 const timer = {
+  // The first value of currentDuration is always the pomodoro duration
   currentDuration: appSettings.durations.pomodoro * 60,
   elapsedSeconds: 0,
   pomodoroCount: 0,
   isBreak: false,
   isRunning: false,
   remainingSeconds: 0,
+
   updateDuration() {
     if (this.isBreak) {
+      // Set the break length to longBreak time, if pomodoroCount is divisible by longBreakInterval else, set it to short break time
       this.currentDuration =
         this.pomodoroCount % appSettings.longBreakInterval === 0
           ? appSettings.durations.longBreak * 60
           : appSettings.durations.shortBreak * 60;
-    } else this.currentDuration = appSettings.durations.pomodoro * 60;
+    } else {
+      this.currentDuration = appSettings.durations.pomodoro * 60;
+    }
+  },
+
+  start() {
+    // Start Timer and change isRunning state
+    timerInterval = setInterval(timerLogic, TIMER_INTERVAL);
+    this.isRunning = true;
+  },
+
+  stop() {
+    // Stop Timer and change isRunning state
+    clearInterval(timerInterval);
+    this.isRunning = false;
+  },
+
+  nextPhase() {
+    // Change duration and isBreak state
+    timer.isBreak = !timer.isBreak;
+    timer.elapsedSeconds = 0;
+    timer.updateDuration();
   },
 };
 
-let timerInterval;
-
-const ringSound = new Audio('../Sounds/ring-sound.mp3');
-const buttonSound = new Audio('../Sounds/button-sound.mp3');
-
 ////////////////////////////////////
-// Functions
-const formatSeconds = (seconds) =>
-  `${String(Math.floor(seconds / 60)).padStart(2, 0)}:${String(seconds % 60).padStart(2, 0)}`;
+// Timer Logic Functions
 
-const toggleSettingsDialog = function () {
-  overlay.classList.toggle('hidden');
-  settingsDialog.classList.toggle('modal-hidden');
-  settingsDialog.classList.toggle('modal-visible');
-};
-
-const renderTime = function (seconds) {
-  timeLabel.textContent = formatSeconds(seconds);
-};
-
-const stopTimer = function () {
-  clearInterval(timerInterval);
-  startBtn.textContent = 'start';
-};
-
-const startTimer = function () {
-  timerInterval = setInterval(timerLogic, 1000);
-  startBtn.textContent = 'stop';
-};
-
-const timerLogic = function () {
+const timerLogic = () => {
+  // 1. Increse elapsedSeconds
   timer.elapsedSeconds++;
+
+  // 2. Calculate and render remainingSeconds
   timer.remainingSeconds = timer.currentDuration - timer.elapsedSeconds;
   renderTime(timer.remainingSeconds);
+
+  // 3. Update Progress Circle
   updateCircleProgress(timer.currentDuration, timer.remainingSeconds);
 
+  // 4. End Timer
   if (timer.remainingSeconds <= 0) {
-    ringSound.play();
-    if (timer.isBreak && appSettings.autoStartBreaks) {
-      startNextPhase();
-    } else if (!timer.isBreak && appSettings.autoStartPomodoros) {
-      startNextPhase();
-    } else switchPhase();
+    playSound(SOUND_TYPES.RING);
+    handlePhaseEnd();
   }
 };
 
-const switchPhase = function () {
-  timer.isBreak = !timer.isBreak;
-  if (!timer.isBreak) {
-    showAlert(`Break is over! 😑`);
-  } else {
-    showAlert(`Pomodoro is over! 🎉`);
-    timer.pomodoroCount++;
-  }
-  updateTimerStateLabel();
-  timer.isRunning = !timer.isRunning;
-  timer.elapsedSeconds = 0;
-  console.log(timer);
-  timer.updateDuration();
-  stopTimer();
-  renderTime(timer.currentDuration);
+// Starts or Stops the Timer, based on the state argument
+const setTimerState = (state) => {
+  timer?.[state]();
+  startBtn.textContent = state === 'start' ? 'stop' : 'start';
+
+  // Only visible if timer is running
   skipBtn.classList.toggle('collapse');
-  resetCircleProgress();
 };
 
-const startNextPhase = function () {
-  // Logic for Auto Starting next Phase
+const completePhase = () => {
+  // 1. Stop Timer
+  setTimerState(TIMER_STATES.STOP);
 
+  // 2. Show alert based on isBreak state
   if (timer.isBreak) {
     showAlert(`Break is over! 😑`);
   } else {
@@ -133,212 +150,248 @@ const startNextPhase = function () {
     timer.pomodoroCount++;
   }
 
-  timer.isBreak = !timer.isBreak;
+  // 2. switch Phase
+  timer.nextPhase();
+
+  // 4. Update UI
+  resetCircleProgress();
   updateTimerStateLabel();
-  timer.elapsedSeconds = 0;
-  timer.updateDuration();
   renderTime(timer.currentDuration);
 
-  // Stop Timer
-  stopTimer();
-  resetCircleProgress();
+  // 5. Play Sound
+  playSound(SOUND_TYPES.RING);
+};
 
-  // Start it again after 5 seconds
+// Handles Phase End based on the autoStart settings
+const handlePhaseEnd = () => {
+  if (timer.isBreak && appSettings.autoStartBreaks) autoStartNextPhase();
+  else if (!timer.isBreak && appSettings.autoStartPomodoros)
+    autoStartNextPhase();
+  else completePhase();
+};
+
+// Starts the timer automatically after 1500 ms
+const autoStartNextPhase = () => {
+  completePhase();
   setTimeout(() => {
-    startTimer();
-  }, 3000);
+    setTimerState(TIMER_STATES.START);
+  }, AUTO_START_DELAY);
 };
 
-const updateTimerStateLabel = function () {
-  timerStateLabel.textContent = timer.isBreak ? 'relax.' : 'focus.';
+////////////////////////////////////
+// UI & Utility Functions
+
+// Formats seconds into mm:ss format
+const formatSeconds = (seconds) =>
+  `${String(Math.floor(seconds / 60)).padStart(2, 0)}:${String(seconds % 60).padStart(2, 0)}`;
+
+// Updates Time UI
+const renderTime = (seconds) =>
+  (timeLabel.textContent = formatSeconds(seconds));
+
+// Updates timerState UI
+const updateTimerStateLabel = () =>
+  (timerStateLabel.textContent = timer.isBreak ? 'relax.' : 'focus.');
+
+// Toggles the Settings Window
+const toggleSettingsDialog = () => {
+  overlay.classList.toggle('hidden');
+  settingsDialog.classList.toggle('modal-hidden');
+  settingsDialog.classList.toggle('modal-visible');
 };
 
-const updateLocalStorage = function () {
-  const settings = JSON.stringify(appSettings);
-  localStorage.setItem('settings', settings);
+// Updates Circle Progress
+const updateCircleProgress = (currentDuration, remainingDuration) => {
+  const newOffset =
+    CIRCLE_CIRCUMFERENCE * (remainingDuration / currentDuration);
+  progressCircle.setAttribute('stroke-dashoffset', newOffset);
 };
 
-const loadLocalStorage = function () {
-  const settings = JSON.parse(localStorage.getItem('settings'));
-  if (settings) {
-    appSettings = settings;
-  }
-};
+// Resets Circle Progress to 0
+const resetCircleProgress = () =>
+  progressCircle.setAttribute('stroke-dashoffset', CIRCLE_CIRCUMFERENCE);
 
-const loadAndRenderSettings = function () {
-  if (appSettings && appSettings !== defaultSettings) {
-    const autoStartBreaksBtn = autoStartBreaksToggle.querySelector(
-      '.toggle-button-circle',
-    );
-
-    const autoStartPomodorosBtn = autoStartPomodorosToggle.querySelector(
-      '.toggle-button-circle',
-    );
-
-    pomodoroInput.value = appSettings.durations.pomodoro;
-    shortBreakInput.value = appSettings.durations.shortBreak;
-    longBreakInput.value = appSettings.durations.longBreak;
-    longBreakIntervalInput.value = appSettings.longBreakInterval;
-
-    if (appSettings.autoStartBreaks)
-      autoStartBreaksToggle.classList.add('bg-accent');
-    else autoStartBreaksToggle.classList.remove('bg-accent');
-
-    autoStartBreaksBtn.classList.add(`toggle-${appSettings.autoStartBreaks}`);
-    autoStartBreaksBtn.classList.remove(
-      `toggle-${!appSettings.autoStartBreaks}`,
-    );
-
-    if (appSettings.autoStartPomodoros)
-      autoStartPomodorosToggle.classList.add('bg-accent');
-    else autoStartPomodorosToggle.classList.remove('bg-accent');
-
-    autoStartPomodorosBtn.classList.add(
-      `toggle-${appSettings.autoStartPomodoros}`,
-    );
-    autoStartPomodorosBtn.classList.remove(
-      `toggle-${!appSettings.autoStartPomodoros}`,
-    );
-  }
-};
-
-const showAlert = function (text) {
+// Shows an alert and hides it after 3000 ms
+const showAlert = (text) => {
   alertContainer.textContent = text;
   alertContainer.classList.remove('alert-hidden');
   alertContainer.classList.add('alert-visible');
 
   setTimeout(() => {
-    alertContainer.classList.toggle('alert-visible');
-    alertContainer.classList.toggle('alert-hidden');
-  }, 1500);
+    alertContainer.classList.remove('alert-visible');
+    alertContainer.classList.add('alert-hidden');
+  }, ALERT_DURATION);
 };
 
-const updateCircleProgress = function (currentDuration, remainingDuration) {
-  const newOffset = CIRCUMFERENCE * (remainingDuration / currentDuration);
+// Wrapper Function for playing Sounds
+const playSound = (soundName) => SOUNDS[soundName]?.play();
 
-  progressCircle.setAttribute('stroke-dashoffset', newOffset);
+////////////////////////////////////
+// Settings Handling
+
+// Saves settings to localStorage
+const updateLocalStorage = () => {
+  const settings = JSON.stringify(appSettings);
+  localStorage.setItem('settings', settings);
 };
 
-const resetCircleProgress = () =>
-  progressCircle.setAttribute('stroke-dashoffset', 880);
+// Loads settings from localStorage
+const loadLocalStorage = () => {
+  const settings = JSON.parse(localStorage.getItem('settings'));
+  if (settings) appSettings = settings;
+};
+
+// Changes toggleButton UI based on the value in appSettings
+const updateToggleButton = (toggleElement, isActive) => {
+  const circle = toggleElement.querySelector('.toggle-button-circle');
+  if (isActive) toggleElement.classList.add('bg-accent');
+  else toggleElement.classList.remove('bg-accent');
+  circle.classList.add(`toggle-${isActive}`);
+  circle.classList.remove(`toggle-${!isActive}`);
+};
+
+// Renders the Settings UI based on appSettings
+const loadAndRenderSettings = () => {
+  if (appSettings !== defaultSettings) {
+    pomodoroInput.value = appSettings.durations.pomodoro;
+    shortBreakInput.value = appSettings.durations.shortBreak;
+    longBreakInput.value = appSettings.durations.longBreak;
+    longBreakIntervalInput.value = appSettings.longBreakInterval;
+
+    updateToggleButton(autoStartBreaksToggle, appSettings.autoStartBreaks);
+    updateToggleButton(
+      autoStartPomodorosToggle,
+      appSettings.autoStartPomodoros,
+    );
+  }
+};
+
+// Returns bool value based on the toggleButton's state
+const getToggleState = (toggleBtn) =>
+  toggleBtn
+    .querySelector('.toggle-button-circle')
+    .classList.contains('toggle-true');
+
+// Changes toggleButton UI on every click
+const handleToggleButton = (toggleBtn) => {
+  const toggleCircle = toggleBtn.querySelector('.toggle-button-circle');
+  toggleCircle.classList.toggle('toggle-false');
+  toggleCircle.classList.toggle('toggle-true');
+  toggleBtn.classList.toggle('bg-accent');
+};
+
+// Allows values only between MIN_MINUTES and MAX_MINUTES
+const validateSettingsInputs = () => {
+  numberInputs.forEach((input) => {
+    if (input.value >= MAX_MINUTES) input.value = MAX_MINUTES;
+    if (input.value < MIN_MINUTES) input.value = MIN_MINUTES;
+  });
+};
+
+// Updates appSettings with the entered values
+const updateSettings = (autoStartBreaks, autoStartPomodoros) => {
+  appSettings.durations.pomodoro = +pomodoroInput.value;
+  appSettings.durations.shortBreak = +shortBreakInput.value;
+  appSettings.durations.longBreak = +longBreakInput.value;
+  appSettings.longBreakInterval = +longBreakIntervalInput.value;
+  appSettings.autoStartBreaks = autoStartBreaks;
+  appSettings.autoStartPomodoros = autoStartPomodoros;
+};
+
+// Handles the save logic
+const handleSaveSettings = () => {
+  // 1. Play Sound
+  playSound(SOUND_TYPES.CLICK);
+
+  // 2. Validate Inputs
+  validateSettingsInputs();
+
+  // 3. Get the bool value of the toggleButtons
+  const autoStartBreaks = getToggleState(autoStartBreaksToggle);
+  const autoStartPomodoros = getToggleState(autoStartPomodorosToggle);
+
+  // 4. Update Settings
+  updateSettings(autoStartBreaks, autoStartPomodoros);
+  updateLocalStorage();
+
+  // 5. Close Window & Render new Settings
+  toggleSettingsDialog();
+  loadAndRenderSettings();
+
+  // 6. Update Duration (Maybe the durations changed)
+  timer.updateDuration();
+
+  // 7. Render Time
+  // If remainingSeconds are 0, use currentDuration
+  renderTime(timer.remainingSeconds || timer.currentDuration);
+
+  // 8. Show Alert
+  showAlert('Settings saved! ✅');
+};
+
+// Handles the close settings logic
+const handleSettingsClose = () => {
+  playSound(SOUND_TYPES.CLICK);
+  toggleSettingsDialog();
+};
+
+////////////////////////////////////
+// Event Handling Functions
+
+// Handles the open settings logic
+const handleSettingsOpen = () => {
+  toggleSettingsDialog();
+  playSound(SOUND_TYPES.CLICK);
+};
+
+// Handles the start/stop timer button logic
+const handleTimerToggle = () => {
+  playSound(SOUND_TYPES.CLICK);
+
+  // isRunning is false at the beginning, so the timer starts on the first click
+  if (!timer.isRunning) setTimerState(TIMER_STATES.START);
+  // Timer stops and isRunning gets true
+  else setTimerState(TIMER_STATES.STOP);
+};
+
+// Handles the skip button logic
+const handlePhaseSkip = () => {
+  playSound(SOUND_TYPES.CLICK);
+
+  // Switchs to next phase
+  handlePhaseEnd();
+};
 
 ////////////////////////////////////
 // Events
-settingsBtn.addEventListener('click', function () {
-  toggleSettingsDialog();
-  buttonSound.play();
-});
+settingsBtn.addEventListener('click', handleSettingsOpen);
 
-settingsDialog.addEventListener('click', function (e) {
+settingsDialog.addEventListener('click', (e) => {
   const clickedElement = e.target;
-  // Select Toggle Button
   const toggleBtn = clickedElement.closest('.toggle-button');
-
-  // Select Save Settings Button
   const saveBtn = clickedElement.closest('.save-settings');
-
-  // Select Close Settings Button
   const closeBtn = clickedElement.closest('.close-settings');
 
-  if (closeBtn) {
-    buttonSound.play();
-    toggleSettingsDialog();
-  }
-
-  // Update the Toggle Button UI
-  if (toggleBtn) {
-    // Select the Circle in the Toggle Button
-    const knob = toggleBtn.querySelector('.toggle-button-circle');
-
-    // Change the Position of the Circle (left or right)
-    knob.classList.toggle('toggle-false');
-    knob.classList.toggle('toggle-true');
-
-    // Change the Background-Color
-    toggleBtn.classList.toggle('bg-accent');
-  }
-
-  // Save Settings
-  if (saveBtn) {
-    buttonSound.play();
-
-    // If the user entered a number bigger than 100, reduce it to 100
-    numberInputs.forEach((input) =>
-      input.value >= 100 ? (input.value = 100) : input.value,
-    );
-
-    // Get the Boolean Value of the Toggle Button Settings
-    const autoStartBreaks = autoStartBreaksToggle
-      .querySelector('.toggle-button-circle')
-      .classList.contains('toggle-true');
-
-    const autoStartPomodoros = autoStartPomodorosToggle
-      .querySelector('.toggle-button-circle')
-      .classList.contains('toggle-true');
-
-    // Overwrite Settings Object
-    appSettings.durations.pomodoro = +pomodoroInput.value;
-    appSettings.durations.shortBreak = +shortBreakInput.value;
-    appSettings.durations.longBreak = +longBreakInput.value;
-    appSettings.longBreakInterval = +longBreakIntervalInput.value;
-    appSettings.autoStartBreaks = autoStartBreaks;
-    appSettings.autoStartPomodoros = autoStartPomodoros;
-
-    // Hide Settings Modal
-    toggleSettingsDialog();
-
-    // Save to localStorage
-    updateLocalStorage();
-
-    loadAndRenderSettings();
-
-    // Update new Timer Time
-    timer.updateDuration();
-
-    renderTime(timer.currentDuration * 60);
-
-    // Update Time UI
-    timer.remainingSeconds
-      ? renderTime(timer.remainingSeconds)
-      : renderTime(timer.currentDuration);
-
-    // Show Alert
-    showAlert('Settings saved! ✅');
-  }
+  // Event Delegation
+  if (closeBtn) handleSettingsClose();
+  if (toggleBtn) handleToggleButton(toggleBtn);
+  if (saveBtn) handleSaveSettings();
 });
 
-startBtn.addEventListener('click', function () {
-  buttonSound.play();
-  // Check Running State
-  if (!timer.isRunning) startTimer();
-  else stopTimer();
+startBtn.addEventListener('click', handleTimerToggle);
 
-  timer.isRunning = !timer.isRunning;
-  skipBtn.classList.toggle('collapse');
-});
-
-skipBtn.addEventListener('click', function () {
-  buttonSound.play();
-
-  if (timer.isBreak && appSettings.autoStartBreaks) startNextPhase();
-  else if (!timer.isBreak && appSettings.autoStartPomodoros) startNextPhase();
-  else switchPhase();
-});
+skipBtn.addEventListener('click', handlePhaseSkip);
 
 ////////////////////////////////////
 // Initialization
 loadLocalStorage();
 loadAndRenderSettings();
-
 renderTime(appSettings.durations.pomodoro * 60);
-
-timer.updateDuration();
 
 // TODO
 // 5. Leertaste soll den Timer Starten/Beenden
 // 5.1 Focusable von allen Elementen entfernen
 // 5.2 TabStops implementieren
-// 6. Code säubern, Kommentarzeilen hinzufügen
-// 6.1 Jeden DRY Code entfernen
-// 6.2 Große Zeilenblöcke in eigene Funktionen Packen (Lesbarkeit erhöhen)
-// 6.3 Kommentarzeilen hinzufügen
+// Change to OOP
+// Add Tasks Logic
+// Add Modules
