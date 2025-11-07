@@ -400,6 +400,19 @@ startBtn.addEventListener('click', handleTimerToggle);
 
 skipBtn.addEventListener('click', handlePhaseSkip);
 
+document.addEventListener('keydown', function (e) {
+  if (e.key === ' ') {
+    // Click Start/Stop Button
+    startBtn.click();
+
+    // Scale Button
+    startBtn.classList.add('button-active');
+
+    // Remove the Scaling, so it feels like a real click
+    setTimeout(() => startBtn.classList.remove('button-active'), 200);
+  }
+});
+
 ////////////////////////////////////
 // Initialization
 loadLocalStorage();
@@ -407,9 +420,6 @@ loadAndRenderSettings();
 renderTime(appSettings.durations.pomodoro * 60);
 
 // TODO
-// 5. Leertaste soll den Timer Starten/Beenden
-// 5.1 Focusable von allen Elementen entfernen
-
-// 6. Change to OOP
-// 7. Implement Tasks Logic
-// 8. Split Code into Modules
+// 1. Change to OOP
+// 2. Implement Tasks Logic
+// 3. Split Code into Modules

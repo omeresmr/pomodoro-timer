@@ -13,6 +13,10 @@
     font-family: var(--font-raleway);
     color: var(--color-text);
   }
+
+  *:focus-visible {
+    @apply ring-text ring-offset-primary ring-2 ring-offset-4 outline-none;
+  }
 }
 
 .menu-element {
@@ -37,6 +41,10 @@
 
 .button {
   @apply bg-accent rounded-sm text-lg duration-200 hover:scale-101 active:scale-97;
+}
+
+.button-active {
+  @apply scale-97;
 }
 
 .toggle-button {
