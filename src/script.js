@@ -21,6 +21,8 @@ const timerStateLabel = document.querySelector('.timer-state-text');
 const overlay = document.querySelector('.overlay');
 const settingsDialog = document.querySelector('.settings-modal');
 
+const mainContent = document.querySelector('main');
+const header = document.querySelector('header');
 const alertContainer = document.querySelector('.alert-container');
 const progressCircle = document.querySelector('.progress-circle');
 
@@ -244,8 +246,10 @@ const loadLocalStorage = () => {
 // Changes toggleButton UI based on the value in appSettings
 const updateToggleButton = (toggleElement, isActive) => {
   const circle = toggleElement.querySelector('.toggle-button-circle');
+
   if (isActive) toggleElement.classList.add('bg-accent');
   else toggleElement.classList.remove('bg-accent');
+
   circle.classList.add(`toggle-${isActive}`);
   circle.classList.remove(`toggle-${!isActive}`);
 };
@@ -333,6 +337,13 @@ const handleSaveSettings = () => {
 const handleSettingsClose = () => {
   playSound(SOUND_TYPES.CLICK);
   toggleSettingsDialog();
+
+  // Remove Tabbing for settings dialog
+  settingsDialog.setAttribute('inert', '');
+
+  // Allow Tabbing for the main page
+  header.removeAttribute('inert');
+  mainContent.removeAttribute('inert');
 };
 
 ////////////////////////////////////
@@ -342,6 +353,13 @@ const handleSettingsClose = () => {
 const handleSettingsOpen = () => {
   toggleSettingsDialog();
   playSound(SOUND_TYPES.CLICK);
+
+  // Allow Tabbing for Settings Dialog
+  settingsDialog.removeAttribute('inert');
+
+  // Remove Tabbing for the main page
+  header.setAttribute('inert', '');
+  mainContent.setAttribute('inert', '');
 };
 
 // Handles the start/stop timer button logic
@@ -391,7 +409,7 @@ renderTime(appSettings.durations.pomodoro * 60);
 // TODO
 // 5. Leertaste soll den Timer Starten/Beenden
 // 5.1 Focusable von allen Elementen entfernen
-// 5.2 TabStops implementieren
-// Change to OOP
-// Add Tasks Logic
-// Add Modules
+
+// 6. Change to OOP
+// 7. Implement Tasks Logic
+// 8. Split Code into Modules
