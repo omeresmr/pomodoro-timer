@@ -179,7 +179,6 @@ const completePhase = () => {
   // 4. Update UI
   resetCircleProgress();
   updateTimerStateLabel();
-  console.log(timer.currentDuration);
   renderTime(timer.currentDuration);
 
   // 5. Play Sound
@@ -221,6 +220,11 @@ const toggleSettingsDialog = () => {
   overlay.classList.toggle('hidden');
   settingsDialog.classList.toggle('modal-hidden');
   settingsDialog.classList.toggle('modal-visible');
+
+  // Toggle the inert Attribute, so that tabbing works the correct way
+  settingsDialog.toggleAttribute('inert');
+  header.toggleAttribute('inert');
+  mainContent.toggleAttribute('inert');
 };
 
 // Updates Circle Progress
@@ -271,13 +275,16 @@ const updateToggleButton = (toggleElement, isActive) => {
 
 // Renders the Settings UI based on settings
 const renderSettings = () => {
-  pomodoroInput.value = settings.durations.pomodoro;
-  shortBreakInput.value = settings.durations.shortBreak;
-  longBreakInput.value = settings.durations.longBreak;
-  longBreakIntervalInput.value = settings.longBreakInterval;
+  // Added a timeout, so the user can't see the toggle button toggling back ;D
+  setTimeout(() => {
+    pomodoroInput.value = settings.durations.pomodoro;
+    shortBreakInput.value = settings.durations.shortBreak;
+    longBreakInput.value = settings.durations.longBreak;
+    longBreakIntervalInput.value = settings.longBreakInterval;
 
-  updateToggleButton(autoStartBreaksToggle, settings.autoStartBreaks);
-  updateToggleButton(autoStartPomodorosToggle, settings.autoStartPomodoros);
+    updateToggleButton(autoStartBreaksToggle, settings.autoStartBreaks);
+    updateToggleButton(autoStartPomodorosToggle, settings.autoStartPomodoros);
+  }, 100);
 };
 
 // Returns bool value based on the toggleButton's state
@@ -334,7 +341,7 @@ const handleSaveSettings = () => {
   // If remainingSeconds are 0, use currentDuration
   renderTime(timer.remainingSeconds || timer.currentDuration);
 
-  // 8. Show Alert
+  // 7. Show Alert
   showAlert('Settings saved! ✅');
 };
 
@@ -343,15 +350,8 @@ const handleSettingsClose = () => {
   playSound(SOUND_TYPES.CLICK);
   toggleSettingsDialog();
 
-  // TODO Reset Toggle Buttons based on the saved settings state
-
-  // Remove Tabbing for settings dialog
-  settingsDialog.setAttribute('inert', '');
-
-  // TODO Bug Fixing
-  // Allow Tabbing for the main page
-  header.removeAttribute('inert');
-  mainContent.removeAttribute('inert');
+  // Reset Toggle Buttons based on the saved settings state
+  renderSettings();
 };
 
 ////////////////////////////////////
@@ -361,14 +361,6 @@ const handleSettingsClose = () => {
 const handleSettingsOpen = () => {
   toggleSettingsDialog();
   playSound(SOUND_TYPES.CLICK);
-
-  // Allow Tabbing for Settings Dialog
-  settingsDialog.removeAttribute('inert');
-
-  // TODO Bug Fixing
-  // Remove Tabbing for the main page
-  header.setAttribute('inert', '');
-  mainContent.setAttribute('inert', '');
 };
 
 // Handles the start/stop timer button logic
@@ -429,8 +421,6 @@ const settings = new Settings();
 renderSettings();
 renderTime(settings.durations.pomodoro * 60);
 
-// BUG Nachdem der user auf "save settings" klickt, kann er nichts mehr klicken
-// BUG toggle button UI bleibt geändert, selbst wenn der user nicht auf save klickt
 // TODO
-// 2. Split Code into Modules
-// 3. Implement Tasks Logic
+// 1. Split Code into Modules
+// 2. Implement Tasks Logic
