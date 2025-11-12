@@ -62,7 +62,9 @@ export const handlePhaseEnd = () => {
 // Starts the timer automatically after 1500 ms
 const autoStartNextPhase = () => {
   completePhase();
+
   setTimeout(() => {
+    if (timer.isRunning) return;
     setTimerState(TIMER_STATES.START);
   }, AUTO_START_DELAY);
 };
