@@ -2,7 +2,7 @@ import PomodoroTimer from './models/Timer.js';
 import Settings from './models/Settings.js';
 import { TIMER_STATES } from './utils/constants.js';
 import { handlePhaseEnd } from './logic/timerLogic.js';
-import { playSound, SOUND_TYPES } from './utils/sounds.js';
+import { playSound, pauseSound, SOUND_TYPES } from './utils/sounds.js';
 
 import {
   settingsDialog,
@@ -26,6 +26,12 @@ import {
 const settingsBtn = document.querySelector('.settings-button');
 export const startBtn = document.querySelector('.start-timer');
 export const skipBtn = document.querySelector('.skip-timer');
+const soundBtn = document.querySelector('.activate-sound-button');
+
+////////////////////////////////////
+// DOM Elements
+////////////////////////////////////
+export let soundEnabled = true;
 
 ////////////////////////////////////
 // Functions
@@ -34,6 +40,9 @@ export const skipBtn = document.querySelector('.skip-timer');
 // Handles the start/stop timer button logic
 const handleTimerToggle = () => {
   playSound(SOUND_TYPES.CLICK);
+  if (!SOUND_TYPES.RING.paused) {
+    pauseSound(SOUND_TYPES.RING);
+  }
 
   // isRunning is false at the beginning, so the timer starts on the first click
   if (!timer.isRunning) setTimerState(TIMER_STATES.START);
@@ -129,6 +138,20 @@ startBtn.addEventListener('click', handleTimerToggle);
 
 skipBtn.addEventListener('click', handlePhaseSkip);
 
+soundBtn.addEventListener('click', function () {
+  playSound(SOUND_TYPES.CLICK);
+
+  // Change soundEnabled state
+  soundEnabled = !soundEnabled;
+
+  // Show alert, based on soundEnabled state
+  showAlert(`Sound ${!soundEnabled ? 'de' : ''}activated! ✅`);
+
+  // Show the other svg
+  soundBtn.children[0].classList.toggle('hidden');
+  soundBtn.children[1].classList.toggle('hidden');
+});
+
 document.addEventListener('keydown', function (e) {
   if (e.key === ' ') {
     // Click Start/Stop Button
@@ -149,3 +172,5 @@ export const timer = new PomodoroTimer();
 export const settings = new Settings();
 renderSettings();
 renderTime(settings.durations.pomodoro * 60);
+
+// BUG If user starts timer, after a break or pomodoro, and autostart is enabled, timer starts twice
