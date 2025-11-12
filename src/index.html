@@ -9,18 +9,19 @@
   </head>
   <body class="bg-primary relative flex min-h-screen flex-col">
     <header class="mt-8.5 flex items-center justify-center">
-      <ul class="flex gap-2 text-2xl font-medium">
-        <li class="menu-element selected-menu">
+      <ul class="navigation-menu flex gap-2 text-2xl font-medium">
+        <li class="menu-element pomodoro-link selected-menu" data-target="pomodoro">
           <a href="#" tabindex="5">pomodoro</a>
         </li>
         |
-        <li class="menu-element"><a href="#" tabindex="6">tasks</a></li>
+        <li class="menu-element tasks-link" data-target="tasks"><a href="#" tabindex="6">tasks</a></li>
         |
-        <li class="menu-element"><a href="#" tabindex="7">stats</a></li>
+        <li class="menu-element stats-link" data-target="stats"><a href="#" tabindex="7">stats</a></li>
       </ul>
     </header>
-    <main class="relative flex flex-1 flex-col items-center justify-center">
-      <!-- Pomodoro Timer -->
+    <main class="relative flex flex-1 flex-col items-center justify-center overflow-x-hidden">
+      <!-- Pomodoro Timer Section -->
+      <section class="absolute pomodoro-section transition-transform duration-500 current-section" data-index="0">
       <!-- Container for Circle and Buttons -->
       <div class="flex flex-col items-center gap-4 relative" tabindex="-1">
 
@@ -64,6 +65,23 @@
          <div class="alert-container alert-hidden">
          </div>
       </div>
+      </section>
+
+      <!-- Tasks Section -->
+      <section class="tasks-section absolute inset-0 translate-x-[100vw] transition-transform duration-500 flex flex-col items-center justify-start pt-20" data-index="1">
+        <div class="max-w-2xl w-full px-4 bg-pink-500">
+          <h2 class="text-4xl font-bold mb-8">Tasks</h2>
+          <p class="text-lg">Your tasks will appear here.</p>
+        </div>
+      </section>
+
+      <!-- Stats Section -->
+      <section class="stats-section absolute inset-0 translate-x-[200vw] transition-transform duration-500 flex flex-col items-center justify-start pt-20" data-index="2">
+        <div class="max-w-2xl w-full px-4 bg-amber-500">
+          <h2 class="text-4xl font-bold mb-8">Statistics</h2>
+          <p class="text-lg">Your productivity stats will appear here.</p>
+        </div>
+      </section>
     </main>
     <footer class="flex items-center justify-between py-4 px-3">
 

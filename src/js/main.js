@@ -11,6 +11,7 @@ import {
   setTimerState,
   toggleSettingsDialog,
   showAlert,
+  slideToSection,
 } from './utils/ui.js';
 
 import {
@@ -27,6 +28,9 @@ const settingsBtn = document.querySelector('.settings-button');
 export const startBtn = document.querySelector('.start-timer');
 export const skipBtn = document.querySelector('.skip-timer');
 const soundBtn = document.querySelector('.activate-sound-button');
+const navigationMenu = document.querySelector('.navigation-menu');
+
+const sections = document.querySelectorAll('section');
 
 ////////////////////////////////////
 // DOM Elements
@@ -165,6 +169,30 @@ document.addEventListener('keydown', function (e) {
   }
 });
 
+navigationMenu.addEventListener('click', function (e) {
+  const clickedElement = e.target;
+  const clickedMenuElement = clickedElement.closest('.menu-element');
+  const menuElements = document.querySelectorAll('.menu-element');
+  const currentSection = document.querySelector('.current-section');
+
+  // Guard Clause
+  if (!clickedMenuElement) return;
+
+  // Unhighlight every menu element
+  menuElements.forEach((el) => el.classList.remove('selected-menu'));
+
+  // Highlight clicked menu element
+  clickedMenuElement.classList.add('selected-menu');
+
+  const targetSection = document.querySelector(
+    `.${clickedMenuElement.dataset.target}-section`,
+  );
+
+  if (!targetSection) return;
+
+  slideToSection(currentSection, targetSection, sections);
+});
+
 ////////////////////////////////////
 // Initialization
 ////////////////////////////////////
@@ -172,5 +200,3 @@ export const timer = new PomodoroTimer();
 export const settings = new Settings();
 renderSettings();
 renderTime(settings.durations.pomodoro * 60);
-
-// BUG If user starts timer, after a break or pomodoro, and autostart is enabled, timer starts twice

@@ -107,3 +107,30 @@ export const setTimerState = (state) => {
   // Only visible if timer is running
   skipBtn.classList.toggle('collapse');
 };
+
+// Animation for the navigation between sections
+export const slideToSection = (currentSection, targetSection, sections) => {
+  // Guard Clause
+  if (currentSection === targetSection) return;
+
+  const targetIndex = targetSection.dataset.index;
+
+  currentSection.classList.remove('current-section');
+  targetSection.classList.add('current-section');
+
+  sections.forEach((section) => {
+    // 1. Remove every translate class
+    section.classList.remove(
+      'translate-x-[-200vw]',
+      'translate-x-[-100vw]',
+      'translate-x-[0vw]',
+      'translate-x-[100vw]',
+      'translate-x-[200vw]',
+    );
+    // 2. Calculate the new position value
+    const position = (section.dataset.index - targetIndex) * 100;
+
+    // 3. Move the section to the new position
+    section.classList.add(`translate-x-[${position}vw]`);
+  });
+};
