@@ -31,6 +31,7 @@ const soundBtn = document.querySelector('.activate-sound-button');
 const navigationMenu = document.querySelector('.navigation-menu');
 
 const sections = document.querySelectorAll('section');
+const currentSection = document.querySelector('.current-section');
 
 ////////////////////////////////////
 // DOM Elements
@@ -157,6 +158,9 @@ soundBtn.addEventListener('click', function () {
 });
 
 document.addEventListener('keydown', function (e) {
+  // If the user is on a different section, return
+  if (!currentSection.classList.contains('pomodoro-section')) return;
+
   if (e.key === ' ') {
     // Click Start/Stop Button
     startBtn.click();
@@ -173,7 +177,6 @@ navigationMenu.addEventListener('click', function (e) {
   const clickedElement = e.target;
   const clickedMenuElement = clickedElement.closest('.menu-element');
   const menuElements = document.querySelectorAll('.menu-element');
-  const currentSection = document.querySelector('.current-section');
 
   // Guard Clause
   if (!clickedMenuElement) return;

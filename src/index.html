@@ -8,20 +8,20 @@
     <script defer type="module" src="./js/main.js"></script>
   </head>
   <body class="bg-primary relative flex min-h-screen flex-col">
-    <header class="mt-8.5 flex items-center justify-center">
+    <header class="py-4 flex items-center justify-center bg-secondary">
       <ul class="navigation-menu flex gap-2 text-2xl font-medium">
-        <li class="menu-element pomodoro-link selected-menu" data-target="pomodoro">
+        <li class="menu-element" data-target="pomodoro">
           <a href="#" tabindex="5">pomodoro</a>
         </li>
         |
-        <li class="menu-element tasks-link" data-target="tasks"><a href="#" tabindex="6">tasks</a></li>
+        <li class="menu-element selected-menu" data-target="tasks"><a href="#" tabindex="6">tasks</a></li>
         |
-        <li class="menu-element stats-link" data-target="stats"><a href="#" tabindex="7">stats</a></li>
+        <li class="menu-element" data-target="stats"><a href="#" tabindex="7">stats</a></li>
       </ul>
     </header>
     <main class="relative flex flex-1 flex-col items-center justify-center overflow-x-hidden">
       <!-- Pomodoro Timer Section -->
-      <section class="absolute pomodoro-section transition-transform duration-500 current-section" data-index="0">
+      <section class="absolute pomodoro-section transition-transform translate-x-[-100vw] duration-500" data-index="0" inert="">
       <!-- Container for Circle and Buttons -->
       <div class="flex flex-col items-center gap-4 relative" tabindex="-1">
 
@@ -68,22 +68,31 @@
       </section>
 
       <!-- Tasks Section -->
-      <section class="tasks-section absolute inset-0 translate-x-[100vw] transition-transform duration-500 flex flex-col items-center justify-start pt-20" data-index="1">
-        <div class="max-w-2xl w-full px-4 bg-pink-500">
-          <h2 class="text-4xl font-bold mb-8">Tasks</h2>
-          <p class="text-lg">Your tasks will appear here.</p>
-        </div>
+      <section class="current-section tasks-section absolute inset-0 transition-transform duration-500 flex flex-col items-center justify-start mt-8 px-4 py-12" data-index="1">
+        <!-- Create Task Form -->
+          <form class="grid grid-rows-[auto_auto_auto_auto] grid-cols-1 justify-items-start bg-secondary p-5 gap-7 rounded-2xl w-9/10 max-w-sm sm:max-w-md lg:max-w-lg">
+            <h1 class="font-bold text-2xl text-accent justify-self-start">Create Task</h1>
+            <div class="flex flex-col w-full justify-self-start">
+              <label for="task-name">Task Name</label>
+              <input type="text" id="task-name" class="border border-border-input text-accent text-left rounded-md text-sm p-2" tabindex="1">
+            </div>
+            <div class="flex flex-col">
+              <label for="est-pomodoros">Est. Pomos</label>
+              <input type="number" value="1" id="est-pomodoros" class="number-input" tabindex="2">
+            </div>
+            <button class="button py-1 px-8 max-w-4/10" tabindex="3">Create</button>
+          </form>
       </section>
 
       <!-- Stats Section -->
-      <section class="stats-section absolute inset-0 translate-x-[200vw] transition-transform duration-500 flex flex-col items-center justify-start pt-20" data-index="2">
+      <section class="stats-section absolute inset-0 translate-x-[100vw] transition-transform duration-500 flex flex-col items-center justify-start pt-20" data-index="2" inert="">
         <div class="max-w-2xl w-full px-4 bg-amber-500">
           <h2 class="text-4xl font-bold mb-8">Statistics</h2>
           <p class="text-lg">Your productivity stats will appear here.</p>
         </div>
       </section>
     </main>
-    <footer class="flex items-center justify-between py-4 px-3">
+    <footer class="flex items-center justify-between py-4 px-5 bg-secondary">
 
     <!-- "Get into flow. Text" -->
       <h1 class="text-4xl md:text-[40px] font-bold pointer-events-none" tabindex="-1">
@@ -94,7 +103,7 @@
       <!-- Settings & Sound Button-->
       <div class="flex gap-7">
       <!-- Activate/Deactivate Sound-->
-        <button class="activate-sound-button svg-button relative flex items-center justify-center" tabindex="3">
+        <button class="activate-sound-button svg-button relative flex items-center justify-center w-7" tabindex="3">
 
           <!-- Sound on SVG -->
           <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 absolute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-volume1-icon lucide-volume-1"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/></svg>

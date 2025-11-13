@@ -4,8 +4,10 @@
 @theme {
   --font-raleway: 'Raleway', sans-serif;
   --color-primary: #424b54;
+  --color-secondary: #3b434b;
   --color-text: #f5f5f5;
   --color-accent: #f67e7d;
+  --color-border-input: #646c73;
 }
 
 @layer base {
@@ -15,7 +17,7 @@
   }
 
   *:focus-visible {
-    @apply ring-text ring-offset-primary ring-2 ring-offset-4 outline-none;
+    @apply ring-text ring-offset-primary ring-1 ring-offset-4 transition outline-none;
   }
 }
 
@@ -64,11 +66,11 @@
 }
 
 .number-input {
-  @apply border-text text-accent w-20 rounded border bg-transparent px-2 py-1 text-left;
+  @apply text-accent border-border-input w-20 rounded-md border bg-transparent p-2 text-left;
 }
 
 .settings-modal {
-  @apply bg-primary border-text absolute top-1/2 left-1/2 -z-2 flex w-[333px] max-w-[90vw] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center border duration-200;
+  @apply bg-secondary border-text absolute top-1/2 left-1/2 -z-2 flex w-[333px] max-w-[90vw] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-md border duration-200;
 }
 
 .modal-visible {

@@ -115,17 +115,21 @@ export const slideToSection = (currentSection, targetSection, sections) => {
 
   const targetIndex = targetSection.dataset.index;
 
+  // Set the current-section class (important for main.js)
   currentSection.classList.remove('current-section');
   targetSection.classList.add('current-section');
 
+  // Toggle "inert" attribute, so that tabbing works as expected
+  currentSection.toggleAttribute('inert');
+  targetSection.toggleAttribute('inert');
+
+  // I have 3 sections, so the range is from -200 to 200.
+  const translateValues = [-200, -100, 0, 100, 200];
+
   sections.forEach((section) => {
-    // 1. Remove every translate class
-    section.classList.remove(
-      'translate-x-[-200vw]',
-      'translate-x-[-100vw]',
-      'translate-x-[0vw]',
-      'translate-x-[100vw]',
-      'translate-x-[200vw]',
+    // 1. Remove every translate class from every section
+    translateValues.forEach((v) =>
+      section.classList.remove(`translate-x-[${v}vw]`),
     );
     // 2. Calculate the new position value
     const position = (section.dataset.index - targetIndex) * 100;
