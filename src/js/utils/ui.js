@@ -82,6 +82,8 @@ export const toggleSettingsDialog = () => {
 // Renders the Settings UI based on settings
 export const renderSettings = () => {
   // Added a timeout, so the user can't see the toggle button toggling back ;D
+
+  // Render Timer Settings
   setTimeout(() => {
     settingsInputs.pomodoro.value = settings.durations.pomodoro;
     settingsInputs.shortBreak.value = settings.durations.shortBreak;
@@ -97,6 +99,20 @@ export const renderSettings = () => {
       settings.autoStartPomodoros,
     );
   }, 100);
+};
+
+// Renders enable/disable Sound button
+export const renderSoundButton = (button) => {
+  const soundOnSvg = button.children[0];
+  const soundOffSvg = button.children[1];
+
+  if (settings.soundEnabled) {
+    soundOnSvg.classList.remove('hidden');
+    soundOffSvg.classList.add('hidden');
+  } else {
+    soundOffSvg.classList.remove('hidden');
+    soundOnSvg.classList.add('hidden');
+  }
 };
 
 // Starts or Stops the Timer, based on the state argument

@@ -1,20 +1,22 @@
 // Settings Class
 export default class Settings {
-  // Default values
+  soundEnabled = true;
+
+  // Default Timer values
   durations = { pomodoro: 25, shortBreak: 5, longBreak: 15 };
   autoStartBreaks = false;
   autoStartPomodoros = false;
   longBreakInterval = 4;
   constructor() {
     const settings = JSON.parse(localStorage.getItem('settings'));
+    if (!settings) return;
 
-    // Overwrite settings, if there are settings saved in the localStorage
-    if (settings) {
-      this.durations = settings.durations;
-      this.autoStartBreaks = settings.autoStartBreaks;
-      this.autoStartPomodoros = settings.autoStartPomodoros;
-      this.longBreakInterval = settings.longBreakInterval;
-    }
+    // Overwrite settings
+    this.durations = settings.durations;
+    this.autoStartBreaks = settings.autoStartBreaks;
+    this.autoStartPomodoros = settings.autoStartPomodoros;
+    this.longBreakInterval = settings.longBreakInterval;
+    this.soundEnabled = settings.soundEnabled;
   }
 
   update(
@@ -33,3 +35,5 @@ export default class Settings {
     this.longBreakInterval = longBreakInterval;
   }
 }
+
+// TODO Split Settings into sections

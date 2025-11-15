@@ -1,4 +1,4 @@
-import { soundEnabled } from '../main.js';
+import { settings } from '../main.js';
 
 export const SOUND_TYPES = {
   CLICK: 'click',
@@ -13,7 +13,7 @@ const SOUNDS = {
 // Wrapper Function for playing Sounds
 export const playSound = (soundName) => {
   // If user disabled sound, return.
-  if (!soundEnabled) return;
+  if (!settings.soundEnabled) return;
 
   // If the sound doesn't exist, return.
   const sound = SOUNDS[soundName];
@@ -24,7 +24,7 @@ export const playSound = (soundName) => {
 
 // Wrapper Function for pausing Sounds
 export const pauseSound = (soundName) => {
-  if (!soundEnabled) return;
+  if (!settings.soundEnabled) return;
 
   const sound = SOUNDS[soundName];
   if (!sound) return;

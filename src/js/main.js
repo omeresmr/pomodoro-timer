@@ -12,6 +12,7 @@ import {
   toggleSettingsDialog,
   showAlert,
   slideToSection,
+  renderSoundButton,
 } from './utils/ui.js';
 
 import {
@@ -32,11 +33,6 @@ const navigationMenu = document.querySelector('.navigation-menu');
 
 const sections = document.querySelectorAll('section');
 const currentSection = document.querySelector('.current-section');
-
-////////////////////////////////////
-// DOM Elements
-////////////////////////////////////
-export let soundEnabled = true;
 
 ////////////////////////////////////
 // Functions
@@ -147,10 +143,12 @@ soundBtn.addEventListener('click', function () {
   playSound(SOUND_TYPES.CLICK);
 
   // Change soundEnabled state
-  soundEnabled = !soundEnabled;
+  settings.soundEnabled = !settings.soundEnabled;
+
+  updateLocalStorage();
 
   // Show alert, based on soundEnabled state
-  showAlert(`Sound ${!soundEnabled ? 'de' : ''}activated! ✅`);
+  showAlert(`Sound ${!settings.soundEnabled ? 'de' : ''}activated! ✅`);
 
   // Show the other svg
   soundBtn.children[0].classList.toggle('hidden');
@@ -202,4 +200,5 @@ navigationMenu.addEventListener('click', function (e) {
 export const timer = new PomodoroTimer();
 export const settings = new Settings();
 renderSettings();
+renderSoundButton(soundBtn);
 renderTime(settings.durations.pomodoro * 60);
