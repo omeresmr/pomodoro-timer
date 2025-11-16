@@ -19,7 +19,7 @@
         <li class="menu-element" data-target="stats"><a href="#" tabindex="7">stats</a></li>
       </ul>
     </header>
-    <main class="relative flex flex-1 flex-col items-center justify-center overflow-x-hidden">
+    <main class="relative flex flex-1 flex-col items-center justify-center overflow-x-hidden my-8">
       <!-- Pomodoro Timer Section -->
       <section class="absolute pomodoro-section transition-transform translate-x-[-100vw] duration-500" data-index="0" inert="">
       <!-- Container for Circle and Buttons -->
@@ -64,9 +64,9 @@
       </section>
 
       <!-- Tasks Section -->
-      <section class="current-section tasks-section absolute inset-0 transition-transform duration-500 flex flex-col items-center justify-start mt-8 px-4 py-12" data-index="1">
+      <section class="current-section tasks-section absolute inset-0 transition-transform duration-500 flex flex-col items-center justify-start px-4" data-index="1">
         <!-- Create Task Form -->
-          <form class="grid grid-rows-[auto_auto_auto_auto] grid-cols-1 justify-items-start bg-secondary p-5 gap-7 rounded-2xl w-9/10 max-w-sm sm:max-w-md lg:max-w-lg">
+          <form class="grid grid-cols-1 justify-items-start bg-secondary p-5 gap-7 rounded-2xl w-9/10 max-w-sm sm:max-w-md lg:max-w-lg">
             <h1 class="font-bold text-2xl text-accent justify-self-start">Create Task</h1>
             <div class="flex flex-col w-full justify-self-start">
               <label for="task-name">Task Name</label>
@@ -78,6 +78,9 @@
             </div>
             <button disabled class="create-task button py-1 px-8 max-w-4/10" tabindex="3">Create</button>
           </form>
+            <div class="tasks mt-8 w-full flex flex-col items-center justify-center">
+
+            </div>
       </section>
 
       <!-- Stats Section -->

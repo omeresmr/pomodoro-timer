@@ -1,6 +1,5 @@
 import PomodoroTimer from './models/Timer.js';
 import Settings from './models/Settings.js';
-import Task from './models/Task.js';
 import { TIMER_STATES } from './utils/constants.js';
 import { handlePhaseEnd } from './logic/timerLogic.js';
 import { playSound, pauseSound, SOUND_TYPES } from './utils/sounds.js';
@@ -14,6 +13,7 @@ import {
   showAlert,
   slideToSection,
   renderSoundButton,
+  renderTask,
 } from './utils/ui.js';
 
 import {
@@ -22,7 +22,7 @@ import {
   getToggleState,
   settingsInputs,
 } from './logic/settingsLogic.js';
-import { tasks, saveTasks } from './logic/taskLogic.js';
+import { addTask, tasks } from './logic/taskLogic.js';
 
 ////////////////////////////////////
 // DOM Elements
@@ -175,9 +175,9 @@ createTaskBtn.addEventListener('click', function (e) {
   const taskName = taskNameInput.value;
   const estPomos = +estPomosInput.value;
 
-  tasks.push(new Task(taskName, estPomos));
+  addTask(taskName, estPomos);
+  renderTask(tasks.at(-1));
   showAlert(`Task ${taskName} succesfully created! ✅`);
-  saveTasks();
 
   taskNameInput.value = '';
 

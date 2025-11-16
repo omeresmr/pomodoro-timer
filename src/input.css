@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Raleway');
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
 @import 'tailwindcss';
 
 @theme {
@@ -86,7 +86,7 @@
 }
 
 .alert-visible {
-  @apply bottom-10 opacity-100;
+  @apply bottom-20 opacity-100;
 }
 
 .alert-hidden {
