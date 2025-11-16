@@ -7,7 +7,7 @@
     <title>Pomodoro Timer</title>
     <script defer type="module" src="./js/main.js"></script>
   </head>
-  <body class="bg-primary relative flex min-h-screen flex-col">
+  <body class="bg-primary relative flex min-h-screen flex-col" tabIndex="-1">
     <header class="py-4 flex items-center justify-center bg-secondary">
       <ul class="navigation-menu flex gap-2 text-2xl font-medium">
         <li class="menu-element" data-target="pomodoro">
@@ -60,10 +60,6 @@
 
         <!-- Start/Stop Timer Button-->
         <button class="start-timer button px-10 py-0.5 focus:border-text" tabindex="1">start</button>
-
-        <!-- Alert Container -->
-         <div class="alert-container alert-hidden">
-         </div>
       </div>
       </section>
 
@@ -78,9 +74,9 @@
             </div>
             <div class="flex flex-col">
               <label for="est-pomodoros">Est. Pomos</label>
-              <input type="number" value="1" id="est-pomodoros" class="number-input" tabindex="2">
+              <input type="number" value="1" min="1" id="est-pomodoros" class="number-input" tabindex="2">
             </div>
-            <button class="button py-1 px-8 max-w-4/10" tabindex="3">Create</button>
+            <button disabled class="create-task button py-1 px-8 max-w-4/10" tabindex="3">Create</button>
           </form>
       </section>
 
@@ -91,6 +87,8 @@
           <p class="text-lg">Your productivity stats will appear here.</p>
         </div>
       </section>
+      <!-- Alert Container -->
+      <div class="alert-container alert-hidden"></div>
     </main>
     <footer class="flex items-center justify-between py-4 px-5 bg-secondary">
 

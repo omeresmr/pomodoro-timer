@@ -42,7 +42,7 @@
 }
 
 .button {
-  @apply bg-accent rounded-sm text-lg duration-200 hover:scale-101 active:scale-97;
+  @apply bg-accent rounded-sm text-lg duration-200 hover:scale-101 active:scale-97 disabled:pointer-events-none disabled:brightness-75;
 }
 
 .button-active {
@@ -82,13 +82,13 @@
 }
 
 .alert-container {
-  @apply absolute mt-8 p-2 font-bold duration-500;
+  @apply absolute p-2 font-bold duration-500;
 }
 
 .alert-visible {
-  @apply -bottom-35 opacity-100;
+  @apply bottom-10 opacity-100;
 }
 
 .alert-hidden {
-  @apply -bottom-45 opacity-0;
+  @apply bottom-5 opacity-0;
 }

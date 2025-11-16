@@ -1,5 +1,6 @@
 import PomodoroTimer from './models/Timer.js';
 import Settings from './models/Settings.js';
+import Task from './models/Task.js';
 import { TIMER_STATES } from './utils/constants.js';
 import { handlePhaseEnd } from './logic/timerLogic.js';
 import { playSound, pauseSound, SOUND_TYPES } from './utils/sounds.js';
@@ -21,6 +22,7 @@ import {
   getToggleState,
   settingsInputs,
 } from './logic/settingsLogic.js';
+import { tasks, saveTasks } from './logic/taskLogic.js';
 
 ////////////////////////////////////
 // DOM Elements
@@ -29,7 +31,11 @@ const settingsBtn = document.querySelector('.settings-button');
 export const startBtn = document.querySelector('.start-timer');
 export const skipBtn = document.querySelector('.skip-timer');
 const soundBtn = document.querySelector('.activate-sound-button');
+const createTaskBtn = document.querySelector('.create-task');
+
 const navigationMenu = document.querySelector('.navigation-menu');
+const taskNameInput = document.getElementById('task-name');
+const estPomosInput = document.getElementById('est-pomodoros');
 
 const sections = document.querySelectorAll('section');
 const currentSection = document.querySelector('.current-section');
@@ -153,6 +159,32 @@ soundBtn.addEventListener('click', function () {
   // Show the other svg
   soundBtn.children[0].classList.toggle('hidden');
   soundBtn.children[1].classList.toggle('hidden');
+});
+
+taskNameInput.addEventListener('input', function () {
+  createTaskBtn.disabled = !taskNameInput.value;
+});
+
+estPomosInput.addEventListener('input', function () {
+  const estPomos = estPomosInput.value;
+  if (Number.isInteger(estPomos) || estPomos < 0) createTaskBtn.disabled = true;
+});
+
+createTaskBtn.addEventListener('click', function (e) {
+  e.preventDefault();
+  const taskName = taskNameInput.value;
+  const estPomos = +estPomosInput.value;
+
+  tasks.push(new Task(taskName, estPomos));
+  showAlert(`Task ${taskName} succesfully created! ✅`);
+  saveTasks();
+
+  taskNameInput.value = '';
+
+  this.disabled = true;
+
+  // Unfocus everything after creating a Task
+  document.body.focus();
 });
 
 document.addEventListener('keydown', function (e) {
