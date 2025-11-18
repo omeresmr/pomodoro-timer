@@ -14,6 +14,8 @@ import {
   slideToSection,
   renderSoundButton,
   renderTask,
+  setTaskState,
+  toggleTaskInfo,
 } from './utils/ui.js';
 
 import {
@@ -22,7 +24,7 @@ import {
   getToggleState,
   settingsInputs,
 } from './logic/settingsLogic.js';
-import { addTask, tasks } from './logic/taskLogic.js';
+import { addTask, tasks, findTask } from './logic/taskLogic.js';
 
 ////////////////////////////////////
 // DOM Elements
@@ -38,7 +40,6 @@ const taskNameInput = document.getElementById('task-name');
 const estPomosInput = document.getElementById('est-pomodoros');
 
 const sections = document.querySelectorAll('section');
-const currentSection = document.querySelector('.current-section');
 
 ////////////////////////////////////
 // Functions
@@ -46,6 +47,7 @@ const currentSection = document.querySelector('.current-section');
 
 // Handles the start/stop timer button logic
 const handleTimerToggle = () => {
+  console.log(tasks);
   playSound(SOUND_TYPES.CLICK);
   if (!SOUND_TYPES.RING.paused) {
     pauseSound(SOUND_TYPES.RING);
@@ -124,6 +126,33 @@ const handleToggleButton = (toggleBtn) => {
   toggleBtn.classList.toggle('bg-accent');
 };
 
+// Starts a Task
+const handleStartTask = (taskId) => {
+  const tasksSection = document.querySelector('.tasks-section');
+  const pomodoroSection = document.querySelector('.pomodoro-section');
+  const task = findTask(taskId);
+  if (!task) return;
+
+  // Change isActive state
+  task.start();
+
+  // Change task UI
+  setTaskState(taskId, 'active'); // CHANGE
+
+  // Reset Timer
+  timer.reset();
+
+  // Slide to Timer section
+  slideToSection(tasksSection, pomodoroSection, sections);
+
+  // Start Timer
+  setTimerState(TIMER_STATES.START);
+  timer.initTask(task);
+
+  // Show Task
+  toggleTaskInfo(taskId); // CHANGE
+};
+
 ////////////////////////////////////
 // Event Listeners
 ////////////////////////////////////
@@ -172,12 +201,17 @@ estPomosInput.addEventListener('input', function () {
 
 createTaskBtn.addEventListener('click', function (e) {
   e.preventDefault();
+
+  playSound(SOUND_TYPES.CLICK);
+
   const taskName = taskNameInput.value;
   const estPomos = +estPomosInput.value;
 
-  addTask(taskName, estPomos);
-  renderTask(tasks.at(-1));
-  showAlert(`Task ${taskName} succesfully created! ✅`);
+  const newTask = addTask(taskName.trim(), estPomos);
+
+  renderTask(newTask);
+
+  showAlert(`Task "${newTask.name}" created! ✅`);
 
   taskNameInput.value = '';
 
@@ -187,7 +221,9 @@ createTaskBtn.addEventListener('click', function (e) {
   document.body.focus();
 });
 
+// Event Listener for the space button on pomodoro page
 document.addEventListener('keydown', function (e) {
+  const currentSection = document.querySelector('.current-section');
   // If the user is on a different section, return
   if (!currentSection.classList.contains('pomodoro-section')) return;
 
@@ -203,10 +239,23 @@ document.addEventListener('keydown', function (e) {
   }
 });
 
+// Event Listener for the dynamically added tasks
+document.addEventListener('click', function (e) {
+  const clickedElement = e.target;
+  const taskContainer = clickedElement.closest('.task-container');
+  if (!taskContainer) return;
+
+  const taskId = +taskContainer.dataset.id;
+  taskId;
+  const startTaskBtn = clickedElement.closest('.start-task');
+  if (startTaskBtn) handleStartTask(taskId);
+});
+
 navigationMenu.addEventListener('click', function (e) {
   const clickedElement = e.target;
   const clickedMenuElement = clickedElement.closest('.menu-element');
   const menuElements = document.querySelectorAll('.menu-element');
+  const currentSection = document.querySelector('.current-section');
 
   // Guard Clause
   if (!clickedMenuElement) return;
@@ -234,3 +283,13 @@ export const settings = new Settings();
 renderSettings();
 renderSoundButton(soundBtn);
 renderTime(settings.durations.pomodoro * 60);
+const newTask = addTask('Test1', 2);
+renderTask(newTask);
+const newTask2 = addTask('Test2', 2);
+renderTask(newTask2);
+const newTask3 = addTask('Test3', 2);
+renderTask(newTask3);
+const newTask4 = addTask('Test4', 2);
+renderTask(newTask4);
+
+(newTask.id, newTask2.id, newTask3.id, newTask4.id);

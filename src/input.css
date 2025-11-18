@@ -82,13 +82,13 @@
 }
 
 .alert-container {
-  @apply absolute p-2 font-bold duration-500;
+  @apply bg-secondary absolute rounded-xl p-3 font-semibold shadow-xl duration-500;
 }
 
 .alert-visible {
-  @apply bottom-20 opacity-100;
+  @apply bottom-1 opacity-100;
 }
 
 .alert-hidden {
-  @apply bottom-5 opacity-0;
+  @apply bottom-0 opacity-0;
 }

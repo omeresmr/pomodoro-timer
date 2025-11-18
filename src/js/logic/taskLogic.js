@@ -17,6 +17,11 @@ const deleteTask = (taskId) => {
 };
 
 export const addTask = (taskName, estPomos) => {
-  tasks.push(new Task(taskName, estPomos));
+  const newTask = new Task(taskName, estPomos);
+  tasks.push(newTask);
   saveTasks();
+
+  return newTask;
 };
+
+export const findTask = (taskId) => tasks.find((task) => task.id === taskId);

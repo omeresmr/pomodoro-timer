@@ -2,9 +2,11 @@ import {
   CIRCLE_CIRCUMFERENCE,
   ALERT_DURATION,
   TASK_ACTION_ICONS,
+  TRANSLATE,
 } from './constants.js';
 import { settings, timer, startBtn, skipBtn } from '../main.js';
 import { settingsInputs } from '../logic/settingsLogic.js';
+import { findTask } from '../logic/taskLogic.js';
 
 ////////////////////////////
 // DOM ELEMENTS
@@ -109,29 +111,73 @@ export const renderSettings = () => {
 
 export const renderTask = (task) => {
   const html = `
-  <div class="task-container bg-secondary flex items-center flex-col justify-center p-5 w-9/10 max-w-sm sm:max-w-md lg:max-w-lg rounded-2xl gap-4">
-    <div class="text-center">
-      <p class="text-accent font-semibold text-xl">${task.name}</p>
-      <p class="font-semibold">${task.completedPomos} of ${task.estPomos}</p>
-    </div>
-
-    <div class="flex gap-4">
-      <button class="start-task svg-button">${TASK_ACTION_ICONS.start}</button>
-      <button class="edit-task svg-button">${TASK_ACTION_ICONS.edit}</button>
-      <button class="delete-task svg-button">${TASK_ACTION_ICONS.delete}</button>
-      <button class="complete-task svg-button">${TASK_ACTION_ICONS.complete}</button>
-    </div>
-
-    <div class="flex items-center justify-center flex-col w-full gap-2">
-      <div class="h-4 border-2 border-text w-full overflow-hidden rounded-full">
-        <div class="bg-green-500 h-3 w-full"></div>
+    <div class="task-container bg-secondary flex items-center flex-col justify-center p-5 w-9/10 max-w-sm sm:max-w-md lg:max-w-lg rounded-2xl gap-4 border border-transparent" data-id="${task.id}">
+      <div class="text-center">
+        <p class="text-accent font-semibold text-xl">${task.name}</p>
+        <p class="font-semibold">${task.completedPomos} of ${task.estPomos}</p>
       </div>
-      <p class="text-xs font-bold">${task.progressPercentage}%</p>
+
+      <div class="flex gap-4">
+        <button class="start-task svg-button">${TASK_ACTION_ICONS.start}</button>
+        <button class="edit-task svg-button">${TASK_ACTION_ICONS.edit}</button>
+        <button class="delete-task svg-button">${TASK_ACTION_ICONS.delete}</button>
+        <button class="complete-task svg-button">${TASK_ACTION_ICONS.complete}</button>
       </div>
-    </div>
-  `;
+
+      <div class="flex items-center justify-center flex-col w-full gap-2">
+        <div class="h-4 border-2 border-text w-full overflow-hidden rounded-full">
+          <div class="progress-bar bg-text h-3 w-full"></div>
+        </div>
+        <p class="text-xs font-bold">${task.progressPercentage}%</p>
+        </div>
+      </div>
+    `;
 
   tasksContainer.insertAdjacentHTML('beforeend', html);
+};
+
+export const setTaskState = (taskId, newState) => {
+  const taskToChange = document.querySelector(`[data-id="${taskId}"]`);
+  const progressBar = taskToChange.querySelector('.progress-bar');
+  const allTasks = document.querySelectorAll('.task-container');
+
+  allTasks.forEach((task) => {
+    const progressBar = task.querySelector('.progress-bar');
+    task.classList.add('border-transparent');
+    task.classList.remove('border-accent');
+    progressBar.classList.remove('bg-accent');
+    progressBar.classList.remove('bg-green-500');
+    progressBar.classList.add('bg-text');
+  });
+
+  switch (newState) {
+    case 'active':
+      taskToChange.classList.add('border-accent');
+      taskToChange.classList.remove('border-transparent');
+      progressBar.classList.add('bg-accent');
+      progressBar.classList.remove('bg-accent');
+      tasksContainer.prepend(taskToChange);
+      break;
+    case 'complete':
+      break;
+    default:
+      console.error('Wrong state input');
+      break;
+  }
+};
+
+// toggles task info on the timer section
+export const toggleTaskInfo = (taskId) => {
+  const task = findTask(taskId);
+  console.log(taskId, task, 'Fired');
+  if (!task) return;
+  const taskInfoCon = document.querySelector('.task-info-container');
+  const taskNameLabel = taskInfoCon.querySelector('.task-name');
+  const estPomosLabel = taskInfoCon.querySelector('.est-pomos');
+
+  taskInfoCon.classList.remove('hidden');
+  taskNameLabel.textContent = task.name;
+  estPomosLabel.textContent = `${task.completedPomos}/${task.estPomos}`;
 };
 
 // Renders enable/disable Sound button
@@ -164,6 +210,8 @@ export const slideToSection = (currentSection, targetSection, sections) => {
 
   const targetIndex = targetSection.dataset.index;
 
+  (currentSection, targetSection);
+
   // Set the current-section class (important for main.js)
   currentSection.classList.remove('current-section');
   targetSection.classList.add('current-section');
@@ -174,7 +222,6 @@ export const slideToSection = (currentSection, targetSection, sections) => {
 
   // I have 3 sections, so the range is from -200 to 200.
   const translateValues = [-200, -100, 0, 100, 200];
-
   sections.forEach((section) => {
     // 1. Remove every translate class from every section
     translateValues.forEach((v) =>
@@ -184,6 +231,7 @@ export const slideToSection = (currentSection, targetSection, sections) => {
     const position = (section.dataset.index - targetIndex) * 100;
 
     // 3. Move the section to the new position
-    section.classList.add(`translate-x-[${position}vw]`);
+    section.classList.add(`${TRANSLATE[position]}`);
   });
+  sections;
 };

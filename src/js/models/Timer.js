@@ -10,7 +10,14 @@ export default class Timer {
   pomodoroCount = 0;
   isBreak = false;
   isRunning = false;
+
+  activeTask = {};
+
   constructor() {}
+
+  initTask(task) {
+    this.activeTask = task;
+  }
 
   get remainingSeconds() {
     return this.currentDuration - this.elapsedSeconds;
@@ -34,6 +41,13 @@ export default class Timer {
     // Stop Timer and change isRunning state
     clearInterval(timerInterval);
     this.isRunning = false;
+  }
+
+  reset() {
+    this.isBreak = false;
+    this.pomodoroCount = 0;
+    this.elapsedSeconds = 0;
+    this.stop();
   }
 
   nextPhase() {

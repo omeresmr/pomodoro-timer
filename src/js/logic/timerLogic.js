@@ -9,6 +9,7 @@ import {
   updateTimerStateLabel,
   setTimerState,
   showAlert,
+  toggleTaskInfo,
 } from '../utils/ui.js';
 
 export const timerLogic = () => {
@@ -40,15 +41,21 @@ const completePhase = () => {
     timer.pomodoroCount++;
   }
 
-  // 2. switch Phase
+  // 3. Check if user started a task and increment pomo based on isBreak state
+  if (timer.activeTask && !timer.isBreak) {
+    timer.activeTask.incrementPomo();
+    toggleTaskInfo(timer.activeTask.id);
+  }
+
+  // 4. switch Phase
   timer.nextPhase();
 
-  // 4. Update UI
+  // 5. Update UI
   resetCircleProgress();
   updateTimerStateLabel();
   renderTime(timer.currentDuration);
 
-  // 5. Play Sound
+  // 6. Play Sound
   playSound(SOUND_TYPES.RING);
 };
 

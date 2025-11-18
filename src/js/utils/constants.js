@@ -20,3 +20,11 @@ export const TASK_ACTION_ICONS = {
   complete:
     '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
 };
+
+export const TRANSLATE = {
+  '-200': 'translate-x-[-200vw]',
+  '-100': 'translate-x-[-100vw]',
+  0: 'translate-x-[0vw]',
+  100: 'translate-x-[100vw]',
+  200: 'translate-x-[200vw]',
+};
