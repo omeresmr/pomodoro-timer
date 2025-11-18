@@ -5,11 +5,9 @@ import { handlePhaseEnd } from './logic/timerLogic.js';
 import { playSound, pauseSound, SOUND_TYPES } from './utils/sounds.js';
 
 import {
-  settingsDialog,
   renderSettings,
   renderTime,
   setTimerState,
-  toggleSettingsDialog,
   showAlert,
   slideToSection,
   renderSoundButton,
@@ -40,6 +38,8 @@ const taskNameInput = document.getElementById('task-name');
 const estPomosInput = document.getElementById('est-pomodoros');
 
 const sections = document.querySelectorAll('section');
+
+const settingsModal = document.querySelector('.settings-modal');
 
 ////////////////////////////////////
 // Functions
@@ -92,7 +92,7 @@ const handleSaveSettings = () => {
   updateLocalStorage();
 
   // 5. Close Window & Render new Settings
-  toggleSettingsDialog();
+  settingsModal.close();
   renderSettings();
 
   // 6. Render Time
@@ -106,7 +106,7 @@ const handleSaveSettings = () => {
 // Handles the close settings logic
 const handleSettingsClose = () => {
   playSound(SOUND_TYPES.CLICK);
-  toggleSettingsDialog();
+  settingsModal.close();
 
   // Reset Toggle Buttons based on the saved settings state
   renderSettings();
@@ -114,8 +114,8 @@ const handleSettingsClose = () => {
 
 // Handles the open settings logic
 const handleSettingsOpen = () => {
-  toggleSettingsDialog();
   playSound(SOUND_TYPES.CLICK);
+  settingsModal.showModal();
 };
 
 // Changes toggleButton UI on every click
@@ -158,7 +158,7 @@ const handleStartTask = (taskId) => {
 ////////////////////////////////////
 settingsBtn.addEventListener('click', handleSettingsOpen);
 
-settingsDialog.addEventListener('click', (e) => {
+settingsModal.addEventListener('click', (e) => {
   const clickedElement = e.target;
   const toggleBtn = clickedElement.closest('.toggle-button');
   const saveBtn = clickedElement.closest('.save-settings');

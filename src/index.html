@@ -3,27 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A modern Pomodoro Timer with task tracking, stats, customizable durations and a smooth UI. Boost focus, productivity and deep work."
+    />
     <link rel="stylesheet" href="./output.css" />
     <title>Pomodoro Timer</title>
     <script defer type="module" src="./js/main.js"></script>
   </head>
   <body class="bg-primary relative flex min-h-screen flex-col" tabIndex="-1">
     <header class="py-4 flex items-center justify-center bg-secondary">
+      <h1 class="sr-only">Pomodoro Timer with a Tasks & Stats Feature</h1>
+      <nav aria-label="Primary">
       <ul class="navigation-menu flex gap-2 text-xl font-medium">
-        <li class="menu-element selected-menu" data-target="pomodoro">
-          <a href="#" tabindex="5">pomodoro</a>
+        <li class="menu-element selected-menu" id="nav-pomodoro" data-target="pomodoro">
+          <a href="#">pomodoro</a>
         </li>
-        |
-        <li class="menu-element" data-target="tasks"><a href="#" tabindex="6">tasks</a></li>
-        |
-        <li class="menu-element" data-target="stats"><a href="#" tabindex="7">stats</a></li>
+        <li class="menu-element" id="nav-tasks" data-target="tasks">
+          <a href="#">tasks</a>
+        </li>
+        <li class="menu-element" id="nav-stats" data-target="stats">
+          <a href="#">stats</a>
+        </li>
       </ul>
+      </nav>
     </header>
     <main class="relative flex flex-1 flex-col items-center justify-center overflow-hidden my-8">
       <!-- Pomodoro Timer Section -->
-      <section class="absolute pomodoro-section current-section transition-transform duration-500 flex items-center justify-center translate-x-[0vw]" data-index="0">
+      <section class="absolute pomodoro-section current-section transition-transform duration-500 flex items-center justify-center translate-x-[0vw]" aria-labelledby="nav-pomodoro"  data-index="0">
       <!-- Container for Circle and Buttons -->
-      <div class="flex flex-col items-center gap-4 relative" tabindex="-1">
+      <div class="flex flex-col items-center gap-4 relative">
 
         <!-- Outer Circle -->
         <div
@@ -34,13 +43,13 @@
           </svg>
 
           <!-- Remaining Time -->
-          <p class="remaining-time z-20 pointer-events-none"></p>
+          <time class="remaining-time z-20 pointer-events-none" aria-label="Remaining time"></time>
           <!-- Timer State -->
           <p class="timer-state-text z-20 pointer-events-none">focus.</p>
         </div>
 
         <!-- Skip Timer Button -->
-        <button class="skip-timer svg-button collapse" tabindex="2">
+        <button class="skip-timer svg-button collapse">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -59,7 +68,7 @@
         </button>
 
         <!-- Start/Stop Timer Button-->
-        <button class="start-timer button px-10 py-0.5 focus:border-text" tabindex="1">start</button>
+        <button class="start-timer button px-10 py-0.5 focus:border-text">start</button>
 
         <!-- Task Name & Estimated Pomodoros -->
         <div class="task-info-container text-center flex flex-col gap-0.5 rounded-xl hidden">
@@ -70,46 +79,46 @@
       </section>
 
       <!-- Tasks Section -->
-      <section class="tasks-section absolute inset-0 transition-transform duration-500 flex flex-col items-center justify-start px-4 translate-x-[100vw] overflow-y-auto" data-index="1" inert="">
+      <section class="tasks-section absolute inset-0 transition-transform duration-500 flex flex-col items-center justify-start px-4 translate-x-[100vw] overflow-y-auto" aria-labelledby="nav-tasks" data-index="1" inert="">
         <!-- Create Task Form -->
           <form class="grid grid-cols-1 justify-items-start bg-secondary p-5 gap-7 rounded-2xl w-9/10 max-w-sm sm:max-w-md lg:max-w-lg">
-            <h1 class="font-bold text-2xl text-accent justify-self-start">Create Task</h1>
+            <h2 class="font-bold text-2xl text-accent justify-self-start">Create Task</h2>
             <div class="flex flex-col w-full justify-self-start">
               <label for="task-name">Task Name</label>
-              <input type="text" id="task-name" class="border border-border-input text-accent text-left rounded-md text-sm p-2" tabindex="1">
+              <input type="text" id="task-name" class="border border-border-input text-accent text-left rounded-md text-sm p-2">
             </div>
             <div class="flex flex-col">
               <label for="est-pomodoros">Est. Pomos</label>
-              <input type="number" value="1" min="1" id="est-pomodoros" class="number-input" tabindex="2">
+              <input type="number" value="1" min="1" id="est-pomodoros" class="number-input">
             </div>
-            <button disabled class="create-task button py-1 px-8 max-w-4/10" tabindex="3">Create</button>
+            <button disabled class="create-task button py-1 px-8 max-w-4/10">Create</button>
           </form>
-            <div class="tasks mt-8 w-full flex flex-col items-center justify-center gap-4">
-            </div>
+            <ul class="tasks mt-8 w-full flex flex-col items-center justify-center gap-4">
+            </ul>
       </section>
 
       <!-- Stats Section -->
-      <section class="stats-section absolute inset-0 transition-transform duration-500 flex flex-col items-center justify-start pt-20 translate-x-[200vw]" data-index="2" inert="">
+      <section class="stats-section absolute inset-0 transition-transform duration-500 flex flex-col items-center justify-start pt-20 translate-x-[200vw]" aria-labelledby="nav-stats" data-index="2" inert="">
         <div class="max-w-2xl w-full px-4 bg-amber-500">
           <h2 class="text-4xl font-bold mb-8">Statistics</h2>
           <p class="text-lg">Your productivity stats will appear here.</p>
         </div>
       </section>
       <!-- Alert Container -->
-      <div class="alert-container alert-hidden"></div>
+      <div role="alert" aria-live="polite" class="alert-container alert-hidden"></div>
     </main>
     <footer class="flex items-center justify-between py-4 px-5 bg-secondary border-primary">
 
     <!-- "Get into flow. Text" -->
-      <h1 class="text-4xl md:text-[40px] font-bold pointer-events-none" tabindex="-1">
+      <p class="text-4xl md:text-[40px] font-bold pointer-events-none" tabindex="-1">
         Get into <span class="text-accent">flow</span>.
-      </h1>
+      </p>
 
 
       <!-- Settings & Sound Button-->
       <div class="flex gap-7">
       <!-- Activate/Deactivate Sound-->
-        <button class="activate-sound-button svg-button relative flex items-center justify-center w-7" tabindex="3">
+        <button class="activate-sound-button svg-button relative flex items-center justify-center w-7" aria-label="Open settings">
 
           <!-- Sound on SVG -->
           <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 absolute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/></svg>
@@ -119,7 +128,7 @@
         </button>
 
       <!-- Settings Button -->
-        <button class="settings-button svg-button" tabindex="4">
+        <button class="settings-button svg-button" aria-label="Toggle sound">
           <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-7 w-7"
@@ -138,11 +147,8 @@
         </button>
       </div>
     </footer>
-    <div
-      class="overlay absolute z-40 min-h-screen min-w-screen bg-[rgba(0,0,0,0.4)] backdrop-blur-xs hidden"
-    ></div>
-    <div
-      class="settings-modal modal-hidden" inert=""
+    <dialog
+      class="settings-modal"
     >
     <!-- Settings Header -->
       <h1 class="text-2xl font-bold mt-4.5 pointer-events-none">Settings</h1>
@@ -218,6 +224,6 @@
     <path d="m6 6 12 12"/>
    </svg>
   </button>
-</div>
+</dialog>
   </body>
 </html>

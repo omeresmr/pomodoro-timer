@@ -18,12 +18,6 @@ const progressCircle = document.querySelector('.progress-circle');
 const timeLabel = document.querySelector('.remaining-time');
 const timerStateLabel = document.querySelector('.timer-state-text');
 
-const overlay = document.querySelector('.overlay');
-export const settingsDialog = document.querySelector('.settings-modal');
-
-const mainContent = document.querySelector('main');
-const header = document.querySelector('header');
-
 const tasksContainer = document.querySelector('.tasks');
 
 ////////////////////////////
@@ -74,18 +68,6 @@ export const renderTime = (seconds) =>
 // Updates timerState UI
 export const updateTimerStateLabel = () =>
   (timerStateLabel.textContent = timer.isBreak ? 'relax.' : 'focus.');
-
-// Toggles the Settings Window
-export const toggleSettingsDialog = () => {
-  overlay.classList.toggle('hidden');
-  settingsDialog.classList.toggle('modal-hidden');
-  settingsDialog.classList.toggle('modal-visible');
-
-  // Toggle the inert Attribute, so that tabbing works the correct way
-  settingsDialog.toggleAttribute('inert');
-  header.toggleAttribute('inert');
-  mainContent.toggleAttribute('inert');
-};
 
 // Renders the Settings UI based on settings
 export const renderSettings = () => {
