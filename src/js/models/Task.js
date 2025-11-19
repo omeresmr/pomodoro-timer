@@ -25,4 +25,8 @@ export default class Task {
   get progressPercentage() {
     return Math.floor((this.completedPomos / this.estPomos) * 100);
   }
+
+  completeIfReady() {
+    if (this.estPomos === this.completedPomos) this.complete();
+  }
 }

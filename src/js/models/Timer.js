@@ -11,7 +11,7 @@ export default class Timer {
   isBreak = false;
   isRunning = false;
 
-  activeTask = {};
+  activeTask = null;
 
   constructor() {}
 

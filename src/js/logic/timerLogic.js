@@ -2,6 +2,10 @@ import { timer, settings } from '../main.js';
 import { AUTO_START_DELAY, TIMER_STATES } from '../utils/constants.js';
 import { playSound, SOUND_TYPES } from '../utils/sounds.js';
 
+import { handleTaskCompletion } from './taskLogic.js';
+
+import { updatePomodoroProgress } from '../utils/ui.js';
+
 import {
   renderTime,
   updateCircleProgress,
@@ -30,6 +34,8 @@ export const timerLogic = () => {
 };
 
 const completePhase = () => {
+  const currentTask = timer.activeTask;
+
   // 1. Stop Timer
   setTimerState(TIMER_STATES.STOP);
 
@@ -42,13 +48,18 @@ const completePhase = () => {
   }
 
   // 3. Check if user started a task and increment pomo based on isBreak state
-  if (timer.activeTask && !timer.isBreak) {
-    timer.activeTask.incrementPomo();
-    toggleTaskInfo(timer.activeTask.id);
+  if (currentTask && !timer.isBreak) {
+    currentTask.incrementPomo();
+    updatePomodoroProgress(currentTask);
+
+    // Show Task info on timer page
+    toggleTaskInfo(currentTask.id);
+
+    handleTaskCompletion(currentTask);
   }
 
-  // 4. switch Phase
-  timer.nextPhase();
+  // 4. Switch Phase oder Reset Timer, based on the currentTask's isComplete state
+  currentTask?.isComplete ? timer.reset() : timer.nextPhase();
 
   // 5. Update UI
   resetCircleProgress();

@@ -14,6 +14,7 @@ import {
   renderTask,
   setTaskState,
   toggleTaskInfo,
+  highlightMenuElement,
 } from './utils/ui.js';
 
 import {
@@ -36,8 +37,6 @@ const createTaskBtn = document.querySelector('.create-task');
 const navigationMenu = document.querySelector('.navigation-menu');
 const taskNameInput = document.getElementById('task-name');
 const estPomosInput = document.getElementById('est-pomodoros');
-
-const sections = document.querySelectorAll('section');
 
 const settingsModal = document.querySelector('.settings-modal');
 
@@ -128,7 +127,6 @@ const handleToggleButton = (toggleBtn) => {
 
 // Starts a Task
 const handleStartTask = (taskId) => {
-  const tasksSection = document.querySelector('.tasks-section');
   const pomodoroSection = document.querySelector('.pomodoro-section');
   const task = findTask(taskId);
   if (!task) return;
@@ -143,14 +141,14 @@ const handleStartTask = (taskId) => {
   timer.reset();
 
   // Slide to Timer section
-  slideToSection(tasksSection, pomodoroSection, sections);
+  slideToSection(pomodoroSection);
 
   // Start Timer
   setTimerState(TIMER_STATES.START);
   timer.initTask(task);
 
   // Show Task
-  toggleTaskInfo(taskId); // CHANGE
+  toggleTaskInfo(taskId);
 };
 
 ////////////////////////////////////
@@ -246,7 +244,6 @@ document.addEventListener('click', function (e) {
   if (!taskContainer) return;
 
   const taskId = +taskContainer.dataset.id;
-  taskId;
   const startTaskBtn = clickedElement.closest('.start-task');
   if (startTaskBtn) handleStartTask(taskId);
 });
@@ -255,16 +252,11 @@ navigationMenu.addEventListener('click', function (e) {
   const clickedElement = e.target;
   const clickedMenuElement = clickedElement.closest('.menu-element');
   const menuElements = document.querySelectorAll('.menu-element');
-  const currentSection = document.querySelector('.current-section');
 
   // Guard Clause
   if (!clickedMenuElement) return;
 
-  // Unhighlight every menu element
-  menuElements.forEach((el) => el.classList.remove('selected-menu'));
-
-  // Highlight clicked menu element
-  clickedMenuElement.classList.add('selected-menu');
+  highlightMenuElement(clickedMenuElement, menuElements);
 
   const targetSection = document.querySelector(
     `.${clickedMenuElement.dataset.target}-section`,
@@ -272,7 +264,7 @@ navigationMenu.addEventListener('click', function (e) {
 
   if (!targetSection) return;
 
-  slideToSection(currentSection, targetSection, sections);
+  slideToSection(targetSection);
 });
 
 ////////////////////////////////////

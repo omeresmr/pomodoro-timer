@@ -20,6 +20,8 @@ const timerStateLabel = document.querySelector('.timer-state-text');
 
 const tasksContainer = document.querySelector('.tasks');
 
+const sections = document.querySelectorAll('section');
+
 ////////////////////////////
 // FUNCTIONS
 ////////////////////////////
@@ -95,8 +97,8 @@ export const renderTask = (task) => {
   const html = `
     <div class="task-container bg-secondary flex items-center flex-col justify-center p-5 w-9/10 max-w-sm sm:max-w-md lg:max-w-lg rounded-2xl gap-4 border border-transparent" data-id="${task.id}">
       <div class="text-center">
-        <p class="text-accent font-semibold text-xl">${task.name}</p>
-        <p class="font-semibold">${task.completedPomos} of ${task.estPomos}</p>
+        <p class="task-name text-accent font-semibold text-xl">${task.name}</p>
+        <p class="pomodoro-progress font-semibold">${task.completedPomos} of ${task.estPomos}</p>
       </div>
 
       <div class="flex gap-4">
@@ -118,9 +120,21 @@ export const renderTask = (task) => {
   tasksContainer.insertAdjacentHTML('beforeend', html);
 };
 
+export const updatePomodoroProgress = (task) => {
+  const taskToChange = document.querySelector(`[data-id="${task.id}"]`);
+
+  if (!taskToChange) return;
+
+  console.log(taskToChange, taskToChange.querySelector('.pomodoro-progress'));
+
+  taskToChange.querySelector('.pomodoro-progress').textContent =
+    `${task.completedPomos} of ${task.estPomos}`;
+};
+
 export const setTaskState = (taskId, newState) => {
   const taskToChange = document.querySelector(`[data-id="${taskId}"]`);
   const progressBar = taskToChange.querySelector('.progress-bar');
+  const nameLabel = taskToChange.querySelector('.task-name');
   const allTasks = document.querySelectorAll('.task-container');
 
   allTasks.forEach((task) => {
@@ -141,6 +155,12 @@ export const setTaskState = (taskId, newState) => {
       tasksContainer.prepend(taskToChange);
       break;
     case 'complete':
+      progressBar.classList.remove('bg-text');
+      progressBar.classList.add('bg-green-500');
+      nameLabel.classList.remove('text-accent');
+      nameLabel.classList.add('text-gray-500');
+      nameLabel.classList.add('line-through');
+      tasksContainer.append(taskToChange);
       break;
     default:
       console.error('Wrong state input');
@@ -151,11 +171,17 @@ export const setTaskState = (taskId, newState) => {
 // toggles task info on the timer section
 export const toggleTaskInfo = (taskId) => {
   const task = findTask(taskId);
-  console.log(taskId, task, 'Fired');
+
   if (!task) return;
+
   const taskInfoCon = document.querySelector('.task-info-container');
   const taskNameLabel = taskInfoCon.querySelector('.task-name');
   const estPomosLabel = taskInfoCon.querySelector('.est-pomos');
+
+  if (task.isComplete) {
+    taskInfoCon.classList.add('hidden');
+    return;
+  }
 
   taskInfoCon.classList.remove('hidden');
   taskNameLabel.textContent = task.name;
@@ -186,7 +212,9 @@ export const setTimerState = (state) => {
 };
 
 // Animation for the navigation between sections
-export const slideToSection = (currentSection, targetSection, sections) => {
+export const slideToSection = (targetSection) => {
+  const currentSection = document.querySelector('.current-section');
+
   // Guard Clause
   if (currentSection === targetSection) return;
 
@@ -215,5 +243,13 @@ export const slideToSection = (currentSection, targetSection, sections) => {
     // 3. Move the section to the new position
     section.classList.add(`${TRANSLATE[position]}`);
   });
-  sections;
+};
+
+// Find a way, to use this Method in slideToSection
+export const highlightMenuElement = (targetElement, menuElements) => {
+  // Unhighlight every menu element
+  menuElements.forEach((el) => el.classList.remove('selected-menu'));
+
+  // Highlight clicked menu element
+  targetElement.classList.add('selected-menu');
 };
