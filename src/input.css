@@ -45,6 +45,10 @@
   @apply bg-accent rounded-sm text-lg duration-200 hover:scale-101 active:scale-97 disabled:pointer-events-none disabled:brightness-75;
 }
 
+.dialog-button {
+  @apply rounded-sm px-10 py-1 text-lg duration-200 hover:scale-101 active:scale-97 disabled:pointer-events-none disabled:brightness-75;
+}
+
 .button-active {
   @apply scale-97;
 }

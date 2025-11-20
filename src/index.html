@@ -148,14 +148,19 @@
       </div>
     </footer>
 
-    <!-- Delete Task Dialog -->
-     <dialog class="delete-task-modal p-8 relative" data-id="">
-      <h2>Are you sure that you want to delete <span class="task-to-delete text-accent font-bold">Test</span>?</h2>
-      <div class="">
-        <button class="yes-btn">Yes</button>
-        <button class="no-btn">No</button>
-      </div>
-     </dialog>
+<dialog class="delete-task-modal" data-id="">
+  <div class="modal-content flex flex-col justify-between items-center gap-10 p-4">
+    <h2>
+      Are you sure you want to delete
+      <span class="task-to-delete text-accent font-bold">Test123112312312312312312312123123</span>?
+    </h2>
+
+    <div class="button-row">
+      <button class="yes-btn dialog-button bg-green-700">Yes</button>
+      <button class="no-btn dialog-button bg-red-700">No</button>
+    </div>
+  </div>
+</dialog>
 
     <!-- Settings Dialog -->
     <dialog
