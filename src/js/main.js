@@ -24,7 +24,13 @@ import {
   getToggleState,
   settingsInputs,
 } from './logic/settingsLogic.js';
-import { addTask, tasks, findTask, deleteTask } from './logic/taskLogic.js';
+import {
+  addTask,
+  tasks,
+  findTask,
+  deleteTask,
+  handleTaskCompletion,
+} from './logic/taskLogic.js';
 
 ////////////////////////////////////
 // DOM Elements
@@ -250,6 +256,7 @@ document.addEventListener('click', function (e) {
 
   const startTaskBtn = clickedElement.closest('.start-task');
   const deleteTaskBtn = clickedElement.closest('.delete-task');
+  const completeTaskBtn = clickedElement.closest('.complete-task');
 
   if (startTaskBtn) handleStartTask(taskId);
   if (deleteTaskBtn) {
@@ -260,6 +267,7 @@ document.addEventListener('click', function (e) {
     deleteTaskModal.dataset.id = taskId;
     deleteTaskModal.showModal();
   }
+  if (completeTaskBtn) handleTaskCompletion(task, 'manual');
 });
 
 deleteTaskModal.addEventListener('click', function (e) {
@@ -309,11 +317,17 @@ renderSoundButton(soundBtn);
 renderTime(settings.durations.pomodoro * 60);
 const newTask = addTask('Test1', 2);
 renderTask(newTask);
-const newTask2 = addTask('Test2', 2);
-renderTask(newTask2);
-const newTask3 = addTask('Test3', 2);
-renderTask(newTask3);
-const newTask4 = addTask('Test4', 2);
-renderTask(newTask4);
+setTimeout(() => {
+  const newTask2 = addTask('Test2', 2);
+  renderTask(newTask2);
+}, 5);
 
-(newTask.id, newTask2.id, newTask3.id, newTask4.id);
+setTimeout(() => {
+  const newTask3 = addTask('Test3', 2);
+  renderTask(newTask3);
+}, 15);
+
+setTimeout(() => {
+  const newTask4 = addTask('Test4', 2);
+  renderTask(newTask4);
+}, 20);

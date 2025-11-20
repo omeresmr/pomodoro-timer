@@ -42,7 +42,7 @@ export const handleTaskCompletion = (task, mode = 'automatic') => {
 
   // TODO
   if (mode === 'manual') {
-    return;
+    task.isComplete = true;
   }
 
   if (!task.isComplete) return;

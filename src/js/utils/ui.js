@@ -142,6 +142,8 @@ export const setTaskState = (taskId, newState) => {
   const progressBar = taskToChange.querySelector('.progress-bar');
   const nameLabel = taskToChange.querySelector('.task-name');
   const allTasks = document.querySelectorAll('.task-container');
+  const startTaskBtn = taskToChange.querySelector('.start-task');
+  const completeTaskBtn = taskToChange.querySelector('.complete-task');
 
   allTasks.forEach((task) => {
     const progressBar = task.querySelector('.progress-bar');
@@ -154,22 +156,39 @@ export const setTaskState = (taskId, newState) => {
 
   switch (newState) {
     case 'active':
+      // Change Border color to accent
       taskToChange.classList.add('border-accent');
       taskToChange.classList.remove('border-transparent');
+
+      // Set progresBar to accent
       progressBar.classList.add('bg-accent');
-      progressBar.classList.remove('bg-accent');
+      progressBar.classList.remove('bg-text');
+
+      // Move the active task up
       tasksContainer.prepend(taskToChange);
+
       break;
     case 'complete':
+      // Set progressBar to green
       progressBar.classList.remove('bg-text');
       progressBar.classList.add('bg-green-500');
+
+      // Change text color to gray and add line-through
       nameLabel.classList.remove('text-accent');
       nameLabel.classList.add('text-gray-500');
       nameLabel.classList.add('line-through');
+
+      // Hide start and complete task buttons
+      startTaskBtn.classList.add('hidden');
+      completeTaskBtn.classList.add('hidden');
+
+      // Move the completed task down
       tasksContainer.append(taskToChange);
+
       break;
     default:
       console.error('Wrong state input');
+
       break;
   }
 };
