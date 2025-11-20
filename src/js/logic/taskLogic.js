@@ -16,7 +16,7 @@ const saveTasks = () => {
   localStorage.setItem('tasks', newTasks);
 };
 
-const deleteTask = (taskId) => {
+export const deleteTask = (taskId) => {
   const indexToDelete = tasks.findIndex((task) => task.id === taskId);
 
   if (indexToDelete === -1) return;

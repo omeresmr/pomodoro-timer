@@ -15,6 +15,7 @@ import {
   setTaskState,
   toggleTaskInfo,
   highlightMenuElement,
+  removeTask,
 } from './utils/ui.js';
 
 import {
@@ -23,7 +24,7 @@ import {
   getToggleState,
   settingsInputs,
 } from './logic/settingsLogic.js';
-import { addTask, tasks, findTask } from './logic/taskLogic.js';
+import { addTask, tasks, findTask, deleteTask } from './logic/taskLogic.js';
 
 ////////////////////////////////////
 // DOM Elements
@@ -39,6 +40,7 @@ const taskNameInput = document.getElementById('task-name');
 const estPomosInput = document.getElementById('est-pomodoros');
 
 const settingsModal = document.querySelector('.settings-modal');
+const deleteTaskModal = document.querySelector('.delete-task-modal');
 
 ////////////////////////////////////
 // Functions
@@ -244,8 +246,38 @@ document.addEventListener('click', function (e) {
   if (!taskContainer) return;
 
   const taskId = +taskContainer.dataset.id;
+  const task = findTask(taskId);
+
   const startTaskBtn = clickedElement.closest('.start-task');
+  const deleteTaskBtn = clickedElement.closest('.delete-task');
+
   if (startTaskBtn) handleStartTask(taskId);
+  if (deleteTaskBtn) {
+    // Show the task name, on that the delete btn got clicked
+    deleteTaskModal.querySelector('.task-to-delete').textContent = task.name;
+
+    // Save the task id
+    deleteTaskModal.dataset.id = taskId;
+    deleteTaskModal.showModal();
+  }
+});
+
+deleteTaskModal.addEventListener('click', function (e) {
+  const clickedElement = e.target;
+  const taskId = +this.dataset.id;
+  const task = findTask(taskId);
+
+  if (clickedElement.classList.contains('no-btn')) deleteTaskModal.close();
+  if (clickedElement.classList.contains('yes-btn')) {
+    showAlert(`Task "${task.name}" got deleted. ✅`);
+    deleteTaskModal.close();
+    removeTask(task);
+
+    deleteTask(taskId);
+
+    // Hide task on pomdoro page
+    toggleTaskInfo(taskId);
+  }
 });
 
 navigationMenu.addEventListener('click', function (e) {

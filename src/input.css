@@ -69,11 +69,11 @@
   @apply text-accent border-border-input w-20 rounded-md border bg-transparent p-2;
 }
 
-.settings-modal {
+dialog {
   @apply bg-secondary border-text absolute top-1/2 left-1/2 w-[333px] max-w-[90vw] -translate-x-1/2 -translate-y-1/2 rounded-md border text-center duration-200;
 }
 
-.settings-modal::backdrop {
+dialog::backdrop {
   @apply bg-black/50 backdrop-blur-sm;
 }
 

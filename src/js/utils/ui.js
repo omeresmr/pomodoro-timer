@@ -120,6 +120,12 @@ export const renderTask = (task) => {
   tasksContainer.insertAdjacentHTML('beforeend', html);
 };
 
+export const removeTask = (task) => {
+  const taskToRemove = document.querySelector(`[data-id="${task.id}"]`);
+
+  taskToRemove.remove();
+};
+
 export const updatePomodoroProgress = (task) => {
   const taskToChange = document.querySelector(`[data-id="${task.id}"]`);
 
@@ -172,20 +178,22 @@ export const setTaskState = (taskId, newState) => {
 export const toggleTaskInfo = (taskId) => {
   const task = findTask(taskId);
 
-  if (!task) return;
+  console.log(task);
+  console.log(!task);
 
   const taskInfoCon = document.querySelector('.task-info-container');
   const taskNameLabel = taskInfoCon.querySelector('.task-name');
   const estPomosLabel = taskInfoCon.querySelector('.est-pomos');
 
-  if (task.isComplete) {
+  // If task is done or got deleted, hide it on pomodoro page
+  if (task?.isComplete || !task) {
     taskInfoCon.classList.add('hidden');
     return;
   }
 
   taskInfoCon.classList.remove('hidden');
-  taskNameLabel.textContent = task.name;
-  estPomosLabel.textContent = `${task.completedPomos}/${task.estPomos}`;
+  taskNameLabel.textContent = task?.name;
+  estPomosLabel.textContent = `${task?.completedPomos}/${task?.estPomos}`;
 };
 
 // Renders enable/disable Sound button

@@ -230,6 +230,9 @@
   .right-2 {
     right: calc(var(--spacing) * 2);
   }
+  .bottom-0 {
+    bottom: calc(var(--spacing) * 0);
+  }
   .z-20 {
     z-index: 20;
   }
@@ -451,6 +454,9 @@
   .p-5 {
     padding: calc(var(--spacing) * 5);
   }
+  .p-8 {
+    padding: calc(var(--spacing) * 8);
+  }
   .px-4 {
     padding-inline: calc(var(--spacing) * 4);
   }
@@ -528,9 +534,6 @@
   }
   .line-through {
     text-decoration-line: line-through;
-  }
-  .underline {
-    text-decoration-line: underline;
   }
   .ring {
     --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
@@ -721,7 +724,7 @@
   padding: calc(var(--spacing) * 2);
   color: var(--color-accent);
 }
-.settings-modal {
+dialog {
   position: absolute;
   top: calc(1/2 * 100%);
   left: calc(1/2 * 100%);
@@ -740,7 +743,7 @@
   --tw-duration: 200ms;
   transition-duration: 200ms;
 }
-.settings-modal::backdrop {
+dialog::backdrop {
   background-color: color-mix(in srgb, #000 50%, transparent);
   @supports (color: color-mix(in lab, red, red)) {
     background-color: color-mix(in oklab, var(--color-black) 50%, transparent);
