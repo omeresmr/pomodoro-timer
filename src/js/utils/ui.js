@@ -93,7 +93,7 @@ export const renderSettings = () => {
   }, 100);
 };
 
-export const renderTask = (task) => {
+export const renderTask = (task, taskExists = false) => {
   const html = `
     <div class="task-container bg-secondary flex items-center flex-col justify-center p-5 w-9/10 max-w-sm sm:max-w-md lg:max-w-lg rounded-2xl gap-4 border border-transparent" data-id="${task.id}">
       <div class="text-center">
@@ -117,6 +117,11 @@ export const renderTask = (task) => {
       </div>
     `;
 
+  if (taskExists) {
+    const taskToRender = document.querySelector(`[data-id="${task.id}"]`);
+    taskToRender.innerHTML = html;
+    return;
+  }
   tasksContainer.insertAdjacentHTML('beforeend', html);
 };
 
@@ -124,6 +129,31 @@ export const removeTask = (task) => {
   const taskToRemove = document.querySelector(`[data-id="${task.id}"]`);
 
   taskToRemove.remove();
+};
+
+export const renderEditTaskForm = (task) => {
+  const taskToEdit = document.querySelector(`[data-id="${task.id}"]`);
+
+  const html = `
+        <div class="w-full">
+          <input class="text-input text-center font-semibold text-xl w-full" type="text" value="${task.name}" placeholder="Enter task name"/>
+        </div>
+
+        <div class="w-full">
+          <div class="flex items-center justify-center gap-3">
+            <input class="new-completed-pomos font-semibold number-input text-center" type="number" value="${task.completedPomos}" min="0"/>
+            <span class="font-semibold text-lg">of</span>
+            <input class="new-est-pomos font-semibold number-input text-center" type="number" value="${task.estPomos}" min="1"/>
+          </div>
+        </div>
+
+        <div class="flex gap-3 w-full">
+          <button class="save-edited-task button px-8 py-2 flex-1">Save</button>
+          <button class="cancel-edit-task dialog-button bg-secondary border border-border-input flex-1 py-2 cancel-edit">Cancel</button>
+        </div>
+    `;
+
+  taskToEdit.innerHTML = html;
 };
 
 export const updatePomodoroProgress = (task) => {

@@ -16,6 +16,7 @@ import {
   toggleTaskInfo,
   highlightMenuElement,
   removeTask,
+  renderEditTaskForm,
 } from './utils/ui.js';
 
 import {
@@ -245,18 +246,20 @@ document.addEventListener('keydown', function (e) {
   }
 });
 
-// Event Listener for the dynamically added tasks
 document.addEventListener('click', function (e) {
   const clickedElement = e.target;
   const taskContainer = clickedElement.closest('.task-container');
-  if (!taskContainer) return;
 
   const taskId = +taskContainer.dataset.id;
   const task = findTask(taskId);
 
+  // Event Listener for the dynamically added tasks
   const startTaskBtn = clickedElement.closest('.start-task');
   const deleteTaskBtn = clickedElement.closest('.delete-task');
   const completeTaskBtn = clickedElement.closest('.complete-task');
+  const editTaskBtn = clickedElement.closest('.edit-task');
+  const saveEditBtn = clickedElement.closest('.save-edited-task');
+  const cancelEditBtn = clickedElement.closest('.cancel-edit-task');
 
   if (startTaskBtn) handleStartTask(taskId);
   if (deleteTaskBtn) {
@@ -268,6 +271,23 @@ document.addEventListener('click', function (e) {
     deleteTaskModal.showModal();
   }
   if (completeTaskBtn) handleTaskCompletion(task, 'manual');
+  if (editTaskBtn) renderEditTaskForm(task);
+
+  if (saveEditBtn) {
+    const newTaskName = taskContainer.querySelector('.text-input').value;
+    const newEstPomos = +taskContainer.querySelector('.new-est-pomos').value;
+    const newCompletedPomos = +taskContainer.querySelector(
+      '.new-completed-pomos',
+    ).value;
+
+    task.name = newTaskName;
+    task.estPomos = newEstPomos;
+    task.completedPomos = newCompletedPomos;
+
+    renderTask(task, true);
+    showAlert(`Task "${task.name}" saved! ✅`);
+  }
+  if (cancelEditBtn) renderTask(task, true);
 });
 
 deleteTaskModal.addEventListener('click', function (e) {
