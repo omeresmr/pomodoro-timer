@@ -93,36 +93,46 @@ export const renderSettings = () => {
   }, 100);
 };
 
+const getTaskInnerHTML = (task) => `
+  <div class="text-center">
+    <p class="task-name text-accent font-semibold text-xl">${task.name}</p>
+    <p class="pomodoro-progress font-semibold">${task.completedPomos} of ${task.estPomos}</p>
+  </div>
+
+  <div class="flex gap-4">
+    <button class="start-task svg-button">${task.isActive ? TASK_ACTION_ICONS.stop : TASK_ACTION_ICONS.start}</button>
+    <button class="edit-task svg-button">${TASK_ACTION_ICONS.edit}</button>
+    <button class="delete-task svg-button">${TASK_ACTION_ICONS.delete}</button>
+    <button class="complete-task svg-button">${TASK_ACTION_ICONS.complete}</button>
+  </div>
+
+  <div class="flex items-center justify-center flex-col w-full gap-2">
+    <div class="h-4 border-2 border-text w-full overflow-hidden rounded-full">
+      <div class="progress-bar bg-text h-3" style="width: ${task.progressPercentage}%"></div>
+    </div>
+    <p class="text-xs font-bold">${task.progressPercentage}%</p>
+  </div>
+`;
+
+const getTaskOuterHTML = (task, innerHTML) => `
+  <div class="task-container bg-secondary flex items-center flex-col justify-center p-5 w-9/10 max-w-sm sm:max-w-md lg:max-w-lg rounded-2xl gap-4 border border-transparent" data-id="${task.id}">
+    ${innerHTML}
+  </div>
+`;
+
 export const renderTask = (task, taskExists = false) => {
-  const html = `
-    <div class="task-container bg-secondary flex items-center flex-col justify-center p-5 w-9/10 max-w-sm sm:max-w-md lg:max-w-lg rounded-2xl gap-4 border border-transparent" data-id="${task.id}">
-      <div class="text-center">
-        <p class="task-name text-accent font-semibold text-xl">${task.name}</p>
-        <p class="pomodoro-progress font-semibold">${task.completedPomos} of ${task.estPomos}</p>
-      </div>
-
-      <div class="flex gap-4">
-        <button class="start-task svg-button">${TASK_ACTION_ICONS.start}</button>
-        <button class="edit-task svg-button">${TASK_ACTION_ICONS.edit}</button>
-        <button class="delete-task svg-button">${TASK_ACTION_ICONS.delete}</button>
-        <button class="complete-task svg-button">${TASK_ACTION_ICONS.complete}</button>
-      </div>
-
-      <div class="flex items-center justify-center flex-col w-full gap-2">
-        <div class="h-4 border-2 border-text w-full overflow-hidden rounded-full">
-          <div class="progress-bar bg-text h-3 w-full"></div>
-        </div>
-        <p class="text-xs font-bold">${task.progressPercentage}%</p>
-        </div>
-      </div>
-    `;
+  const taskInnerHTML = getTaskInnerHTML(task);
+  const taskOuterHTML = getTaskOuterHTML(task, taskInnerHTML);
+  console.log(task);
 
   if (taskExists) {
-    const taskToRender = document.querySelector(`[data-id="${task.id}"]`);
-    taskToRender.innerHTML = html;
+    const taskToRender = document.querySelector(
+      `.task-container[data-id="${task.id}"]`,
+    );
+    taskToRender.innerHTML = taskInnerHTML;
     return;
   }
-  tasksContainer.insertAdjacentHTML('beforeend', html);
+  tasksContainer.insertAdjacentHTML('beforeend', taskOuterHTML);
 };
 
 export const removeTask = (task) => {
@@ -161,12 +171,13 @@ export const updatePomodoroProgress = (task) => {
 
   if (!taskToChange) return;
 
-  console.log(taskToChange, taskToChange.querySelector('.pomodoro-progress'));
-
   taskToChange.querySelector('.pomodoro-progress').textContent =
     `${task.completedPomos} of ${task.estPomos}`;
+
+  renderTask(task, true);
 };
 
+// TODO versuchen die ganzen UI funktionen nur auf renderTask zu reduzieren.
 export const setTaskState = (taskId, newState) => {
   const taskToChange = document.querySelector(`[data-id="${taskId}"]`);
   const progressBar = taskToChange.querySelector('.progress-bar');
@@ -216,6 +227,12 @@ export const setTaskState = (taskId, newState) => {
       tasksContainer.append(taskToChange);
 
       break;
+
+    case 'default': {
+      progressBar.classList.add('bg-text');
+
+      taskToChange.classList.remove('bg-accent');
+    }
     default:
       console.error('Wrong state input');
 

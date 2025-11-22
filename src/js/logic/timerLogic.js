@@ -36,6 +36,8 @@ export const timerLogic = () => {
 const completePhase = () => {
   const currentTask = timer.activeTask;
 
+  console.log(currentTask);
+
   // 1. Stop Timer
   setTimerState(TIMER_STATES.STOP);
 

@@ -35,6 +35,8 @@ export const addTask = (taskName, estPomos) => {
 export const findTask = (taskId) => tasks.find((task) => task.id === taskId);
 
 export const handleTaskCompletion = (task, mode = 'automatic') => {
+  console.log(task);
+
   if (mode === 'automatic') {
     // Check if the estimated Pomodoros are done
     task.completeIfReady();
@@ -57,4 +59,10 @@ export const handleTaskCompletion = (task, mode = 'automatic') => {
   // Slide to Tasks Section
   slideToSection(tasksSection);
   timer.activeTask = null;
+};
+
+export const startTask = (task) => {
+  tasks.forEach((task) => (task.isActive = false));
+
+  task.start();
 };

@@ -31,6 +31,7 @@ import {
   findTask,
   deleteTask,
   handleTaskCompletion,
+  startTask,
 } from './logic/taskLogic.js';
 
 ////////////////////////////////////
@@ -140,24 +141,32 @@ const handleStartTask = (taskId) => {
   const task = findTask(taskId);
   if (!task) return;
 
-  // Change isActive state
-  task.start();
+  if (!task.isActive) {
+    // Change isActive state
+    startTask(task);
 
-  // Change task UI
-  setTaskState(taskId, 'active'); // CHANGE
+    // Reset Timer
+    timer.reset();
 
-  // Reset Timer
-  timer.reset();
+    // Slide to Timer section
+    slideToSection(pomodoroSection);
 
-  // Slide to Timer section
-  slideToSection(pomodoroSection);
+    // Start Timer
+    setTimerState(TIMER_STATES.START);
+    timer.initTask(task);
 
-  // Start Timer
-  setTimerState(TIMER_STATES.START);
-  timer.initTask(task);
+    // Show Task
+    toggleTaskInfo(taskId);
 
-  // Show Task
-  toggleTaskInfo(taskId);
+    // Change task UI
+    renderTask(task, true);
+    setTaskState(taskId, 'active');
+  } else {
+    task.stop();
+
+    renderTask(task, true);
+    setTaskState(taskId, 'default');
+  }
 };
 
 ////////////////////////////////////
@@ -250,7 +259,10 @@ document.addEventListener('click', function (e) {
   const clickedElement = e.target;
   const taskContainer = clickedElement.closest('.task-container');
 
+  if (!taskContainer) return;
+
   const taskId = +taskContainer.dataset.id;
+
   const task = findTask(taskId);
 
   // Event Listener for the dynamically added tasks
@@ -283,6 +295,8 @@ document.addEventListener('click', function (e) {
     task.name = newTaskName;
     task.estPomos = newEstPomos;
     task.completedPomos = newCompletedPomos;
+
+    task.checkNewCompleteState();
 
     renderTask(task, true);
     showAlert(`Task "${task.name}" saved! ✅`);

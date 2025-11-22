@@ -2,7 +2,6 @@ export default class Task {
   isComplete = false;
   isActive = false;
   completedPomos = 0;
-  progressPercentage = 0;
   constructor(name, estPomos) {
     this.name = name;
     this.estPomos = estPomos;
@@ -11,6 +10,7 @@ export default class Task {
   }
 
   complete() {
+    this.stop();
     this.isComplete = true;
   }
 
@@ -18,15 +18,24 @@ export default class Task {
     this.isActive = true;
   }
 
+  stop() {
+    this.isActive = false;
+  }
+
   incrementPomo() {
     this.completedPomos++;
   }
 
   get progressPercentage() {
+    if (this.completedPomos > this.estPomos) return 100;
     return Math.floor((this.completedPomos / this.estPomos) * 100);
   }
 
   completeIfReady() {
-    if (this.estPomos === this.completedPomos) this.complete();
+    if (this.completedPomos >= this.estPomos) this.complete();
+  }
+
+  checkNewCompleteState() {
+    if (this.completedPomos < this.estPomos) this.isComplete = false;
   }
 }
