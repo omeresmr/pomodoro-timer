@@ -1,16 +1,14 @@
-// Timer Class
 import { settings } from '../main.js';
 import { TIMER_INTERVAL } from '../utils/constants.js';
-import { timerLogic } from '../logic/timerLogic.js';
+import { timerLogic } from '../logic/timer/timerCore.js';
 
 let timerInterval;
 
 export default class Timer {
-  elapsedSeconds = 0;
-  pomodoroCount = 0;
-  isBreak = false;
+  secondsPassed = 0;
+  completedPomodoros = 0;
+  onBreak = false;
   isRunning = false;
-
   activeTask = null;
 
   constructor() {}
@@ -20,12 +18,12 @@ export default class Timer {
   }
 
   get remainingSeconds() {
-    return this.currentDuration - this.elapsedSeconds;
+    return this.currentDuration - this.secondsPassed;
   }
 
   get currentDuration() {
-    if (this.isBreak) {
-      return this.pomodoroCount % settings.longBreakInterval === 0
+    if (this.onBreak) {
+      return this.completedPomodoros % settings.longBreakInterval === 0
         ? settings.durations.longBreak * 60
         : settings.durations.shortBreak * 60;
     } else return settings.durations.pomodoro * 60;
@@ -44,15 +42,16 @@ export default class Timer {
   }
 
   reset() {
-    this.isBreak = false;
-    this.pomodoroCount = 0;
-    this.elapsedSeconds = 0;
+    this.onBreak = false;
+    this.completedPomodoros = 0;
+    this.secondsPassed = 0;
+    this.activeTask = null;
     this.stop();
   }
 
   nextPhase() {
-    // Reset elapsed Seconds and isBreak state
-    this.isBreak = !this.isBreak;
-    this.elapsedSeconds = 0;
+    // Reset elapsed Seconds and onBreak state
+    this.onBreak = !this.onBreak;
+    this.secondsPassed = 0;
   }
 }

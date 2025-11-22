@@ -19,7 +19,7 @@ export const playSound = (soundName) => {
   const sound = SOUNDS[soundName];
   if (!sound) return;
 
-  SOUNDS[soundName]?.play();
+  sound?.play();
 };
 
 // Wrapper Function for pausing Sounds
@@ -30,8 +30,8 @@ export const pauseSound = (soundName) => {
   if (!sound) return;
 
   // Pause sound
-  SOUNDS[soundName].pause();
+  sound.pause();
 
   // Reset sound
-  SOUNDS[soundName].currentTime = 0;
+  sound.currentTime = 0;
 };

@@ -1,10 +1,9 @@
 export default class Task {
-  isComplete = false;
-  isActive = false;
-  completedPomos = 0;
-  constructor(name, estPomos) {
+  active = false;
+  pomodorosDone = 0;
+  constructor(name, estimatedPomodoros) {
     this.name = name;
-    this.estPomos = estPomos;
+    this.estimatedPomodoros = estimatedPomodoros;
     // Unique ID
     this.id = Date.now();
   }
@@ -15,27 +14,29 @@ export default class Task {
   }
 
   start() {
-    this.isActive = true;
+    this.active = true;
   }
 
   stop() {
-    this.isActive = false;
+    this.active = false;
+  }
+
+  update({ newName, newEstimatedPomodoros, newPomodorosDone }) {
+    this.name = newName;
+    this.estimatedPomodoros = newEstimatedPomodoros;
+    this.pomodorosDone = newPomodorosDone;
   }
 
   incrementPomo() {
-    this.completedPomos++;
+    this.pomodorosDone++;
   }
 
   get progressPercentage() {
-    if (this.completedPomos > this.estPomos) return 100;
-    return Math.floor((this.completedPomos / this.estPomos) * 100);
+    if (this.pomodorosDone > this.estimatedPomodoros) return 100;
+    return Math.floor((this.pomodorosDone / this.estimatedPomodoros) * 100);
   }
 
-  completeIfReady() {
-    if (this.completedPomos >= this.estPomos) this.complete();
-  }
-
-  checkNewCompleteState() {
-    if (this.completedPomos < this.estPomos) this.isComplete = false;
+  get isComplete() {
+    return this.pomodorosDone >= this.estimatedPomodoros;
   }
 }

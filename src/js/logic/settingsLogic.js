@@ -1,20 +1,16 @@
 import { MAX_MINUTES, MIN_MINUTES } from '../utils/constants.js';
+import { dom } from '../utils/ui/dom.js';
 import { settings } from '../main.js';
 
 ////////////////////////////
 // DOM ELEMENTS
 ////////////////////////////
 
-export const settingsInputs = {
-  pomodoro: document.getElementById('pomodoro-time'),
-  shortBreak: document.getElementById('short-break-time'),
-  longBreak: document.getElementById('long-break-time'),
-  longBreakInterval: document.getElementById('long-break-interval'),
-  autoStartBreaks: document.querySelector('.auto-start-breaks'),
-  autoStartPomodoros: document.querySelector('.auto-start-pomos'),
-};
-
-const numberInputs = document.querySelectorAll('.number-input');
+const settingsNumberInputs = [
+  dom.pomodoroLengthInput,
+  dom.shortBreakLengthInput,
+  dom.longBreakLengthInput,
+];
 
 ////////////////////////////
 // Functions
@@ -34,7 +30,7 @@ export const getToggleState = (toggleBtn) =>
 
 // Allows values only between MIN_MINUTES and MAX_MINUTES
 export const validateSettingsInputs = () => {
-  numberInputs.forEach((input) => {
+  settingsNumberInputs.forEach((input) => {
     if (input.value >= MAX_MINUTES) input.value = MAX_MINUTES;
     if (input.value < MIN_MINUTES) input.value = MIN_MINUTES;
   });

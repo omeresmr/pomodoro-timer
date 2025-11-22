@@ -1,4 +1,3 @@
-// Settings Class
 export default class Settings {
   soundEnabled = true;
 
@@ -33,6 +32,10 @@ export default class Settings {
     this.autoStartBreaks = autoStartBreaks;
     this.autoStartPomodoros = autoStartPomodoros;
     this.longBreakInterval = longBreakInterval;
+  }
+
+  toggleSound() {
+    this.soundEnabled = !this.soundEnabled;
   }
 }
 
