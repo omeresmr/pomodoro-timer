@@ -1,6 +1,7 @@
 import './events.js';
 import Settings from './models/Settings.js';
 import PomodoroTimer from './models/Timer.js';
+import { sortTasks } from './events.js';
 import { renderSettings } from './utils/ui/settingsUI.js';
 import { renderTime } from './utils/ui/timerUI.js';
 import { renderTask } from './utils/ui/taskUI.js';
@@ -15,6 +16,16 @@ export const settings = new Settings();
 
 loadTasks();
 
+console.log(tasks);
 tasks.forEach((task) => renderTask(task));
+sortTasks();
 renderSettings();
-renderTime(settings.durations.pomodoro * 60);
+renderTime(timer.currentDuration);
+
+// TODO List:
+// BUG Was passiert wenn der User einen Timer stoppt?
+// Was passiert, wenn ein User eine Task abschließt, aber dann doch wieder _manualComplete weg haben möchte?
+// Reset Settings Button
+// Split Settings into Sections (capsulate in more objects e.g timer, general, tasks)
+// Sound Volume Setting
+// Add Timer to document.title

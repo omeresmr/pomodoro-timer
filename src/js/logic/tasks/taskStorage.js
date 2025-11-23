@@ -16,7 +16,8 @@ export const loadTasks = () => {
   parsedTasks.forEach((t) => {
     const task = new Task(t.name, t.estimatedPomodoros);
     task.pomodorosDone = t.pomodorosDone;
-    task.active = t.active;
+    task.isActive = t.isActive;
+    task.id = t.id;
 
     tasks.push(task);
   });

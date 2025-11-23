@@ -1,4 +1,5 @@
 import { TIMER_STATES, AUTO_START_DELAY } from '../../utils/constants.js';
+import { playSound, SOUND_TYPES } from '../../utils/sounds.js';
 import { timer } from '../../main.js';
 import { settings } from '../../main.js';
 import {
@@ -9,7 +10,7 @@ import {
 } from '../../utils/ui/timerUI.js';
 import { toggleTaskInfo } from '../../utils/ui/taskUI.js';
 import { handleTaskCompletion } from '../tasks/taskState.js';
-import { saveTasks } from '../tasks/taskStorage.js';
+import { showAlert } from '../../utils/ui/alertUI.js';
 
 // Starts the timer automatically after 1500 ms
 const autoStartNextPhase = () => {
@@ -30,6 +31,9 @@ export const handlePhaseEnd = () => {
 };
 
 const completePhase = () => {
+  playSound(SOUND_TYPES.RING);
+  showAlert(`${timer.onBreak ? 'Break' : 'Pomodoro'} ended!`);
+
   const currentTask = timer.activeTask;
 
   setTimerState(TIMER_STATES.STOP);
@@ -43,7 +47,6 @@ const completePhase = () => {
     toggleTaskInfo(currentTask);
 
     handleTaskCompletion(currentTask);
-    saveTasks();
   }
 
   currentTask?.completed ? timer.reset() : timer.nextPhase();

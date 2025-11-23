@@ -1,5 +1,5 @@
 import { timer } from '../../main.js';
-
+import { handlePhaseEnd } from './timerPhase.js';
 import { renderTime, updateCircleProgress } from '../../utils/ui/timerUI.js';
 
 export const timerLogic = () => {

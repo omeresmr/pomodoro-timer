@@ -21,7 +21,6 @@ import { setTimerState, renderTime } from './utils/ui/timerUI.js';
 import {
   toggleTaskInfo,
   renderTask,
-  setTaskState,
   renderEditTaskForm,
   removeTask,
 } from './utils/ui/taskUI.js';
@@ -68,13 +67,13 @@ const handleStartTask = (taskId) => {
     toggleTaskInfo(task);
 
     // Change task UI
-    renderTask(task, true);
-    setTaskState(taskId, 'active');
+    renderTask(task);
+    sortTasks();
   } else {
     task.stop();
 
-    renderTask(task, true);
-    setTaskState(taskId, 'default');
+    renderTask(task);
+    sortTasks();
   }
 };
 
@@ -111,9 +110,8 @@ const handleSaveTask = (task) => {
 
   task.update({ newName, newEstimatedPomodoros, newPomodorosDone });
 
-  task.isComplete;
-
-  renderTask(task, true);
+  renderTask(task);
+  sortTasks();
   showAlert(`Task "${task.name}" saved! ✅`);
   saveTasks();
 };
@@ -129,10 +127,12 @@ const handleCreateTask = (e) => {
   const newTask = addTask(taskName, estimatedPomodoros);
 
   renderTask(newTask);
+  sortTasks();
 
   showAlert(`Task "${newTask.name}" created! ✅`);
 
   dom.taskNameInput.value = '';
+  dom.estPomosInput.value = '1';
 
   dom.createTaskBtn.disabled = true;
 
@@ -150,6 +150,25 @@ const updateCreateTaskButtonState = () => {
   const estPomos = dom.estPomosInput.value;
 
   dom.createTaskBtn.disabled = !name || !isValidEstPomos(estPomos);
+};
+
+// Sorts the tasks based on isComplete or active state
+export const sortTasks = () => {
+  const tasksArr = Array.from(dom.tasksContainer.children);
+  console.log(tasksArr.map((t) => findTask(+t.dataset.id)));
+
+  tasksArr.sort((a, b) => {
+    const taskA = findTask(+a.dataset.id);
+    const taskB = findTask(+b.dataset.id);
+
+    // Move taskB up if its active or move taskA down if its complete
+    return (
+      Number(taskB.active) - Number(taskA.active) ||
+      Number(taskA.isComplete) - Number(taskB.isComplete)
+    );
+  });
+
+  tasksArr.forEach((taskEl) => dom.tasksContainer.append(taskEl));
 };
 
 ////////////////////////

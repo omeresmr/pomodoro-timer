@@ -1,6 +1,7 @@
 export default class Task {
-  active = false;
+  isActive = false;
   pomodorosDone = 0;
+  _manualComplete = null;
   constructor(name, estimatedPomodoros) {
     this.name = name;
     this.estimatedPomodoros = estimatedPomodoros;
@@ -10,15 +11,15 @@ export default class Task {
 
   complete() {
     this.stop();
-    this.isComplete = true;
+    this._manualComplete = true;
   }
 
   start() {
-    this.active = true;
+    this.isActive = true;
   }
 
   stop() {
-    this.active = false;
+    this.isActive = false;
   }
 
   update({ newName, newEstimatedPomodoros, newPomodorosDone }) {
@@ -37,6 +38,8 @@ export default class Task {
   }
 
   get isComplete() {
-    return this.pomodorosDone >= this.estimatedPomodoros;
+    return (
+      this.pomodorosDone >= this.estimatedPomodoros || this._manualComplete
+    );
   }
 }

@@ -8,46 +8,41 @@ const getTaskInnerHTML = (task) => `
   </div>
 
   <div class="flex gap-4">
-    <button class="start-task svg-button">${task.active ? TASK_ACTION_ICONS.stop : TASK_ACTION_ICONS.start}</button>
+    <button class="start-task svg-button ${task.isComplete ? 'hidden' : ''}">${task.isActive ? TASK_ACTION_ICONS.stop : TASK_ACTION_ICONS.start}</button>
     <button class="edit-task svg-button">${TASK_ACTION_ICONS.edit}</button>
     <button class="delete-task svg-button">${TASK_ACTION_ICONS.delete}</button>
-    <button class="complete-task svg-button">${TASK_ACTION_ICONS.complete}</button>
+    <button class="complete-task svg-button ${task.isComplete ? 'hidden' : ''}">${TASK_ACTION_ICONS.complete}</button>
   </div>
 
   <div class="flex items-center justify-center flex-col w-full gap-2">
     <div class="h-4 border-2 border-text w-full overflow-hidden rounded-full">
-      <div class="progress-bar ${task.isComplete ? 'bg-green-500' : task.active ? 'bg-accent' : 'bg-text'} h-3" style="width: ${task.progressPercentage}%"></div>
+      <div class="progress-bar ${task.isComplete ? 'bg-green-500' : task.isActive ? 'bg-accent' : 'bg-text'} h-3" style="width: ${task.progressPercentage}%"></div>
     </div>
     <p class="text-xs font-bold">${task.progressPercentage}%</p>
   </div>
 `;
 
 const getTaskOuterHTML = (task, innerHTML) => `
-  <div class="task-container bg-secondary flex items-center flex-col justify-center p-5 w-9/10 max-w-sm sm:max-w-md lg:max-w-lg rounded-2xl gap-4 border ${task.active ? 'border-accent' : 'border-transparent'}" data-id="${task.id}">
+  <div class="task-container bg-secondary flex items-center flex-col justify-center p-5 w-9/10 max-w-sm sm:max-w-md lg:max-w-lg rounded-2xl gap-4" data-id="${task.id}">
     ${innerHTML}
   </div>
 `;
 
-export const renderTask = (task, taskExists = false) => {
+export const renderTask = (task) => {
   const taskInnerHTML = getTaskInnerHTML(task);
   const taskOuterHTML = getTaskOuterHTML(task, taskInnerHTML);
 
-  if (taskExists) {
-    const taskToRender = document.querySelector(
-      `.task-container[data-id="${task.id}"]`,
-    );
+  const taskEl = document.querySelector(
+    `.task-container[data-id="${task.id}"]`,
+  );
+  const taskExists = !!taskEl;
 
-    const borderToRemove = task.active ? 'border-transparent' : 'border-accent';
-
-    const borderToAdd = task.active ? 'border-accent' : 'border-transparent';
-
-    taskToRender.classList.remove(borderToRemove);
-    taskToRender.classList.add(borderToAdd);
-
-    taskToRender.innerHTML = taskInnerHTML;
+  if (!taskExists) {
+    dom.tasksContainer.insertAdjacentHTML('beforeend', taskOuterHTML);
     return;
   }
-  dom.tasksContainer.insertAdjacentHTML('beforeend', taskOuterHTML);
+
+  taskEl.innerHTML = taskInnerHTML;
 };
 
 export const removeTask = (task) => {
@@ -79,34 +74,6 @@ export const renderEditTaskForm = (task) => {
     `;
 
   taskToEdit.innerHTML = html;
-};
-
-export const setTaskState = (taskId, newState) => {
-  const taskToChange = document.querySelector(`[data-id="${taskId}"]`);
-  const startTaskBtn = taskToChange.querySelector('.start-task');
-  const completeTaskBtn = taskToChange.querySelector('.complete-task');
-
-  switch (newState) {
-    case 'active':
-      // Move the active task up
-      dom.tasksContainer.prepend(taskToChange);
-      break;
-
-    case 'complete':
-      // Hide start and complete task buttons
-      startTaskBtn.classList.add('hidden');
-      completeTaskBtn.classList.add('hidden');
-
-      console.log(taskToChange, startTaskBtn, completeTaskBtn);
-
-      // Move the completed task down
-      dom.tasksContainer.append(taskToChange);
-      break;
-
-    default:
-      console.error('Wrong state input');
-      break;
-  }
 };
 
 // toggles task info on the timer section
