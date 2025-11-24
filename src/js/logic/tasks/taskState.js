@@ -1,7 +1,7 @@
 import { tasks } from './taskActions.js';
 import { sortTasks } from '../../events.js';
 import { toggleTaskInfo, renderTask } from '../../utils/ui/taskUI.js';
-import { slideToSection } from '../../utils/ui/sectionUI.js';
+import { navigateToSection } from '../../utils/ui/sectionUI.js';
 import { showAlert } from '../../utils/ui/alertUI.js';
 import { dom } from '../../utils/ui/dom.js';
 import { saveTasks } from './taskStorage.js';
@@ -37,5 +37,5 @@ export const handleTaskCompletion = (task, mode = 'automatic') => {
   showAlert(`${task.name} finished! 👏`);
 
   // Slide to Tasks Section
-  slideToSection(dom.tasksSection);
+  navigateToSection(dom.navigationTasks);
 };

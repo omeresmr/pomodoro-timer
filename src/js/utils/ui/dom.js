@@ -26,6 +26,10 @@ export const dom = {
 
   // Navigation
   navigationMenu: document.querySelector('.navigation-menu'),
+  menuElements: document.querySelectorAll('.menu-element'),
+  navigationPomodoro: document.getElementById('nav-pomodoro'),
+  navigationTasks: document.getElementById('nav-tasks'),
+  navigationStats: document.getElementById('nav-stats'),
   sections: document.querySelectorAll('section'),
   pomodoroSection: document.querySelector('.pomodoro-section'),
   tasksSection: document.querySelector('.tasks-section'),

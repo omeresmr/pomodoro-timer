@@ -16,7 +16,7 @@ import { saveTasks } from './logic/tasks/taskStorage.js';
 
 // UI
 import { dom } from './utils/ui/dom.js';
-import { slideToSection, highlightMenuElement } from './utils/ui/sectionUI.js';
+import { navigateToSection } from './utils/ui/sectionUI.js';
 import { setTimerState, renderTime } from './utils/ui/timerUI.js';
 import {
   toggleTaskInfo,
@@ -48,7 +48,9 @@ const handleStartTask = (taskId) => {
   const task = findTask(taskId);
   if (!task) return;
 
-  if (!task.active) {
+  console.log(task);
+
+  if (!task.isActive) {
     // Change active state
     startTask(task);
 
@@ -56,7 +58,7 @@ const handleStartTask = (taskId) => {
     timer.reset();
 
     // Slide to Timer section
-    slideToSection(dom.pomodoroSection);
+    navigateToSection(dom.navigationPomodoro);
 
     // Start Timer
     setTimerState(TIMER_STATES.START);
@@ -72,6 +74,9 @@ const handleStartTask = (taskId) => {
   } else {
     task.stop();
 
+    timer.activeTask = null;
+
+    toggleTaskInfo(task);
     renderTask(task);
     sortTasks();
   }
@@ -301,6 +306,20 @@ const handleSoundToggle = () => {
 };
 
 ////////////////////////
+// Navigation Event Handler Functions
+////////////////////////
+
+const handleNavigationMenu = (e) => {
+  const clickedElement = e.target;
+  const clickedMenuElement = clickedElement.closest('.menu-element');
+
+  // Guard Clause
+  if (!clickedMenuElement) return;
+
+  navigateToSection(clickedMenuElement);
+};
+
+////////////////////////
 // Event Listeners
 ////////////////////////
 
@@ -379,23 +398,6 @@ dom.soundBtn.addEventListener('click', handleSoundToggle);
 // Other Event Listeners
 ////////////////////////
 
-dom.navigationMenu.addEventListener('click', function (e) {
-  const clickedElement = e.target;
-  const clickedMenuElement = clickedElement.closest('.menu-element');
-  const menuElements = document.querySelectorAll('.menu-element');
-
-  // Guard Clause
-  if (!clickedMenuElement) return;
-
-  highlightMenuElement(clickedMenuElement, menuElements);
-
-  const targetSection = document.querySelector(
-    `.${clickedMenuElement.dataset.target}-section`,
-  );
-
-  if (!targetSection) return;
-
-  slideToSection(targetSection);
-});
+dom.navigationMenu.addEventListener('click', handleNavigationMenu);
 
 document.addEventListener('keydown', handleSpacebarToggle);

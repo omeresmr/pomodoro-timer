@@ -2,7 +2,7 @@ import { dom } from './dom.js';
 import { TRANSLATE } from '../constants.js';
 
 // Repositions all sections based on their relative index to the target section
-export const slideToSection = (targetSection) => {
+const slideToSection = (targetSection) => {
   const currentSection = document.querySelector('.current-section');
 
   if (currentSection === targetSection) return;
@@ -33,10 +33,18 @@ export const slideToSection = (targetSection) => {
 };
 
 // Find a way, to use this Method in slideToSection
-export const highlightMenuElement = (targetElement, menuElements) => {
+export const navigateToSection = (targetElement) => {
   // Unhighlight every menu element
-  menuElements.forEach((el) => el.classList.remove('selected-menu'));
+  dom.menuElements.forEach((el) => el.classList.remove('selected-menu'));
 
-  // Highlight clicked menu element
+  // Highlight menu element
   targetElement.classList.add('selected-menu');
+
+  const targetSection = document.querySelector(
+    `.${targetElement.dataset.target}-section`,
+  );
+
+  if (!targetSection) return;
+
+  slideToSection(targetSection);
 };

@@ -82,7 +82,7 @@ export const toggleTaskInfo = (task) => {
   const taskNameLabel = taskInfoCon.querySelector('.task-name');
   const estimatedPomodorosLabel = taskInfoCon.querySelector('.est-pomos');
 
-  if (task.isComplete || !task) {
+  if (task.isComplete || !task.isActive || !task) {
     taskInfoCon.classList.add('hidden');
     return;
   }
