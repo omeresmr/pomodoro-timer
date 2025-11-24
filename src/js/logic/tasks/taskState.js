@@ -7,29 +7,31 @@ import { dom } from '../../utils/ui/dom.js';
 import { saveTasks } from './taskStorage.js';
 
 export const startTask = (task) => {
-  tasks.forEach((task) => (task.isActive = false));
+  // Reset status of the active tasks to default
+  tasks.forEach((task) =>
+    task.status === 'active' ? (task.status = 'default') : task.status,
+  );
 
+  // Set task state to active
   task.start();
 };
 
-// TODO optimize this function
 export const handleTaskCompletion = (task, mode = 'automatic') => {
-  if (mode === 'automatic') task.isComplete;
+  // Change status to default
+  task.stop();
+
+  // Change status to complete
   if (mode === 'manual') task.complete();
 
-  // Change task UI on tasks page
-  renderTask(task);
+  // Check if task is complete, if yes, status -> complete
+  if (mode === 'automatic') task.isComplete;
 
-  // TODO
-  task.stop();
   saveTasks();
-  sortTasks();
-  task.start();
 
-  if (!task.isComplete) return;
+  if (task.status !== 'completed') return;
 
-  task.stop();
   renderTask(task);
+  sortTasks();
 
   // Hide task info on timer page
   toggleTaskInfo(task);

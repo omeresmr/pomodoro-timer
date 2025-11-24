@@ -50,7 +50,7 @@ const handleStartTask = (taskId) => {
 
   console.log(task);
 
-  if (!task.isActive) {
+  if (task.status !== 'active') {
     // Change active state
     startTask(task);
 
@@ -157,20 +157,23 @@ const updateCreateTaskButtonState = () => {
   dom.createTaskBtn.disabled = !name || !isValidEstPomos(estPomos);
 };
 
+// Returns a number, based on the task status (used in sortTasks)
+const getTaskPriority = (task) => {
+  if (task.status === 'active') return 1;
+  if (task.status === 'default') return 0;
+  if (task.status === 'completed') return -1;
+};
+
 // Sorts the tasks based on isComplete or active state
 export const sortTasks = () => {
   const tasksArr = Array.from(dom.tasksContainer.children);
-  console.log(tasksArr.map((t) => findTask(+t.dataset.id)));
 
   tasksArr.sort((a, b) => {
     const taskA = findTask(+a.dataset.id);
     const taskB = findTask(+b.dataset.id);
 
     // Move taskB up if its active or move taskA down if its complete
-    return (
-      Number(taskB.active) - Number(taskA.active) ||
-      Number(taskA.isComplete) - Number(taskB.isComplete)
-    );
+    return getTaskPriority(taskB) - getTaskPriority(taskA);
   });
 
   tasksArr.forEach((taskEl) => dom.tasksContainer.append(taskEl));

@@ -3,20 +3,21 @@ import { dom } from '../ui/dom.js';
 
 const getTaskInnerHTML = (task) => `
   <div class="text-center">
-    <p class="task-name ${task.isComplete ? 'text-gray-500 line-through' : 'text-accent'} font-semibold text-xl">${task.name}</p>
+    <p class="task-name ${task.status === 'completed' ? 'text-gray-500 line-through' : 'text-accent'} font-semibold text-xl">${task.name}</p>
     <p class="pomodoro-progress font-semibold">${task.pomodorosDone} of ${task.estimatedPomodoros}</p>
   </div>
 
   <div class="flex gap-4">
-    <button class="start-task svg-button ${task.isComplete ? 'hidden' : ''}">${task.isActive ? TASK_ACTION_ICONS.stop : TASK_ACTION_ICONS.start}</button>
+    <button class="start-task svg-button ${task.status === 'completed' ? 'hidden' : ''}">${task.status === 'active' ? TASK_ACTION_ICONS.stop : TASK_ACTION_ICONS.start}</button>
     <button class="edit-task svg-button">${TASK_ACTION_ICONS.edit}</button>
     <button class="delete-task svg-button">${TASK_ACTION_ICONS.delete}</button>
-    <button class="complete-task svg-button ${task.isComplete ? 'hidden' : ''}">${TASK_ACTION_ICONS.complete}</button>
+    <button class="complete-task svg-button ${task.status === 'completed' ? 'hidden' : ''}">${TASK_ACTION_ICONS.complete}</button>
+    <button class="undo-task svg-button ${task.status === 'completed' ? '' : 'hidden'}>${TASK_ACTION_ICONS.undo}</button>
   </div>
 
   <div class="flex items-center justify-center flex-col w-full gap-2">
     <div class="h-4 border-2 border-text w-full overflow-hidden rounded-full">
-      <div class="progress-bar ${task.isComplete ? 'bg-green-500' : task.isActive ? 'bg-accent' : 'bg-text'} h-3" style="width: ${task.progressPercentage}%"></div>
+      <div class="progress-bar ${task.status === 'completed' ? 'bg-green-500' : task.status === 'active' ? 'bg-accent' : 'bg-text'} h-3" style="width: ${task.progressPercentage}%"></div>
     </div>
     <p class="text-xs font-bold">${task.progressPercentage}%</p>
   </div>
@@ -82,7 +83,7 @@ export const toggleTaskInfo = (task) => {
   const taskNameLabel = taskInfoCon.querySelector('.task-name');
   const estimatedPomodorosLabel = taskInfoCon.querySelector('.est-pomos');
 
-  if (task.isComplete || !task.isActive || !task) {
+  if (task.isComplete || task.status !== 'active' || !task) {
     taskInfoCon.classList.add('hidden');
     return;
   }

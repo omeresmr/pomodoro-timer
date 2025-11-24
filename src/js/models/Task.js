@@ -1,25 +1,23 @@
 export default class Task {
-  isActive = false;
   pomodorosDone = 0;
-  _manualComplete = null;
   constructor(name, estimatedPomodoros) {
     this.name = name;
     this.estimatedPomodoros = estimatedPomodoros;
-    // Unique ID
     this.id = Date.now();
+    this.status = 'default';
   }
 
   complete() {
     this.stop();
-    this._manualComplete = true;
+    this.status = 'completed';
   }
 
   start() {
-    this.isActive = true;
+    this.status = 'active';
   }
 
   stop() {
-    this.isActive = false;
+    this.status = 'default';
   }
 
   update({ newName, newEstimatedPomodoros, newPomodorosDone }) {
@@ -38,8 +36,7 @@ export default class Task {
   }
 
   get isComplete() {
-    return (
-      this.pomodorosDone >= this.estimatedPomodoros || this._manualComplete
-    );
+    if (this.pomodorosDone >= this.estimatedPomodoros)
+      this.status = 'completed';
   }
 }

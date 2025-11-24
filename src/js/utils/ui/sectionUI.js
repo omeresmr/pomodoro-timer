@@ -32,7 +32,6 @@ const slideToSection = (targetSection) => {
   });
 };
 
-// Find a way, to use this Method in slideToSection
 export const navigateToSection = (targetElement) => {
   // Unhighlight every menu element
   dom.menuElements.forEach((el) => el.classList.remove('selected-menu'));

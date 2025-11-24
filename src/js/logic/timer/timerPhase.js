@@ -8,9 +8,10 @@ import {
   renderTime,
   setTimerState,
 } from '../../utils/ui/timerUI.js';
-import { toggleTaskInfo } from '../../utils/ui/taskUI.js';
+import { toggleTaskInfo, renderTask } from '../../utils/ui/taskUI.js';
 import { handleTaskCompletion } from '../tasks/taskState.js';
 import { showAlert } from '../../utils/ui/alertUI.js';
+import { sortTasks } from '../../events.js';
 
 // Starts the timer automatically after 1500 ms
 const autoStartNextPhase = () => {
@@ -42,6 +43,7 @@ const completePhase = () => {
 
   if (currentTask && !timer.onBreak) {
     currentTask.incrementPomo();
+    renderTask(currentTask);
 
     // Show Task info on timer page
     toggleTaskInfo(currentTask);
