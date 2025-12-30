@@ -286,6 +286,19 @@
     @apply font-bold text-lg flex items-center justify-center gap-2.5;
   }
 
+  .logo-gradient {
+    @apply bg-linear-to-br  from-sky-600 to-purple-600
+    dark:from-sky-400 dark:to-purple-400;
+  }
+
+  .logo-icon {
+    @apply w-7 h-7 lg:w-8 lg:h-8 text-white shadow-md p-1.25 rounded-lg;
+  }
+
+  .logo-text {
+    @apply text-transparent bg-clip-text font-bold hidden text-base sm:block lg:text-lg;
+  }
+
   .card {
     @apply bg-card p-4 rounded-sm
     flex items-center justify-center
