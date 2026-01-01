@@ -1,0 +1,11 @@
+import { Check } from 'lucide-react';
+
+export default function CheckBox() {
+  return (
+    <label className="flex gap-2 relative">
+      <input type="checkbox" name="task-status" className="hidden peer" />
+      <div className="task-checkbox"></div>
+      <Check />
+    </label>
+  );
+}
