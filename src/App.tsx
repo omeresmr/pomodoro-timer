@@ -1,45 +1,31 @@
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import Header from './components/Header/Header';
-import NavigationList from './components/Navigation/NavigationList';
-import NavigationItem from './components/Navigation/NavigationItem';
+import TimerPage from './Pages/TimerPage';
+import TasksPage from './Pages/TasksPage';
+import StatsPage from './Pages/StatsPage';
+import SettingsPage from './Pages/SettingsPage';
 import ToggleDarkMode from './components/Header/ToggleDarkMode';
-import TimerContent from './components/Timer/TimerContent';
-import TaskList from './components/Tasks/TaskList';
-import { Timer, ListTodo, ChartColumn, Settings } from 'lucide-react';
+import Navigation from './components/Navigation/Navigation';
 
 function App() {
   return (
     <>
-      <Header>
-        <nav>
-          <NavigationList>
-            <NavigationItem className="active-link">
-              <Timer />
-              Timer
-            </NavigationItem>
-            <NavigationItem>
-              <ListTodo />
-              Tasks
-            </NavigationItem>
-            <NavigationItem>
-              <ChartColumn />
-              Stats
-            </NavigationItem>
-            <NavigationItem>
-              <Settings />
-              Settings
-            </NavigationItem>
-          </NavigationList>
-        </nav>
-        <ToggleDarkMode />
-      </Header>
-      <main>
-        <section className="flex items-center justify-center">
-          <div className="timer-wrapper">
-            <TimerContent />
-            <TaskList />
-          </div>
-        </section>
-      </main>
+      <BrowserRouter>
+        <Header>
+          <Navigation />
+          <ToggleDarkMode />
+        </Header>
+        <main>
+          <section className="flex items-center justify-center">
+            <Routes>
+              <Route path="/" element={<TimerPage />} />
+              <Route path="/tasks" element={<TasksPage />} />
+              <Route path="/stats" element={<StatsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Routes>
+          </section>
+        </main>
+      </BrowserRouter>
     </>
   );
 }
