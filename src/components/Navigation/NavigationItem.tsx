@@ -1,17 +1,10 @@
 import type { ReactNode } from 'react';
 
-interface NavigationListProps {
+interface NavigationItemProps {
   className?: string;
   children: ReactNode;
 }
 
-export default function NavigationList({
-  className,
-  children,
-}: NavigationListProps) {
-  return (
-    <li>
-      <a className={`nav-link ${className}`}>{children}</a>
-    </li>
-  );
+export default function NavigationItem({ children }: NavigationItemProps) {
+  return <li>{children}</li>;
 }

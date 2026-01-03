@@ -1,14 +1,16 @@
-import HighlightCon from './HighlightCon';
-import type { ReactNode } from 'react';
+import { type ReactNode, type RefObject } from 'react';
 
 interface NavigationListProps {
   children: ReactNode;
+  listRef: RefObject<null | HTMLUListElement>;
 }
 
-export default function NavigationList({ children }: NavigationListProps) {
+export default function NavigationList({
+  children,
+  listRef,
+}: NavigationListProps) {
   return (
-    <ul className="nav-list">
-      <HighlightCon />
+    <ul className="nav-list" ref={listRef}>
       {children}
     </ul>
   );
