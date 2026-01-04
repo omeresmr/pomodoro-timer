@@ -1,9 +1,9 @@
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import Header from './components/Header/Header';
-import TimerPage from './Pages/TimerPage';
-import TasksPage from './Pages/TasksPage';
-import StatsPage from './Pages/StatsPage';
-import SettingsPage from './Pages/SettingsPage';
+import TimerPage from './pages/TimerPage';
+import TasksPage from './pages/TasksPage';
+import StatsPage from './pages/StatsPage';
+import SettingsPage from './pages/SettingsPage';
 import ToggleDarkMode from './components/Header/ToggleDarkMode';
 import Navigation from './components/Navigation/Navigation';
 
