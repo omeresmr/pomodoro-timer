@@ -1,6 +1,6 @@
 export type TaskStatus = 'default' | 'active' | 'completed';
 
-export interface TaskData {
+export interface TaskState {
   id: number;
   name: string;
   estimatedPomodoros: number;
@@ -11,7 +11,7 @@ export interface TaskData {
 export const createTask = (
   name: string,
   estimatedPomodoros: number
-): TaskData => ({
+): TaskState => ({
   id: Date.now(),
   name,
   estimatedPomodoros,
