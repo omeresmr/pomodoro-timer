@@ -2,10 +2,19 @@ import IconButton from '../Buttons/IconButton';
 import PrimaryButton from '../Buttons/PrimaryButton';
 import { RotateCcw } from 'lucide-react';
 
-export default function TimerControls() {
+interface TimerControlsProps {
+  handleToggleTimer: () => void;
+}
+
+export default function TimerControls({
+  handleToggleTimer,
+}: TimerControlsProps) {
   return (
     <div className="relative flex items-center justify-center">
-      <PrimaryButton className="px-12 py-2.5 rounded-3xl">
+      <PrimaryButton
+        className="px-12 py-2.5 rounded-3xl"
+        handleClick={handleToggleTimer}
+      >
         Start Focus
       </PrimaryButton>
       <IconButton className="absolute -right-12">

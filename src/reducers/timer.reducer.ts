@@ -1,8 +1,17 @@
 import { type TimerState } from '../models/timer.model';
 import { type TimerAction } from '../models/timer.actions';
+
+export const initialState = {
+  secondsPassed: 0,
+  completedPomodoros: 0,
+  onBreak: false,
+  isRunning: false,
+  activeTask: null,
+};
+
 export default function reducer(state: TimerState, action: TimerAction) {
   const { onBreak, completedPomodoros, secondsPassed } = state;
-
+  console.log(state);
   switch (action.type) {
     case 'START':
       return { ...state, isRunning: true };
@@ -14,13 +23,7 @@ export default function reducer(state: TimerState, action: TimerAction) {
         secondsPassed: secondsPassed + 1,
       };
     case 'RESET':
-      return {
-        secondsPassed: 0,
-        completedPomodoros: 0,
-        onBreak: false,
-        isRunning: false,
-        activeTask: null,
-      };
+      return initialState;
     case 'COMPLETE_POMODORO':
       return {
         ...state,
