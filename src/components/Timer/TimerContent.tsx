@@ -16,13 +16,17 @@ export default function TimerContent() {
 
   const totalSeconds = getCurrentDuration(state, settings);
   const currentSession = getCurrentSession(state);
+  const remainingSeconds = totalSeconds - state.secondsPassed;
 
   useEffect(() => {
     if (!state.isRunning) return;
-    const id = setInterval(() => dispatch({ type: 'TICK' }), 1000);
+    const id = setInterval(() => {
+      dispatch({ type: 'TICK' });
+      if (remainingSeconds <= 0) dispatch({ type: 'COMPLETE_POMODORO' });
+    }, 1000);
 
     return () => clearInterval(id);
-  }, [state.isRunning]);
+  }, [state.isRunning, remainingSeconds]);
 
   function handleToggleTimer() {
     if (state.isRunning) dispatch({ type: 'PAUSE' });
@@ -33,10 +37,14 @@ export default function TimerContent() {
     dispatch({ type: 'COMPLETE_POMODORO' });
   }
 
+  function handleReset() {
+    dispatch({ type: 'RESET' });
+  }
+
   return (
     <Card className="flex-col gap-4 self-start">
       <TimerDisplay
-        remainingSeconds={totalSeconds - state.secondsPassed}
+        remainingSeconds={remainingSeconds}
         session={`${currentSession}/${settings.longBreakInterval}`}
       />
 
@@ -50,6 +58,7 @@ export default function TimerContent() {
       <TimerControls
         isTimerRunning={state.isRunning}
         handleToggleTimer={handleToggleTimer}
+        handleReset={handleReset}
       />
 
       <CurrentTask taskName="Refactor React" />

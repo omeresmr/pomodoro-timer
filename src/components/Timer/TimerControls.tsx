@@ -4,11 +4,13 @@ import { RotateCcw } from 'lucide-react';
 
 interface TimerControlsProps {
   handleToggleTimer: () => void;
+  handleReset: () => void;
   isTimerRunning: boolean;
 }
 
 export default function TimerControls({
   handleToggleTimer,
+  handleReset,
   isTimerRunning,
 }: TimerControlsProps) {
   return (
@@ -19,7 +21,7 @@ export default function TimerControls({
       >
         {isTimerRunning ? 'Pause' : 'Start Focus'}
       </PrimaryButton>
-      <IconButton className="absolute -right-12">
+      <IconButton onClick={handleReset} className="absolute -right-12">
         <RotateCcw className="w-4 h-4" />
       </IconButton>
     </div>
