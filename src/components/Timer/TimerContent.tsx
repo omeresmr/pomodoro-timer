@@ -7,12 +7,14 @@ import CurrentTask from './CurrentTask';
 import Card from '../Card/Card';
 import { ArrowRight } from 'lucide-react';
 import reducer, { initialState } from '../../reducers/timer.reducer';
-
-// Temporary
-const PomodoroTime = 7;
+import { useSettings } from '../../contexts/SettingsContext';
+import { getCurrentDuration } from '../../util/timer.utils';
 
 export default function TimerContent() {
+  const settings = useSettings();
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  const totalSeconds = getCurrentDuration(state, settings);
 
   useEffect(() => {
     if (!state.isRunning) return;
@@ -29,7 +31,7 @@ export default function TimerContent() {
   return (
     <Card className="flex-col gap-4 self-start">
       <TimerDisplay
-        remainingSeconds={PomodoroTime - state.secondsPassed}
+        remainingSeconds={totalSeconds - state.secondsPassed}
         session="1/4"
       />
 
@@ -37,7 +39,10 @@ export default function TimerContent() {
         <ArrowRight className="w-4 h-4" />
       </IconButton>
 
-      <TimerControls handleToggleTimer={handleToggleTimer} />
+      <TimerControls
+        isTimerRunning={state.isRunning}
+        handleToggleTimer={handleToggleTimer}
+      />
 
       <CurrentTask taskName="Refactor React" />
     </Card>
