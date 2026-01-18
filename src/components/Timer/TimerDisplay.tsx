@@ -1,12 +1,19 @@
+import formatSeconds from '../../util/formatSeconds';
+
 interface TimerDisplayProps {
-  time: string;
+  remainingSeconds: number;
   session: string;
 }
 
-export default function TimerDisplay({ time, session }: TimerDisplayProps) {
+export default function TimerDisplay({
+  remainingSeconds,
+  session,
+}: TimerDisplayProps) {
   return (
     <div className="timer-display-wrapper">
-      <p className="text-5xl font-extrabold">{time}</p>
+      <p className="text-5xl font-extrabold">
+        {formatSeconds(remainingSeconds)}
+      </p>
       <p className="text-muted-foreground">Session {session}</p>
     </div>
   );
