@@ -11,7 +11,7 @@ export const initialState = {
 
 export default function reducer(state: TimerState, action: TimerAction) {
   const { onBreak, completedPomodoros, secondsPassed } = state;
-  console.log(state);
+
   switch (action.type) {
     case 'START':
       return { ...state, isRunning: true };
@@ -27,9 +27,12 @@ export default function reducer(state: TimerState, action: TimerAction) {
     case 'COMPLETE_POMODORO':
       return {
         ...state,
-        completedPomodoros: completedPomodoros + 1,
+        completedPomodoros: onBreak
+          ? completedPomodoros
+          : completedPomodoros + 1,
         onBreak: !onBreak,
         secondsPassed: 0,
+        isRunning: false,
       };
     case 'SET_ACTIVE_TASK':
       return {

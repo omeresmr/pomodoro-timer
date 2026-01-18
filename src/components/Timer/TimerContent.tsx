@@ -8,13 +8,14 @@ import Card from '../Card/Card';
 import { ArrowRight } from 'lucide-react';
 import reducer, { initialState } from '../../reducers/timer.reducer';
 import { useSettings } from '../../contexts/SettingsContext';
-import { getCurrentDuration } from '../../util/timer.utils';
+import { getCurrentDuration, getCurrentSession } from '../../util/timer.utils';
 
 export default function TimerContent() {
   const settings = useSettings();
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const totalSeconds = getCurrentDuration(state, settings);
+  const currentSession = getCurrentSession(state);
 
   useEffect(() => {
     if (!state.isRunning) return;
@@ -28,14 +29,21 @@ export default function TimerContent() {
     else dispatch({ type: 'START' });
   }
 
+  function handleSkipPhase() {
+    dispatch({ type: 'COMPLETE_POMODORO' });
+  }
+
   return (
     <Card className="flex-col gap-4 self-start">
       <TimerDisplay
         remainingSeconds={totalSeconds - state.secondsPassed}
-        session="1/4"
+        session={`${currentSession}/${settings.longBreakInterval}`}
       />
 
-      <IconButton>
+      <IconButton
+        onClick={handleSkipPhase}
+        className={state.isRunning ? '' : 'collapse'}
+      >
         <ArrowRight className="w-4 h-4" />
       </IconButton>
 
