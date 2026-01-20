@@ -3,8 +3,17 @@ import type { ReactNode } from 'react';
 interface IconButtonProps {
   children: ReactNode;
   className?: string;
+  onClick?: () => void;
 }
 
-export default function IconButton({ children, className }: IconButtonProps) {
-  return <button className={`btn-icon ${className}`}>{children}</button>;
+export default function IconButton({
+  children,
+  className,
+  onClick,
+}: IconButtonProps) {
+  return (
+    <button onClick={onClick} className={`btn-icon ${className}`}>
+      {children}
+    </button>
+  );
 }

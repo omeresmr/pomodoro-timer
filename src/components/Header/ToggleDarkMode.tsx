@@ -5,6 +5,7 @@ import { Sun, Moon } from 'lucide-react';
 export default function ToggleDarkMode() {
   const [isDark, setIsDark] = useState(false);
 
+  // TODO: Change to ternary operator
   useEffect(() => {
     const root = document.documentElement;
     if (isDark) root.classList.add('dark');

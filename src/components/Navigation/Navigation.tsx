@@ -10,6 +10,7 @@ export default function Navigation() {
   const listRef = useRef<HTMLUListElement>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
 
+  // Used layoutEffect, so the UI doesn't flutter
   useLayoutEffect(() => {
     const updateHighlight = () => {
       const activeItem = listRef.current?.querySelector(
@@ -25,7 +26,7 @@ export default function Navigation() {
     // run instantly, as soon as the route changes
     updateHighlight();
 
-    // ResizeObserver for precise updates
+    // ResizeObserver for automatic updates, if the element size changes
     const observer = new ResizeObserver(() => updateHighlight());
 
     if (listRef.current) observer.observe(listRef.current);

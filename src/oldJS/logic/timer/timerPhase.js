@@ -41,17 +41,17 @@ const completePhase = () => {
   timer.stop();
   if (!timer.onBreak) timer.completedPomodoros++;
 
-  if (currentTask && !timer.onBreak) {
-    currentTask.incrementPomo();
-    renderTask(currentTask);
+  // if (currentTask && !timer.onBreak) {
+  //   currentTask.incrementPomo();
+  //   renderTask(currentTask);
 
-    // Show Task info on timer page
-    toggleTaskInfo(currentTask);
+  //   // Show Task info on timer page
+  //   toggleTaskInfo(currentTask);
 
-    handleTaskCompletion(currentTask);
-  }
+  //   handleTaskCompletion(currentTask);
+  // }
 
-  currentTask?.completed ? timer.reset() : timer.nextPhase();
+  // currentTask?.completed ? timer.reset() : timer.nextPhase();
 
   resetCircleProgress();
   updateTimerStateLabel(timer);

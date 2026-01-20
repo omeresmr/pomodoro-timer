@@ -250,8 +250,7 @@
   }
 
   .timer-display-wrapper {
-    @apply rounded-full border-background border-10 w-55 h-55
-      flex items-center justify-center flex-col text-center gap-2;
+    @apply relative flex items-center justify-center;
   }
 
   .nav-list {
