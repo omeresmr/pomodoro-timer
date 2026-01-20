@@ -1,18 +1,18 @@
-import formatSeconds from '../../util/formatSeconds';
+import formatMilliseconds from '../../util/formatMilliSeconds';
 
 interface TimerDisplayProps {
-  remainingSeconds: number;
+  remainingMilliseconds: number;
   session: string;
 }
 
 export default function TimerDisplay({
-  remainingSeconds,
+  remainingMilliseconds,
   session,
 }: TimerDisplayProps) {
   return (
     <div className="timer-display-wrapper">
       <p className="text-5xl font-extrabold">
-        {formatSeconds(remainingSeconds)}
+        {formatMilliseconds(remainingMilliseconds)}
       </p>
       <p className="text-muted-foreground">Session {session}</p>
     </div>

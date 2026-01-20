@@ -16,14 +16,14 @@ export default function TimerContent() {
 
   const totalSeconds = getCurrentDuration(state, settings);
   const currentSession = getCurrentSession(state);
-  const remainingSeconds = totalSeconds - state.secondsPassed;
+  const remainingSeconds = totalSeconds - state.millisecondsPassed;
 
   useEffect(() => {
     if (!state.isRunning) return;
     const id = setInterval(() => {
       dispatch({ type: 'TICK' });
       if (remainingSeconds <= 0) dispatch({ type: 'COMPLETE_POMODORO' });
-    }, 1000);
+    }, 100);
 
     return () => clearInterval(id);
   }, [state.isRunning, remainingSeconds]);
@@ -44,7 +44,7 @@ export default function TimerContent() {
   return (
     <Card className="flex-col gap-4 self-start">
       <TimerDisplay
-        remainingSeconds={remainingSeconds}
+        remainingMilliseconds={remainingSeconds}
         session={`${currentSession}/${settings.longBreakInterval}`}
       />
 
