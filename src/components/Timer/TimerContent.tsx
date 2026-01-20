@@ -14,19 +14,19 @@ export default function TimerContent() {
   const settings = useSettings();
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const totalSeconds = getCurrentDuration(state, settings);
+  const totalMilliseconds = getCurrentDuration(state, settings);
   const currentSession = getCurrentSession(state);
-  const remainingSeconds = totalSeconds - state.millisecondsPassed;
+  const remainingMilliseconds = totalMilliseconds - state.millisecondsPassed;
 
   useEffect(() => {
     if (!state.isRunning) return;
     const id = setInterval(() => {
       dispatch({ type: 'TICK' });
-      if (remainingSeconds <= 0) dispatch({ type: 'COMPLETE_POMODORO' });
+      if (remainingMilliseconds <= 0) dispatch({ type: 'COMPLETE_POMODORO' });
     }, 100);
 
     return () => clearInterval(id);
-  }, [state.isRunning, remainingSeconds]);
+  }, [state.isRunning, remainingMilliseconds]);
 
   function handleToggleTimer() {
     if (state.isRunning) dispatch({ type: 'PAUSE' });
@@ -44,7 +44,9 @@ export default function TimerContent() {
   return (
     <Card className="flex-col gap-4 self-start">
       <TimerDisplay
-        remainingMilliseconds={remainingSeconds}
+        onBreak={state.onBreak}
+        totalMilliseconds={totalMilliseconds}
+        remainingMilliseconds={remainingMilliseconds}
         session={`${currentSession}/${settings.longBreakInterval}`}
       />
 
