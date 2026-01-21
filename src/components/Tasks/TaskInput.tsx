@@ -1,13 +1,34 @@
+import { useState } from 'react';
 import PrimaryButton from '../Buttons/PrimaryButton';
 import AddTaskInput from './shared/AddTaskInput';
 import { Plus } from 'lucide-react';
+import { createTask, type TaskState } from '../../models/task.model';
 
-export default function TaskInput() {
+interface TaskInputProps {
+  tasks: TaskState[];
+  setTasks: React.Dispatch<React.SetStateAction<TaskState[]>>;
+}
+
+export default function TaskInput({ tasks, setTasks }: TaskInputProps) {
+  const [taskName, setTaskName] = useState('');
+
+  function addTask() {
+    // TODO: Show alert
+    if (!taskName) return;
+
+    const newTask: TaskState = createTask(taskName);
+    setTasks((tasks) => [...tasks, newTask]);
+    setTaskName('');
+  }
+
   return (
     <div className="flex items-center justify-center w-full gap-2">
-      <AddTaskInput />
+      <AddTaskInput
+        value={taskName}
+        onChange={(e) => setTaskName(e.target.value)}
+      />
       <PrimaryButton
-        handleClick={() => console.log('temp')}
+        handleClick={() => addTask()}
         className="rounded-full p-2 flex items-center justify-center"
       >
         <Plus className="w-4 h-4" />

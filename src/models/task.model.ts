@@ -8,13 +8,10 @@ export interface TaskState {
   status: TaskStatus;
 }
 
-export const createTask = (
-  name: string,
-  estimatedPomodoros: number
-): TaskState => ({
+export const createTask = (name: string): TaskState => ({
   id: Date.now(),
   name,
-  estimatedPomodoros,
+  estimatedPomodoros: 4,
   pomodorosDone: 0,
   status: 'default',
 });
