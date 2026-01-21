@@ -1,4 +1,4 @@
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, NavLink } from 'react-router-dom';
 import NavigationList from './NavigationList';
 import NavigationItem from './NavigationItem';
 import HighlightCon from './HighlightCon';
@@ -14,7 +14,7 @@ export default function Navigation() {
   useLayoutEffect(() => {
     const updateHighlight = () => {
       const activeItem = listRef.current?.querySelector(
-        '.active-link'
+        '.active'
       ) as HTMLElement;
 
       if (activeItem && highlightRef.current) {
@@ -39,43 +39,29 @@ export default function Navigation() {
     <nav>
       <NavigationList listRef={listRef}>
         <HighlightCon highlightRef={highlightRef} />
-        <NavigationItem
-          className={`${location.pathname === '/' ? 'active-link' : ''}`}
-        >
-          <Link
-            to="/"
-            className={`${location.pathname === '/' ? 'active-link' : ''} nav-link`}
-          >
+        <NavigationItem>
+          <NavLink to="/" className="nav-link">
             <Timer />
             Timer
-          </Link>
+          </NavLink>
         </NavigationItem>
         <NavigationItem>
-          <Link
-            to="/tasks"
-            className={`${location.pathname === '/tasks' ? 'active-link' : ''} nav-link`}
-          >
+          <NavLink to="/tasks" className="nav-link">
             <ListTodo />
             Tasks
-          </Link>
+          </NavLink>
         </NavigationItem>
         <NavigationItem>
-          <Link
-            to="/stats"
-            className={`${location.pathname === '/stats' ? 'active-link' : ''} nav-link`}
-          >
+          <NavLink to="/stats" className="nav-link">
             <ChartColumn />
             Stats
-          </Link>
+          </NavLink>
         </NavigationItem>
         <NavigationItem>
-          <Link
-            to="/settings"
-            className={`${location.pathname === '/settings' ? 'active-link' : ''} nav-link`}
-          >
+          <NavLink to="/settings" className="nav-link">
             <Settings />
             Settings
-          </Link>
+          </NavLink>
         </NavigationItem>
       </NavigationList>
     </nav>

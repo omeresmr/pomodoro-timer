@@ -272,11 +272,11 @@
     @apply w-5 h-5 md:w-4 md:h-4;
   }
 
-  .nav-link.active-link {
+  .nav-link.active {
     @apply text-foreground;
   }
 
-  .nav-link.active-link svg {
+  .nav-link.active svg {
     @apply text-brand-primary md:text-foreground;
   }
 
