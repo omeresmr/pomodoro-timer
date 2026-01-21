@@ -7,7 +7,7 @@ import TaskActions from './TaskItem/TaskActions';
 
 export default function TaskItem() {
   return (
-    <TaskCard className="task-card group">
+    <TaskCard className="group">
       <CheckBox />
 
       <p className="font-bold text-base">Write Documentation</p>
