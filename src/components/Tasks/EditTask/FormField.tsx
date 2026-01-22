@@ -4,6 +4,7 @@ interface FormFieldProps {
   label: string;
   value: string | number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  ref?: React.RefObject<HTMLInputElement | null>;
 }
 
 export default function FormField({
@@ -12,6 +13,7 @@ export default function FormField({
   label,
   value,
   onChange,
+  ref,
 }: FormFieldProps) {
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
@@ -21,6 +23,7 @@ export default function FormField({
         value={value}
         onChange={onChange}
         className="bg-background rounded-md w-full px-3 py-2 border border-border"
+        ref={ref}
       />
     </div>
   );

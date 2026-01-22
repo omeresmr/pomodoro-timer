@@ -4,7 +4,7 @@ import FormActions from './FormActions';
 import DeleteButton from '../../Buttons/DeleteButton';
 import type { TaskState } from '../../../models/task.model';
 import Modal from '../../Modal';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface EditTaskProps {
   handleCancelEdit: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -26,8 +26,13 @@ export default function EditTask({
     estimatedPomodoros: task.estimatedPomodoros,
     pomodorosDone: task.pomodorosDone,
   });
-
   const [isOpen, setIsOpen] = useState(false);
+  const taskNameInput = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!taskNameInput.current) return;
+    taskNameInput.current.focus();
+  }, []);
 
   function handleDeleteTask() {
     setTasks((tasks) => tasks.filter((t) => t.id !== task.id));
@@ -50,6 +55,7 @@ export default function EditTask({
         onChange={(e) =>
           setUpdatedTask({ ...updatedTask, name: e.target.value })
         }
+        ref={taskNameInput}
       />
       <FormField
         type="number"
