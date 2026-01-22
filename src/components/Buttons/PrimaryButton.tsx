@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 interface PrimaryButtonProps {
   children: ReactNode;
   className?: string;
-  handleClick: () => void;
+  handleClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export default function PrimaryButton({

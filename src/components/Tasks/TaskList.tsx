@@ -13,7 +13,7 @@ export default function TaskList({ tasks, setTasks }: TaskListProps) {
       <TaskInput tasks={tasks} setTasks={setTasks} />
       <div className="tasks-con flex justify-center items-center gap-2 flex-col">
         {tasks.map((t) => (
-          <TaskItem key={t.id} task={t} />
+          <TaskItem key={t.id} task={t} tasks={tasks} setTasks={setTasks} />
         ))}
       </div>
     </div>
