@@ -26,6 +26,9 @@ export default function TaskInput({ tasks, setTasks }: TaskInputProps) {
       <AddTaskInput
         value={taskName}
         onChange={(e) => setTaskName(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') addTask();
+        }}
       />
       <PrimaryButton
         handleClick={() => addTask()}
