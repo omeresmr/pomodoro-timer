@@ -12,9 +12,26 @@ interface TimerPageProps {
 export default function TimerPage({ tasks, setTasks }: TimerPageProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  function handleCompletion() {
+    dispatch({ type: 'COMPLETE_POMODORO' });
+    const { activeTask } = state;
+
+    if (!activeTask) return;
+
+    // update the activeTask in tasks array
+    setTasks((tasks) => [
+      ...tasks.filter((t) => t.id !== activeTask.id),
+      activeTask,
+    ]);
+  }
+
   return (
     <div className="timer-wrapper">
-      <TimerContent state={state} dispatch={dispatch} />
+      <TimerContent
+        state={state}
+        dispatch={dispatch}
+        handleCompletion={handleCompletion}
+      />
       <TaskList setTasks={setTasks} tasks={tasks} dispatch={dispatch} />
     </div>
   );

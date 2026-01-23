@@ -13,9 +13,14 @@ import type { TimerAction } from '../../models/timer.actions';
 interface TimerContentProps {
   state: TimerState;
   dispatch: React.ActionDispatch<[action: TimerAction]>;
+  handleCompletion: () => void;
 }
 
-export default function TimerContent({ state, dispatch }: TimerContentProps) {
+export default function TimerContent({
+  state,
+  dispatch,
+  handleCompletion,
+}: TimerContentProps) {
   const settings = useSettings();
 
   const totalMilliseconds = getCurrentDuration(state, settings);
@@ -26,11 +31,11 @@ export default function TimerContent({ state, dispatch }: TimerContentProps) {
     if (!state.isRunning) return;
     const id = setInterval(() => {
       dispatch({ type: 'TICK' });
-      if (remainingMilliseconds <= 0) dispatch({ type: 'COMPLETE_POMODORO' });
+      if (remainingMilliseconds <= 0) handleCompletion();
     }, 100);
 
     return () => clearInterval(id);
-  }, [dispatch, state.isRunning, remainingMilliseconds]);
+  }, [dispatch, state.isRunning, remainingMilliseconds, handleCompletion]);
 
   function handleToggleTimer() {
     if (state.isRunning) dispatch({ type: 'PAUSE' });
@@ -38,7 +43,7 @@ export default function TimerContent({ state, dispatch }: TimerContentProps) {
   }
 
   function handleSkipPhase() {
-    dispatch({ type: 'COMPLETE_POMODORO' });
+    handleCompletion();
   }
 
   function handleReset() {
