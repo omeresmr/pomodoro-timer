@@ -1,28 +1,24 @@
 import TimerContent from '../components/Timer/TimerContent';
 import TaskList from '../components/Tasks/TaskList';
 import { type TaskState } from '../models/task.model';
-import reducer, { initialTimerState } from '../reducers/timer.reducer';
+import timerReducer, { initialTimerState } from '../reducers/timer.reducer';
+import { type TaskAction } from '../models/task.actions';
 import { useReducer } from 'react';
 
 interface TimerPageProps {
-  tasks: TaskState[];
-  setTasks: React.Dispatch<React.SetStateAction<TaskState[]>>;
+  tasksState: TaskState[];
+  taskAction: React.ActionDispatch<[action: TaskAction]>;
 }
 
-export default function TimerPage({ tasks, setTasks }: TimerPageProps) {
-  const [timerState, timerAction] = useReducer(reducer, initialTimerState);
+export default function TimerPage({ tasksState, taskAction }: TimerPageProps) {
+  const [timerState, timerAction] = useReducer(timerReducer, initialTimerState);
 
   function handleCompletion() {
     timerAction({ type: 'COMPLETE_POMODORO' });
     const { activeTask } = timerState;
 
     if (!activeTask) return;
-
-    // update the activeTask in tasks array
-    setTasks((tasks) => [
-      ...tasks.filter((t) => t.id !== activeTask.id),
-      activeTask,
-    ]);
+    taskAction({ type: 'SET_ACTIVE', payload: activeTask });
   }
 
   return (
@@ -32,7 +28,11 @@ export default function TimerPage({ tasks, setTasks }: TimerPageProps) {
         timerAction={timerAction}
         handleCompletion={handleCompletion}
       />
-      <TaskList setTasks={setTasks} tasks={tasks} timerAction={timerAction} />
+      <TaskList
+        taskAction={taskAction}
+        tasksState={tasksState}
+        timerAction={timerAction}
+      />
     </div>
   );
 }

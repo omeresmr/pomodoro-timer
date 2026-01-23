@@ -5,20 +5,19 @@ import DeleteButton from '../../Buttons/DeleteButton';
 import type { TaskState } from '../../../models/task.model';
 import Modal from '../../Modal';
 import { useEffect, useRef, useState } from 'react';
+import type { TaskAction } from '../../../models/task.actions';
 
 interface EditTaskProps {
-  handleCancelEdit: (e: React.MouseEvent<HTMLButtonElement>) => void;
   task: TaskState;
-  setTasks: React.Dispatch<React.SetStateAction<TaskState[]>>;
-  tasks: TaskState[];
+  handleCancelEdit: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  taskAction: React.ActionDispatch<[action: TaskAction]>;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function EditTask({
-  handleCancelEdit,
-  tasks,
-  setTasks,
   task,
+  handleCancelEdit,
+  taskAction,
   setIsEditing,
 }: EditTaskProps) {
   const [updatedTask, setUpdatedTask] = useState({
@@ -35,14 +34,11 @@ export default function EditTask({
   }, []);
 
   function handleDeleteTask() {
-    setTasks((tasks) => tasks.filter((t) => t.id !== task.id));
+    taskAction({ type: 'DELETE', payload: task });
   }
 
   function handleSaveTask() {
-    setTasks((tasks) => [
-      ...tasks.filter((t) => t.id !== task.id),
-      { ...task, ...updatedTask },
-    ]);
+    taskAction({ type: 'UPDATE', payload: { ...task, ...updatedTask } });
     setIsEditing(false);
   }
 

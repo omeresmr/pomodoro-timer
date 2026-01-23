@@ -8,18 +8,18 @@ import TaskActions from './TaskItem/TaskActions';
 import EditTask from './EditTask/EditTask';
 import type { TaskState } from '../../models/task.model';
 import type { TimerAction } from '../../models/timer.actions';
+import type { TaskAction } from '../../models/task.actions';
 
 interface TaskItemProps {
   task: TaskState;
-  setTasks: React.Dispatch<React.SetStateAction<TaskState[]>>;
-  tasks: TaskState[];
+  taskAction: React.ActionDispatch<[action: TaskAction]>;
   timerAction: React.ActionDispatch<[action: TimerAction]>;
+  tasksState: TaskState[];
 }
 
 export default function TaskItem({
   task,
-  tasks,
-  setTasks,
+  taskAction,
   timerAction,
 }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
@@ -27,15 +27,19 @@ export default function TaskItem({
   function startTask() {
     timerAction({ type: 'RESET' });
     timerAction({ type: 'START' });
+
+    // initialize activeTask
     timerAction({ type: 'SET_ACTIVE_TASK', payload: task });
+
+    // change task status to active
+    taskAction({ type: 'SET_ACTIVE', payload: task });
   }
 
   if (isEditing)
     return (
       <EditTask
         task={task}
-        tasks={tasks}
-        setTasks={setTasks}
+        taskAction={taskAction}
         setIsEditing={setIsEditing}
         handleCancelEdit={() => setIsEditing(false)}
       />
@@ -57,7 +61,7 @@ export default function TaskItem({
       />
 
       <div className="absolute flex flex-col items-end gap-2 right-4 top-4">
-        <TaskStatus status="pending" />
+        <TaskStatus status={task.status} />
         <TaskActions
           handleEdit={() => setIsEditing(true)}
           handleStartTask={startTask}

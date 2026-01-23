@@ -1,4 +1,4 @@
-export type TaskStatus = 'default' | 'active' | 'completed';
+export type TaskStatus = 'active' | 'completed' | 'pending';
 
 export interface TaskState {
   id: number;
@@ -13,5 +13,5 @@ export const createTask = (name: string): TaskState => ({
   name,
   estimatedPomodoros: 4,
   pomodorosDone: 0,
-  status: 'default',
+  status: 'pending',
 });

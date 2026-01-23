@@ -3,21 +3,20 @@ import PrimaryButton from '../Buttons/PrimaryButton';
 import AddTaskInput from './shared/AddTaskInput';
 import { Plus } from 'lucide-react';
 import { createTask, type TaskState } from '../../models/task.model';
+import type { TaskAction } from '../../models/task.actions';
 
 interface TaskInputProps {
-  tasks: TaskState[];
-  setTasks: React.Dispatch<React.SetStateAction<TaskState[]>>;
+  taskAction: React.ActionDispatch<[action: TaskAction]>;
 }
 
-export default function TaskInput({ tasks, setTasks }: TaskInputProps) {
+export default function TaskInput({ taskAction }: TaskInputProps) {
   const [taskName, setTaskName] = useState('');
 
   function addTask() {
-    // TODO: Show alert
     if (!taskName) return;
 
     const newTask: TaskState = createTask(taskName);
-    setTasks((tasks) => [...tasks, newTask]);
+    taskAction({ type: 'CREATE', payload: newTask });
     setTaskName('');
   }
 
