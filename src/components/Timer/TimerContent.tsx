@@ -1,18 +1,22 @@
-import { useEffect, useReducer } from 'react';
-
+import { useEffect } from 'react';
 import IconButton from '../Buttons/IconButton';
 import TimerDisplay from './TimerDisplay';
 import TimerControls from './TimerControls';
 import CurrentTask from './CurrentTask';
 import Card from '../Card/Card';
 import { ArrowRight } from 'lucide-react';
-import reducer, { initialState } from '../../reducers/timer.reducer';
 import { useSettings } from '../../contexts/SettingsContext';
 import { getCurrentDuration, getCurrentSession } from '../../util/timer.utils';
+import type { TimerState } from '../../models/timer.model';
+import type { TimerAction } from '../../models/timer.actions';
 
-export default function TimerContent() {
+interface TimerContentProps {
+  state: TimerState;
+  dispatch: React.ActionDispatch<[action: TimerAction]>;
+}
+
+export default function TimerContent({ state, dispatch }: TimerContentProps) {
   const settings = useSettings();
-  const [state, dispatch] = useReducer(reducer, initialState);
 
   const totalMilliseconds = getCurrentDuration(state, settings);
   const currentSession = getCurrentSession(state);
@@ -26,7 +30,7 @@ export default function TimerContent() {
     }, 100);
 
     return () => clearInterval(id);
-  }, [state.isRunning, remainingMilliseconds]);
+  }, [dispatch, state.isRunning, remainingMilliseconds]);
 
   function handleToggleTimer() {
     if (state.isRunning) dispatch({ type: 'PAUSE' });
@@ -63,7 +67,7 @@ export default function TimerContent() {
         handleReset={handleReset}
       />
 
-      <CurrentTask taskName="Refactor React" />
+      <CurrentTask task={state.activeTask} />
     </Card>
   );
 }

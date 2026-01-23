@@ -7,15 +7,28 @@ import TaskStatus from './TaskItem/TaskStatus';
 import TaskActions from './TaskItem/TaskActions';
 import EditTask from './EditTask/EditTask';
 import type { TaskState } from '../../models/task.model';
+import type { TimerAction } from '../../models/timer.actions';
 
 interface TaskItemProps {
   task: TaskState;
   setTasks: React.Dispatch<React.SetStateAction<TaskState[]>>;
   tasks: TaskState[];
+  dispatch: React.ActionDispatch<[action: TimerAction]>;
 }
 
-export default function TaskItem({ task, tasks, setTasks }: TaskItemProps) {
+export default function TaskItem({
+  task,
+  tasks,
+  setTasks,
+  dispatch,
+}: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
+
+  function startTask() {
+    dispatch({ type: 'RESET' });
+    dispatch({ type: 'START' });
+    dispatch({ type: 'SET_ACTIVE_TASK', payload: task });
+  }
 
   if (isEditing)
     return (
@@ -45,7 +58,10 @@ export default function TaskItem({ task, tasks, setTasks }: TaskItemProps) {
 
       <div className="absolute flex flex-col items-end gap-2 right-4 top-4">
         <TaskStatus status="pending" />
-        <TaskActions handleEdit={() => setIsEditing(true)} />
+        <TaskActions
+          handleEdit={() => setIsEditing(true)}
+          handleStartTask={startTask}
+        />
       </div>
     </TaskCard>
   );
