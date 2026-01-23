@@ -1,50 +1,65 @@
-import { useEffect, useReducer } from 'react';
-
+import { useEffect } from 'react';
 import IconButton from '../Buttons/IconButton';
 import TimerDisplay from './TimerDisplay';
 import TimerControls from './TimerControls';
 import CurrentTask from './CurrentTask';
 import Card from '../Card/Card';
 import { ArrowRight } from 'lucide-react';
-import reducer, { initialState } from '../../reducers/timer.reducer';
 import { useSettings } from '../../contexts/SettingsContext';
 import { getCurrentDuration, getCurrentSession } from '../../util/timer.utils';
+import type { TimerState } from '../../models/timer.model';
+import type { TimerAction } from '../../models/timer.actions';
 
-export default function TimerContent() {
+interface TimerContentProps {
+  timerState: TimerState;
+  timerAction: React.ActionDispatch<[action: TimerAction]>;
+  handleCompletion: () => void;
+}
+
+export default function TimerContent({
+  timerState,
+  timerAction,
+  handleCompletion,
+}: TimerContentProps) {
   const settings = useSettings();
-  const [state, dispatch] = useReducer(reducer, initialState);
 
-  const totalMilliseconds = getCurrentDuration(state, settings);
-  const currentSession = getCurrentSession(state);
-  const remainingMilliseconds = totalMilliseconds - state.millisecondsPassed;
+  const totalMilliseconds = getCurrentDuration(timerState, settings);
+  const currentSession = getCurrentSession(timerState);
+  const remainingMilliseconds =
+    totalMilliseconds - timerState.millisecondsPassed;
 
   useEffect(() => {
-    if (!state.isRunning) return;
+    if (!timerState.isRunning) return;
     const id = setInterval(() => {
-      dispatch({ type: 'TICK' });
-      if (remainingMilliseconds <= 0) dispatch({ type: 'COMPLETE_POMODORO' });
+      timerAction({ type: 'TICK' });
+      if (remainingMilliseconds <= 0) handleCompletion();
     }, 100);
 
     return () => clearInterval(id);
-  }, [state.isRunning, remainingMilliseconds]);
+  }, [
+    timerAction,
+    timerState.isRunning,
+    remainingMilliseconds,
+    handleCompletion,
+  ]);
 
   function handleToggleTimer() {
-    if (state.isRunning) dispatch({ type: 'PAUSE' });
-    else dispatch({ type: 'START' });
+    if (timerState.isRunning) timerAction({ type: 'PAUSE' });
+    else timerAction({ type: 'START' });
   }
 
   function handleSkipPhase() {
-    dispatch({ type: 'COMPLETE_POMODORO' });
+    handleCompletion();
   }
 
   function handleReset() {
-    dispatch({ type: 'RESET' });
+    timerAction({ type: 'RESET' });
   }
 
   return (
     <Card className="flex-col gap-4 self-start">
       <TimerDisplay
-        onBreak={state.onBreak}
+        onBreak={timerState.onBreak}
         totalMilliseconds={totalMilliseconds}
         remainingMilliseconds={remainingMilliseconds}
         session={`${currentSession}/${settings.longBreakInterval}`}
@@ -52,18 +67,18 @@ export default function TimerContent() {
 
       <IconButton
         onClick={handleSkipPhase}
-        className={state.isRunning ? '' : 'collapse'}
+        className={timerState.isRunning ? '' : 'collapse'}
       >
         <ArrowRight className="w-4 h-4" />
       </IconButton>
 
       <TimerControls
-        isTimerRunning={state.isRunning}
+        isTimerRunning={timerState.isRunning}
         handleToggleTimer={handleToggleTimer}
         handleReset={handleReset}
       />
 
-      <CurrentTask taskName="Refactor React" />
+      <CurrentTask task={timerState.activeTask} />
     </Card>
   );
 }

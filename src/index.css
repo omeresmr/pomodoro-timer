@@ -337,7 +337,12 @@
   }
 
   .edit-task-card {
-    @apply grid grid-cols-2 p-3 gap-2 bg-card w-full rounded-xl border border-brand-accent/70 shadow-card;
+    @apply grid grid-cols-2 p-3 gap-2 bg-card w-full rounded-xl
+     border border-brand-accent/70 shadow-card;
+  }
+
+  .cancel-btn {
+    @apply bg-secondary hover:bg-secondary/80 py-1 px-8 rounded-lg shadow-sm shadow-background;
   }
 
   .pomodoro-circle {
@@ -415,5 +420,19 @@
 
   .toggle-true {
     @apply left-[calc(100%-1.1rem)];
+  }
+
+  .modal {
+    @apply bg-card w-83.25 max-w-[90vw]
+     border-brand-accent/70 shadow-card
+      rounded-md border text-center duration-200 p-3 m-auto;
+  }
+
+  .modal-layout {
+    @apply flex flex-col gap-4;
+  }
+
+  .modal::backdrop {
+    @apply bg-black/20 backdrop-blur-xs;
   }
 }

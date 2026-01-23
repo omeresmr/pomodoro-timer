@@ -1,12 +1,25 @@
 import PrimaryButton from '../../Buttons/PrimaryButton';
 
-export default function FormActions() {
+interface FormActionsProps {
+  handleCancelEdit: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  handleSaveTask: (e: React.MouseEvent<HTMLButtonElement>) => void;
+}
+
+export default function FormActions({
+  handleCancelEdit,
+  handleSaveTask,
+}: FormActionsProps) {
   return (
     <div className="flex gap-2 justify-self-end">
-      <button className="bg-background py-1 px-8 rounded-lg shadow-sm shadow-background">
+      <button onClick={handleCancelEdit} className="cancel-btn">
         Cancel
       </button>
-      <PrimaryButton className="py-1 px-8 rounded-lg">Save</PrimaryButton>
+      <PrimaryButton
+        handleClick={handleSaveTask}
+        className="py-1 px-8 rounded-lg"
+      >
+        Save
+      </PrimaryButton>
     </div>
   );
 }

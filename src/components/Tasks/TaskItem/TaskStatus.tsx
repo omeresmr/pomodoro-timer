@@ -1,5 +1,7 @@
+import { type TaskStatus } from '../../../models/task.model';
+
 interface TaskStatusProps {
-  status: 'active' | 'completed' | 'pending';
+  status: TaskStatus;
 }
 
 export default function TaskStatus({ status }: TaskStatusProps) {
