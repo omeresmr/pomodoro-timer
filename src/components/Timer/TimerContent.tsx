@@ -11,35 +11,41 @@ import type { TimerState } from '../../models/timer.model';
 import type { TimerAction } from '../../models/timer.actions';
 
 interface TimerContentProps {
-  state: TimerState;
-  dispatch: React.ActionDispatch<[action: TimerAction]>;
+  timerState: TimerState;
+  timerAction: React.ActionDispatch<[action: TimerAction]>;
   handleCompletion: () => void;
 }
 
 export default function TimerContent({
-  state,
-  dispatch,
+  timerState,
+  timerAction,
   handleCompletion,
 }: TimerContentProps) {
   const settings = useSettings();
 
-  const totalMilliseconds = getCurrentDuration(state, settings);
-  const currentSession = getCurrentSession(state);
-  const remainingMilliseconds = totalMilliseconds - state.millisecondsPassed;
+  const totalMilliseconds = getCurrentDuration(timerState, settings);
+  const currentSession = getCurrentSession(timerState);
+  const remainingMilliseconds =
+    totalMilliseconds - timerState.millisecondsPassed;
 
   useEffect(() => {
-    if (!state.isRunning) return;
+    if (!timerState.isRunning) return;
     const id = setInterval(() => {
-      dispatch({ type: 'TICK' });
+      timerAction({ type: 'TICK' });
       if (remainingMilliseconds <= 0) handleCompletion();
     }, 100);
 
     return () => clearInterval(id);
-  }, [dispatch, state.isRunning, remainingMilliseconds, handleCompletion]);
+  }, [
+    timerAction,
+    timerState.isRunning,
+    remainingMilliseconds,
+    handleCompletion,
+  ]);
 
   function handleToggleTimer() {
-    if (state.isRunning) dispatch({ type: 'PAUSE' });
-    else dispatch({ type: 'START' });
+    if (timerState.isRunning) timerAction({ type: 'PAUSE' });
+    else timerAction({ type: 'START' });
   }
 
   function handleSkipPhase() {
@@ -47,13 +53,13 @@ export default function TimerContent({
   }
 
   function handleReset() {
-    dispatch({ type: 'RESET' });
+    timerAction({ type: 'RESET' });
   }
 
   return (
     <Card className="flex-col gap-4 self-start">
       <TimerDisplay
-        onBreak={state.onBreak}
+        onBreak={timerState.onBreak}
         totalMilliseconds={totalMilliseconds}
         remainingMilliseconds={remainingMilliseconds}
         session={`${currentSession}/${settings.longBreakInterval}`}
@@ -61,18 +67,18 @@ export default function TimerContent({
 
       <IconButton
         onClick={handleSkipPhase}
-        className={state.isRunning ? '' : 'collapse'}
+        className={timerState.isRunning ? '' : 'collapse'}
       >
         <ArrowRight className="w-4 h-4" />
       </IconButton>
 
       <TimerControls
-        isTimerRunning={state.isRunning}
+        isTimerRunning={timerState.isRunning}
         handleToggleTimer={handleToggleTimer}
         handleReset={handleReset}
       />
 
-      <CurrentTask task={state.activeTask} />
+      <CurrentTask task={timerState.activeTask} />
     </Card>
   );
 }

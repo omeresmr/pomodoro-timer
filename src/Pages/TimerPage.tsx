@@ -1,7 +1,7 @@
 import TimerContent from '../components/Timer/TimerContent';
 import TaskList from '../components/Tasks/TaskList';
 import { type TaskState } from '../models/task.model';
-import reducer, { initialState } from '../reducers/timer.reducer';
+import reducer, { initialTimerState } from '../reducers/timer.reducer';
 import { useReducer } from 'react';
 
 interface TimerPageProps {
@@ -10,11 +10,11 @@ interface TimerPageProps {
 }
 
 export default function TimerPage({ tasks, setTasks }: TimerPageProps) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [timerState, timerAction] = useReducer(reducer, initialTimerState);
 
   function handleCompletion() {
-    dispatch({ type: 'COMPLETE_POMODORO' });
-    const { activeTask } = state;
+    timerAction({ type: 'COMPLETE_POMODORO' });
+    const { activeTask } = timerState;
 
     if (!activeTask) return;
 
@@ -28,11 +28,11 @@ export default function TimerPage({ tasks, setTasks }: TimerPageProps) {
   return (
     <div className="timer-wrapper">
       <TimerContent
-        state={state}
-        dispatch={dispatch}
+        timerState={timerState}
+        timerAction={timerAction}
         handleCompletion={handleCompletion}
       />
-      <TaskList setTasks={setTasks} tasks={tasks} dispatch={dispatch} />
+      <TaskList setTasks={setTasks} tasks={tasks} timerAction={timerAction} />
     </div>
   );
 }

@@ -6,9 +6,13 @@ import type { TimerAction } from '../../models/timer.actions';
 interface TaskListProps {
   tasks: TaskState[];
   setTasks: React.Dispatch<React.SetStateAction<TaskState[]>>;
-  dispatch: React.ActionDispatch<[action: TimerAction]>;
+  timerAction: React.ActionDispatch<[action: TimerAction]>;
 }
-export default function TaskList({ tasks, setTasks, dispatch }: TaskListProps) {
+export default function TaskList({
+  tasks,
+  setTasks,
+  timerAction,
+}: TaskListProps) {
   return (
     <div className="flex flex-col gap-2 w-full pb-10">
       <p className="font-bold text-xl">Active Tasks</p>
@@ -20,7 +24,7 @@ export default function TaskList({ tasks, setTasks, dispatch }: TaskListProps) {
             task={t}
             tasks={tasks}
             setTasks={setTasks}
-            dispatch={dispatch}
+            timerAction={timerAction}
           />
         ))}
       </div>

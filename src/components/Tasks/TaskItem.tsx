@@ -13,21 +13,21 @@ interface TaskItemProps {
   task: TaskState;
   setTasks: React.Dispatch<React.SetStateAction<TaskState[]>>;
   tasks: TaskState[];
-  dispatch: React.ActionDispatch<[action: TimerAction]>;
+  timerAction: React.ActionDispatch<[action: TimerAction]>;
 }
 
 export default function TaskItem({
   task,
   tasks,
   setTasks,
-  dispatch,
+  timerAction,
 }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
 
   function startTask() {
-    dispatch({ type: 'RESET' });
-    dispatch({ type: 'START' });
-    dispatch({ type: 'SET_ACTIVE_TASK', payload: task });
+    timerAction({ type: 'RESET' });
+    timerAction({ type: 'START' });
+    timerAction({ type: 'SET_ACTIVE_TASK', payload: task });
   }
 
   if (isEditing)
