@@ -18,6 +18,12 @@ export default function taskReducer(
           ? { ...t, status: 'active' }
           : { ...t, status: 'pending' }
       );
+    case 'INCREMENT_POMODORO':
+      return tasksState.map((t) =>
+        t.id === enteredTask.id
+          ? { ...t, pomodorosDone: enteredTask.pomodorosDone + 1 }
+          : t
+      );
     case 'DELETE':
       return tasksState.filter((t) => t.id !== enteredTask.id);
     case 'RESET':

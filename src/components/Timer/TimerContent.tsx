@@ -10,9 +10,12 @@ import { getCurrentDuration, getCurrentSession } from '../../util/timer.utils';
 import type { TimerState } from '../../models/timer.model';
 import type { TimerAction } from '../../models/timer.actions';
 import type { TaskAction } from '../../models/task.actions';
+import { getActiveTask } from '../../util/task.utils';
+import type { TaskState } from '../../models/task.model';
 
 interface TimerContentProps {
   timerState: TimerState;
+  tasksState: TaskState[];
   taskAction: React.ActionDispatch<[action: TaskAction]>;
   timerAction: React.ActionDispatch<[action: TimerAction]>;
   handleCompletion: () => void;
@@ -20,6 +23,7 @@ interface TimerContentProps {
 
 export default function TimerContent({
   timerState,
+  tasksState,
   timerAction,
   taskAction,
   handleCompletion,
@@ -27,9 +31,11 @@ export default function TimerContent({
   const settings = useSettings();
 
   const totalMilliseconds = getCurrentDuration(timerState, settings);
-  const currentSession = getCurrentSession(timerState);
+  const currentSession = getCurrentSession(timerState, tasksState);
   const remainingMilliseconds =
     totalMilliseconds - timerState.millisecondsPassed;
+
+  const activeTask = getActiveTask(tasksState, timerState.activeTaskId);
 
   useEffect(() => {
     if (!timerState.isRunning) return;
@@ -58,10 +64,10 @@ export default function TimerContent({
   function handleReset() {
     timerAction({ type: 'RESET' });
 
-    if (!timerState.activeTask) return;
+    if (!activeTask) return;
 
     // reset the status of activeTask
-    taskAction({ type: 'RESET', payload: timerState.activeTask });
+    taskAction({ type: 'RESET', payload: activeTask });
   }
 
   return (
@@ -70,7 +76,7 @@ export default function TimerContent({
         onBreak={timerState.onBreak}
         totalMilliseconds={totalMilliseconds}
         remainingMilliseconds={remainingMilliseconds}
-        session={`${currentSession}/${timerState.activeTask ? timerState.activeTask.estimatedPomodoros : settings.longBreakInterval}`}
+        session={`${currentSession}/${activeTask ? activeTask.estimatedPomodoros : settings.longBreakInterval}`}
       />
 
       <IconButton
@@ -86,7 +92,7 @@ export default function TimerContent({
         handleReset={handleReset}
       />
 
-      <CurrentTask task={timerState.activeTask} />
+      <CurrentTask task={activeTask} />
     </Card>
   );
 }

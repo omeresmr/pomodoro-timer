@@ -8,7 +8,7 @@ export default function timerReducer(
   timerState: TimerState,
   action: TimerAction
 ) {
-  const { onBreak, completedPomodoros, millisecondsPassed, activeTask } =
+  const { onBreak, completedPomodoros, millisecondsPassed, activeTaskId } =
     timerState;
 
   switch (action.type) {
@@ -25,33 +25,21 @@ export default function timerReducer(
       return initialTimerState;
     case 'COMPLETE_POMODORO': {
       // only increase counter, after a break
-      // if there is a selected task, use it's pomodorosDone count
-      // if not, use timerState's completedPomodoros count
-      const newCount = activeTask
-        ? onBreak
-          ? activeTask.pomodorosDone
-          : activeTask.pomodorosDone + 1
-        : onBreak
-          ? completedPomodoros
-          : completedPomodoros + 1;
+      const newCount = onBreak ? completedPomodoros : completedPomodoros + 1;
 
       return {
         completedPomodoros: newCount,
         onBreak: !onBreak,
         millisecondsPassed: 0,
         isRunning: false,
-
-        // update activeTask's count
-        activeTask: activeTask
-          ? { ...activeTask, pomodorosDone: newCount }
-          : activeTask,
+        activeTaskId: activeTaskId,
       };
     }
 
     case 'SET_ACTIVE_TASK':
       return {
         ...timerState,
-        activeTask: action.payload,
+        activeTaskId: action.payload.id,
       };
     default:
       throw new Error('Unknown timer action');

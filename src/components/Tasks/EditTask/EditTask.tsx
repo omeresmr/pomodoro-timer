@@ -22,7 +22,6 @@ export default function EditTask({
   task,
   handleCancelEdit,
   taskAction,
-  timerAction,
   setIsEditing,
   timerState,
 }: EditTaskProps) {
@@ -51,13 +50,7 @@ export default function EditTask({
 
     setIsEditing(false);
 
-    if (!timerState.activeTask) return;
-
-    // initialize the updated task
-    timerAction({
-      type: 'SET_ACTIVE_TASK',
-      payload: newTask,
-    });
+    if (!timerState.activeTaskId) return;
   }
 
   function handleUpdateDonePomodoros(e: React.ChangeEvent<HTMLInputElement>) {

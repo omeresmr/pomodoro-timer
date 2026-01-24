@@ -4,6 +4,7 @@ import { type TaskState } from '../models/task.model';
 import timerReducer, { initialTimerState } from '../reducers/timer.reducer';
 import { type TaskAction } from '../models/task.actions';
 import { useReducer } from 'react';
+import { getActiveTask } from '../util/task.utils';
 
 interface TimerPageProps {
   tasksState: TaskState[];
@@ -15,18 +16,22 @@ export default function TimerPage({ tasksState, taskAction }: TimerPageProps) {
 
   function handleCompletion() {
     timerAction({ type: 'COMPLETE_POMODORO' });
-    const { activeTask } = timerState;
+    const { onBreak, activeTaskId } = timerState;
 
-    if (!activeTask) return;
+    if (!activeTaskId) return;
 
-    // update activeTask
-    taskAction({ type: 'UPDATE', payload: activeTask });
+    const activeTask = getActiveTask(tasksState, activeTaskId);
+
+    if (onBreak && activeTask) {
+      taskAction({ type: 'INCREMENT_POMODORO', payload: activeTask });
+    }
   }
 
   return (
     <div className="timer-wrapper">
       <TimerContent
         timerState={timerState}
+        tasksState={tasksState}
         taskAction={taskAction}
         timerAction={timerAction}
         handleCompletion={handleCompletion}
