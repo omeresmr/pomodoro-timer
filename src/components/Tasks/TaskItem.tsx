@@ -9,9 +9,11 @@ import EditTask from './EditTask/EditTask';
 import type { TaskState } from '../../models/task.model';
 import type { TimerAction } from '../../models/timer.actions';
 import type { TaskAction } from '../../models/task.actions';
+import type { TimerState } from '../../models/timer.model';
 
 interface TaskItemProps {
   task: TaskState;
+  timerState: TimerState;
   taskAction: React.ActionDispatch<[action: TaskAction]>;
   timerAction: React.ActionDispatch<[action: TimerAction]>;
   tasksState: TaskState[];
@@ -21,6 +23,7 @@ export default function TaskItem({
   task,
   taskAction,
   timerAction,
+  timerState,
 }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -38,8 +41,10 @@ export default function TaskItem({
   if (isEditing)
     return (
       <EditTask
+        timerState={timerState}
         task={task}
         taskAction={taskAction}
+        timerAction={timerAction}
         setIsEditing={setIsEditing}
         handleCancelEdit={() => setIsEditing(false)}
       />

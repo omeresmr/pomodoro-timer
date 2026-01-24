@@ -18,17 +18,21 @@ export default function TimerPage({ tasksState, taskAction }: TimerPageProps) {
     const { activeTask } = timerState;
 
     if (!activeTask) return;
-    taskAction({ type: 'SET_ACTIVE', payload: activeTask });
+
+    // update activeTask
+    taskAction({ type: 'UPDATE', payload: activeTask });
   }
 
   return (
     <div className="timer-wrapper">
       <TimerContent
         timerState={timerState}
+        taskAction={taskAction}
         timerAction={timerAction}
         handleCompletion={handleCompletion}
       />
       <TaskList
+        timerState={timerState}
         taskAction={taskAction}
         tasksState={tasksState}
         timerAction={timerAction}

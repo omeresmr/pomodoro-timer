@@ -24,13 +24,24 @@ export default function timerReducer(
     case 'RESET':
       return initialTimerState;
     case 'COMPLETE_POMODORO': {
-      const newCount = onBreak ? completedPomodoros : completedPomodoros + 1;
+      // only increase counter, after a break
+      // if there is a selected task, use it's pomodorosDone count
+      // if not, use timerState's completedPomodoros count
+      const newCount = activeTask
+        ? onBreak
+          ? activeTask.pomodorosDone
+          : activeTask.pomodorosDone + 1
+        : onBreak
+          ? completedPomodoros
+          : completedPomodoros + 1;
 
       return {
         completedPomodoros: newCount,
         onBreak: !onBreak,
         millisecondsPassed: 0,
         isRunning: false,
+
+        // update activeTask's count
         activeTask: activeTask
           ? { ...activeTask, pomodorosDone: newCount }
           : activeTask,

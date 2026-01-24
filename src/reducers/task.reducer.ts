@@ -1,4 +1,4 @@
-import { type TaskState, type TaskStatus } from '../models/task.model';
+import { type TaskState } from '../models/task.model';
 import { type TaskAction } from '../models/task.actions';
 
 export default function taskReducer(
@@ -15,11 +15,15 @@ export default function taskReducer(
     case 'SET_ACTIVE':
       return tasksState.map((t) =>
         t.id === enteredTask.id
-          ? { ...t, status: 'active' as TaskStatus }
-          : { ...t, status: 'default' as TaskStatus }
+          ? { ...t, status: 'active' }
+          : { ...t, status: 'pending' }
       );
     case 'DELETE':
       return tasksState.filter((t) => t.id !== enteredTask.id);
+    case 'RESET':
+      return tasksState.map((t) =>
+        t.id === enteredTask.id ? { ...t, status: 'pending' } : { ...t }
+      );
     default:
       throw new Error('Unknown task action');
   }

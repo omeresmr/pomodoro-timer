@@ -19,7 +19,10 @@ export function getCurrentDuration(state: TimerState, settings: SettingsState) {
 
 // returns the current session number (1-based index)
 export function getCurrentSession(state: TimerState): number {
-  const { onBreak, completedPomodoros } = state;
+  const { onBreak, completedPomodoros, activeTask } = state;
+
+  if (activeTask)
+    return onBreak ? activeTask.pomodorosDone : activeTask.pomodorosDone + 1;
 
   return onBreak ? completedPomodoros : completedPomodoros + 1;
 }

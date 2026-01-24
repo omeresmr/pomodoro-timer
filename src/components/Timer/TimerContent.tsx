@@ -9,9 +9,11 @@ import { useSettings } from '../../contexts/SettingsContext';
 import { getCurrentDuration, getCurrentSession } from '../../util/timer.utils';
 import type { TimerState } from '../../models/timer.model';
 import type { TimerAction } from '../../models/timer.actions';
+import type { TaskAction } from '../../models/task.actions';
 
 interface TimerContentProps {
   timerState: TimerState;
+  taskAction: React.ActionDispatch<[action: TaskAction]>;
   timerAction: React.ActionDispatch<[action: TimerAction]>;
   handleCompletion: () => void;
 }
@@ -19,6 +21,7 @@ interface TimerContentProps {
 export default function TimerContent({
   timerState,
   timerAction,
+  taskAction,
   handleCompletion,
 }: TimerContentProps) {
   const settings = useSettings();
@@ -54,6 +57,11 @@ export default function TimerContent({
 
   function handleReset() {
     timerAction({ type: 'RESET' });
+
+    if (!timerState.activeTask) return;
+
+    // reset the status of activeTask
+    taskAction({ type: 'RESET', payload: timerState.activeTask });
   }
 
   return (
@@ -62,7 +70,7 @@ export default function TimerContent({
         onBreak={timerState.onBreak}
         totalMilliseconds={totalMilliseconds}
         remainingMilliseconds={remainingMilliseconds}
-        session={`${currentSession}/${settings.longBreakInterval}`}
+        session={`${currentSession}/${timerState.activeTask ? timerState.activeTask.estimatedPomodoros : settings.longBreakInterval}`}
       />
 
       <IconButton

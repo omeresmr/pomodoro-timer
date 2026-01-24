@@ -6,11 +6,15 @@ import type { TaskState } from '../../../models/task.model';
 import Modal from '../../Modal';
 import { useEffect, useRef, useState } from 'react';
 import type { TaskAction } from '../../../models/task.actions';
+import type { TimerAction } from '../../../models/timer.actions';
+import type { TimerState } from '../../../models/timer.model';
 
 interface EditTaskProps {
   task: TaskState;
   handleCancelEdit: (e: React.MouseEvent<HTMLButtonElement>) => void;
   taskAction: React.ActionDispatch<[action: TaskAction]>;
+  timerAction: React.ActionDispatch<[action: TimerAction]>;
+  timerState: TimerState;
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -18,7 +22,9 @@ export default function EditTask({
   task,
   handleCancelEdit,
   taskAction,
+  timerAction,
   setIsEditing,
+  timerState,
 }: EditTaskProps) {
   const [updatedTask, setUpdatedTask] = useState({
     name: task.name,
@@ -38,8 +44,33 @@ export default function EditTask({
   }
 
   function handleSaveTask() {
-    taskAction({ type: 'UPDATE', payload: { ...task, ...updatedTask } });
+    const newTask = { ...task, ...updatedTask };
+
+    // update tasks state
+    taskAction({ type: 'UPDATE', payload: newTask });
+
     setIsEditing(false);
+
+    if (!timerState.activeTask) return;
+
+    // initialize the updated task
+    timerAction({
+      type: 'SET_ACTIVE_TASK',
+      payload: newTask,
+    });
+  }
+
+  function handleUpdateDonePomodoros(e: React.ChangeEvent<HTMLInputElement>) {
+    const newValue = +e.target.value;
+
+    setUpdatedTask((prev) => {
+      let validatedValue = newValue;
+
+      if (validatedValue > prev.estimatedPomodoros)
+        validatedValue = prev.estimatedPomodoros;
+
+      return { ...prev, pomodorosDone: validatedValue };
+    });
   }
 
   return (
@@ -56,14 +87,14 @@ export default function EditTask({
       <FormField
         type="number"
         label="Completed"
+        min={0}
         value={updatedTask.pomodorosDone}
-        onChange={(e) =>
-          setUpdatedTask({ ...updatedTask, pomodorosDone: +e.target.value })
-        }
+        onChange={handleUpdateDonePomodoros}
       />
       <FormField
         type="number"
         label="Estimated"
+        min={1}
         value={updatedTask.estimatedPomodoros}
         onChange={(e) =>
           setUpdatedTask({
