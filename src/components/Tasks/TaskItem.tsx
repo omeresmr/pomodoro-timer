@@ -38,6 +38,13 @@ export default function TaskItem({
     taskAction({ type: 'SET_ACTIVE', payload: task });
   }
 
+  function handleCheckTask(e: React.ChangeEvent<HTMLInputElement>) {
+    const isChecked = e.target.checked;
+
+    if (isChecked) taskAction({ type: 'COMPLETE_TASK', payload: task });
+    else taskAction({ type: 'UNCOMPLETE_TASK', payload: task });
+  }
+
   if (isEditing)
     return (
       <EditTask
@@ -52,9 +59,16 @@ export default function TaskItem({
 
   return (
     <TaskCard className="group">
-      <CheckBox />
+      <CheckBox
+        checked={task.status === 'completed'}
+        onChange={handleCheckTask}
+      />
 
-      <p className="font-bold text-base">{task.name}</p>
+      <p
+        className={`font-bold text-base ${task.status === 'completed' ? 'line-through' : ''}`}
+      >
+        {task.name}
+      </p>
 
       <PomodoroCircles
         total={task.estimatedPomodoros}

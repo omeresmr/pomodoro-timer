@@ -28,8 +28,8 @@ export function getCurrentSession(
 
   const activeTask = getActiveTask(tasksState, activeTaskId);
 
-  if (activeTask)
-    return onBreak ? activeTask.pomodorosDone : activeTask.pomodorosDone + 1;
+  if (activeTask) return activeTask.pomodorosDone + 1;
 
-  return onBreak ? completedPomodoros : completedPomodoros + 1;
+  // only increase session after a pomodoro
+  return !onBreak ? completedPomodoros + 1 : completedPomodoros;
 }

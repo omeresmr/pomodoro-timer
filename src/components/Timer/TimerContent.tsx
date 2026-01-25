@@ -16,26 +16,25 @@ import type { TaskState } from '../../models/task.model';
 interface TimerContentProps {
   timerState: TimerState;
   tasksState: TaskState[];
+  handleCompletion: () => void;
   taskAction: React.ActionDispatch<[action: TaskAction]>;
   timerAction: React.ActionDispatch<[action: TimerAction]>;
-  handleCompletion: () => void;
 }
 
 export default function TimerContent({
   timerState,
   tasksState,
+  handleCompletion,
   timerAction,
   taskAction,
-  handleCompletion,
 }: TimerContentProps) {
   const settings = useSettings();
+  const activeTask = getActiveTask(tasksState, timerState.activeTaskId);
 
   const totalMilliseconds = getCurrentDuration(timerState, settings);
   const currentSession = getCurrentSession(timerState, tasksState);
   const remainingMilliseconds =
     totalMilliseconds - timerState.millisecondsPassed;
-
-  const activeTask = getActiveTask(tasksState, timerState.activeTaskId);
 
   useEffect(() => {
     if (!timerState.isRunning) return;

@@ -22,8 +22,15 @@ export default function TimerPage({ tasksState, taskAction }: TimerPageProps) {
 
     const activeTask = getActiveTask(tasksState, activeTaskId);
 
-    if (onBreak && activeTask) {
+    if (!activeTask) return;
+
+    if (!onBreak) {
       taskAction({ type: 'INCREMENT_POMODORO', payload: activeTask });
+
+      // check if the next value would be greater then est. pomos.
+      if (activeTask?.pomodorosDone + 1 >= activeTask?.estimatedPomodoros) {
+        timerAction({ type: 'RESET' });
+      }
     }
   }
 

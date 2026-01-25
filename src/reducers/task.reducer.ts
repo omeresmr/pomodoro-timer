@@ -18,11 +18,27 @@ export default function taskReducer(
           ? { ...t, status: 'active' }
           : { ...t, status: 'pending' }
       );
-    case 'INCREMENT_POMODORO':
+    case 'INCREMENT_POMODORO': {
       return tasksState.map((t) =>
         t.id === enteredTask.id
-          ? { ...t, pomodorosDone: enteredTask.pomodorosDone + 1 }
+          ? {
+              ...t,
+              pomodorosDone: t.pomodorosDone + 1,
+              status:
+                t.pomodorosDone + 1 >= t.estimatedPomodoros
+                  ? 'completed'
+                  : t.status,
+            }
           : t
+      );
+    }
+    case 'COMPLETE_TASK':
+      return tasksState.map((t) =>
+        t.id === enteredTask.id ? { ...t, status: 'completed' } : t
+      );
+    case 'UNCOMPLETE_TASK':
+      return tasksState.map((t) =>
+        t.id === enteredTask.id ? { ...t, status: 'pending' } : t
       );
     case 'DELETE':
       return tasksState.filter((t) => t.id !== enteredTask.id);
