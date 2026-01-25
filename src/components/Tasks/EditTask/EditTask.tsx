@@ -87,7 +87,7 @@ export default function EditTask({
       <FormField
         type="number"
         label="Estimated"
-        min={1}
+        min={updatedTask.pomodorosDone + 1}
         value={updatedTask.estimatedPomodoros}
         onChange={(e) =>
           setUpdatedTask({
