@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+
 import TaskCard from '../Card/TaskCard';
 import PomodoroCircles from './shared/PomodoroCircles';
 import CheckBox from './TaskItem/CheckBox';
@@ -18,6 +20,9 @@ interface TaskItemProps {
   timerAction: React.ActionDispatch<[action: TimerAction]>;
   tasksState: TaskState[];
 }
+
+const MotionEdit = motion(EditTask);
+const MotionCard = motion(TaskCard);
 
 export default function TaskItem({
   task,
@@ -53,49 +58,63 @@ export default function TaskItem({
     else taskAction({ type: 'UNCOMPLETE_TASK', payload: task });
   }
 
-  if (isEditing)
-    return (
-      <EditTask
-        timerState={timerState}
-        task={task}
-        taskAction={taskAction}
-        timerAction={timerAction}
-        setIsEditing={setIsEditing}
-        handleCancelEdit={() => setIsEditing(false)}
-      />
-    );
-
   return (
-    <TaskCard className="group">
-      <CheckBox
-        checked={task.status === 'completed'}
-        onChange={handleCheckTask}
-      />
-
-      <p
-        className={`font-bold text-base ${task.status === 'completed' ? 'line-through' : ''}`}
-      >
-        {task.name}
-      </p>
-
-      <PomodoroCircles
-        total={task.estimatedPomodoros}
-        completed={task.pomodorosDone}
-      />
-
-      <ProgressBar
-        progress={(task.pomodorosDone / task.estimatedPomodoros) * 100}
-      />
-
-      <div className="absolute flex flex-col items-end gap-2 right-4 top-4">
-        <TaskStatus status={task.status} />
-        <TaskActions
+    <AnimatePresence mode="wait">
+      {isEditing ? (
+        <MotionEdit
+          key="edit-mode"
           task={task}
-          handleEdit={() => setIsEditing(true)}
-          handleStartTask={handleStartTask}
-          handleStopTask={handleStopTask}
+          timerState={timerState}
+          taskAction={taskAction}
+          setIsEditing={setIsEditing}
+          handleCancelEdit={() => setIsEditing(false)}
+          // Animation
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.2 }}
         />
-      </div>
-    </TaskCard>
+      ) : (
+        <MotionCard
+          key="view-mode"
+          className="group relative"
+          // Animation
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          layout
+        >
+          <CheckBox
+            checked={task.status === 'completed'}
+            onChange={handleCheckTask}
+          />
+
+          <p
+            className={`font-bold text-base ${task.status === 'completed' ? 'line-through' : ''}`}
+          >
+            {task.name}
+          </p>
+
+          <PomodoroCircles
+            total={task.estimatedPomodoros}
+            completed={task.pomodorosDone}
+          />
+
+          <ProgressBar
+            progress={(task.pomodorosDone / task.estimatedPomodoros) * 100}
+          />
+
+          <div className="absolute flex flex-col items-end gap-2 right-4 top-4">
+            <TaskStatus status={task.status} />
+            <TaskActions
+              task={task}
+              handleEdit={() => setIsEditing(true)}
+              handleStartTask={handleStartTask}
+              handleStopTask={handleStopTask}
+            />
+          </div>
+        </MotionCard>
+      )}
+    </AnimatePresence>
   );
 }

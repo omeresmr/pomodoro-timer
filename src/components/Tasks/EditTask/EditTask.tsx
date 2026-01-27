@@ -1,30 +1,32 @@
+import { useEffect, useRef, useState, forwardRef } from 'react';
+
 import FormField from './FormField';
 import PomodoroCircles from '../shared/PomodoroCircles';
 import FormActions from './FormActions';
 import DeleteButton from '../../Buttons/DeleteButton';
-import type { TaskState } from '../../../models/task.model';
 import Modal from '../../Modal';
-import { useEffect, useRef, useState } from 'react';
+import type { TaskState } from '../../../models/task.model';
 import type { TaskAction } from '../../../models/task.actions';
-import type { TimerAction } from '../../../models/timer.actions';
 import type { TimerState } from '../../../models/timer.model';
 
-interface EditTaskProps {
+interface EditTaskProps extends React.HTMLAttributes<HTMLDivElement> {
   task: TaskState;
-  handleCancelEdit: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  taskAction: React.ActionDispatch<[action: TaskAction]>;
-  timerAction: React.ActionDispatch<[action: TimerAction]>;
+  taskAction: React.ActionDispatch<[TaskAction]>;
   timerState: TimerState;
-  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+  handleCancelEdit: (e: React.MouseEvent) => void;
+  setIsEditing: (value: boolean) => void;
 }
 
-export default function EditTask({
-  task,
-  handleCancelEdit,
-  taskAction,
-  setIsEditing,
-  timerState,
-}: EditTaskProps) {
+const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
+  const {
+    task,
+    handleCancelEdit,
+    taskAction,
+    timerState,
+    setIsEditing,
+    ...motionProps
+  } = props;
+
   const [updatedTask, setUpdatedTask] = useState({
     name: task.name,
     estimatedPomodoros: task.estimatedPomodoros,
@@ -67,7 +69,7 @@ export default function EditTask({
   }
 
   return (
-    <div className="edit-task-card relative">
+    <div ref={ref} {...motionProps} className="edit-task-card relative">
       <FormField
         className="col-span-2"
         label="Task Name"
@@ -116,4 +118,6 @@ export default function EditTask({
       />
     </div>
   );
-}
+});
+
+export default EditTask;
