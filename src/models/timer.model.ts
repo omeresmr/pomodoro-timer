@@ -1,11 +1,9 @@
-import type { TaskState } from './task.model';
-
 export interface TimerState {
   millisecondsPassed: number;
   completedPomodoros: number;
   onBreak: boolean;
   isRunning: boolean;
-  activeTask: TaskState | null;
+  activeTaskId: number | null;
 }
 
 export const createInitialTimerState = (): TimerState => ({
@@ -13,5 +11,5 @@ export const createInitialTimerState = (): TimerState => ({
   completedPomodoros: 0,
   onBreak: false,
   isRunning: false,
-  activeTask: null,
+  activeTaskId: null,
 });

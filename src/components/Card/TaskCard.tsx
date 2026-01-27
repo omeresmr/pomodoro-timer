@@ -1,10 +1,16 @@
-import type { ReactNode } from 'react';
+import { forwardRef } from 'react';
 
-interface TaskCardProps {
-  className: string;
-  children: ReactNode;
-}
+const TaskCard = forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>((props, ref) => {
+  const { className, children, ...motionprops } = props;
 
-export default function TaskCard({ className, children }: TaskCardProps) {
-  return <div className={`task-card ${className}`}>{children}</div>;
-}
+  return (
+    <div {...motionprops} ref={ref} className={`task-card ${className}`}>
+      {children}
+    </div>
+  );
+});
+
+export default TaskCard;

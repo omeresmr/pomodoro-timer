@@ -1,10 +1,11 @@
 interface FormFieldProps {
   className?: string;
-  type?: string;
   label: string;
   value: string | number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   ref?: React.RefObject<HTMLInputElement | null>;
+  type?: string;
+  min?: number;
 }
 
 export default function FormField({
@@ -14,6 +15,7 @@ export default function FormField({
   value,
   onChange,
   ref,
+  min,
 }: FormFieldProps) {
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
@@ -24,6 +26,7 @@ export default function FormField({
         onChange={onChange}
         className="bg-background rounded-md w-full px-3 py-2 border border-border"
         ref={ref}
+        min={min}
       />
     </div>
   );

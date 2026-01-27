@@ -9,22 +9,30 @@ import { useSettings } from '../../contexts/SettingsContext';
 import { getCurrentDuration, getCurrentSession } from '../../util/timer.utils';
 import type { TimerState } from '../../models/timer.model';
 import type { TimerAction } from '../../models/timer.actions';
+import type { TaskAction } from '../../models/task.actions';
+import { getActiveTask } from '../../util/task.utils';
+import type { TaskState } from '../../models/task.model';
 
 interface TimerContentProps {
   timerState: TimerState;
-  timerAction: React.ActionDispatch<[action: TimerAction]>;
+  tasksState: TaskState[];
   handleCompletion: () => void;
+  taskAction: React.ActionDispatch<[action: TaskAction]>;
+  timerAction: React.ActionDispatch<[action: TimerAction]>;
 }
 
 export default function TimerContent({
   timerState,
-  timerAction,
+  tasksState,
   handleCompletion,
+  timerAction,
+  taskAction,
 }: TimerContentProps) {
   const settings = useSettings();
+  const activeTask = getActiveTask(tasksState, timerState.activeTaskId);
 
   const totalMilliseconds = getCurrentDuration(timerState, settings);
-  const currentSession = getCurrentSession(timerState);
+  const currentSession = getCurrentSession(timerState, tasksState);
   const remainingMilliseconds =
     totalMilliseconds - timerState.millisecondsPassed;
 
@@ -54,6 +62,11 @@ export default function TimerContent({
 
   function handleReset() {
     timerAction({ type: 'RESET' });
+
+    if (!activeTask) return;
+
+    // reset the status of activeTask
+    taskAction({ type: 'RESET', payload: activeTask });
   }
 
   return (
@@ -62,7 +75,7 @@ export default function TimerContent({
         onBreak={timerState.onBreak}
         totalMilliseconds={totalMilliseconds}
         remainingMilliseconds={remainingMilliseconds}
-        session={`${currentSession}/${settings.longBreakInterval}`}
+        session={`${currentSession}/${activeTask ? activeTask.estimatedPomodoros : settings.longBreakInterval}`}
       />
 
       <IconButton
@@ -78,7 +91,7 @@ export default function TimerContent({
         handleReset={handleReset}
       />
 
-      <CurrentTask task={timerState.activeTask} />
+      <CurrentTask task={activeTask} />
     </Card>
   );
 }

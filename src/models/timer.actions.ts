@@ -6,4 +6,4 @@ export type TimerAction =
   | { type: 'TICK' }
   | { type: 'RESET' }
   | { type: 'COMPLETE_POMODORO' }
-  | { type: 'SET_ACTIVE_TASK'; payload: TaskState };
+  | { type: 'SET_ACTIVE_TASK'; payload: TaskState | null };
