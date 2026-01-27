@@ -38,7 +38,7 @@ export default function timerReducer(
     case 'SET_ACTIVE_TASK':
       return {
         ...timerState,
-        activeTaskId: action.payload.id,
+        activeTaskId: action.payload ? action.payload.id : null,
       };
     default:
       throw new Error('Unknown timer action');

@@ -11,7 +11,17 @@ export default function taskReducer(
     case 'CREATE':
       return [...tasksState, enteredTask];
     case 'UPDATE':
-      return tasksState.map((t) => (t.id === enteredTask.id ? enteredTask : t));
+      return tasksState.map((t) =>
+        t.id === enteredTask.id
+          ? {
+              ...enteredTask,
+              status:
+                enteredTask.pomodorosDone < enteredTask.estimatedPomodoros
+                  ? 'pending'
+                  : enteredTask.status,
+            }
+          : t
+      );
     case 'SET_ACTIVE':
       return tasksState.map((t) =>
         t.id === enteredTask.id

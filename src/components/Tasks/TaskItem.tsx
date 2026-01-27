@@ -27,7 +27,7 @@ export default function TaskItem({
 }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
 
-  function startTask() {
+  function handleStartTask() {
     timerAction({ type: 'RESET' });
     timerAction({ type: 'START' });
 
@@ -36,6 +36,14 @@ export default function TaskItem({
 
     // change task status to active
     taskAction({ type: 'SET_ACTIVE', payload: task });
+  }
+
+  function handleStopTask() {
+    timerAction({ type: 'RESET' });
+    timerAction({ type: 'PAUSE' });
+
+    timerAction({ type: 'SET_ACTIVE_TASK', payload: null });
+    taskAction({ type: 'UPDATE', payload: task });
   }
 
   function handleCheckTask(e: React.ChangeEvent<HTMLInputElement>) {
@@ -82,8 +90,10 @@ export default function TaskItem({
       <div className="absolute flex flex-col items-end gap-2 right-4 top-4">
         <TaskStatus status={task.status} />
         <TaskActions
+          task={task}
           handleEdit={() => setIsEditing(true)}
-          handleStartTask={startTask}
+          handleStartTask={handleStartTask}
+          handleStopTask={handleStopTask}
         />
       </div>
     </TaskCard>
