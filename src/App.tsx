@@ -1,5 +1,7 @@
-import { useReducer } from 'react';
+import { useReducer, useState } from 'react';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { AnimatePresence } from 'motion/react';
+
 import Header from './components/Header/Header';
 import TimerPage from './pages/TimerPage';
 import TasksPage from './pages/TasksPage';
@@ -9,9 +11,17 @@ import ToggleDarkMode from './components/Header/ToggleDarkMode';
 import Navigation from './components/Navigation/Navigation';
 import { SettingsProvider } from './contexts/SettingsContext';
 import taskReducer from './reducers/task.reducer';
+import Alert from './components/Alert';
 
 function App() {
   const [tasksState, taskAction] = useReducer(taskReducer, []);
+  const [alertMsg, setAlertMsg] = useState('');
+
+  function showAlert(message: string) {
+    setAlertMsg(message);
+
+    setTimeout(() => setAlertMsg(''), 2500);
+  }
 
   return (
     <>
@@ -30,6 +40,7 @@ function App() {
                     <TimerPage
                       tasksState={tasksState}
                       taskAction={taskAction}
+                      showAlert={showAlert}
                     />
                   }
                 />
@@ -37,6 +48,9 @@ function App() {
                 <Route path="/stats" element={<StatsPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
               </Routes>
+              <AnimatePresence>
+                {alertMsg && <Alert message={alertMsg} />}
+              </AnimatePresence>
             </section>
           </main>
         </BrowserRouter>

@@ -7,9 +7,10 @@ import type { TaskAction } from '../../models/task.actions';
 
 interface TaskInputProps {
   taskAction: React.ActionDispatch<[action: TaskAction]>;
+  showAlert: (message: string) => void;
 }
 
-export default function TaskInput({ taskAction }: TaskInputProps) {
+export default function TaskInput({ taskAction, showAlert }: TaskInputProps) {
   const [taskName, setTaskName] = useState('');
 
   function addTask() {
@@ -17,6 +18,9 @@ export default function TaskInput({ taskAction }: TaskInputProps) {
 
     const newTask: TaskState = createTask(taskName);
     taskAction({ type: 'CREATE', payload: newTask });
+
+    showAlert(`${taskName} created.`);
+
     setTaskName('');
   }
 

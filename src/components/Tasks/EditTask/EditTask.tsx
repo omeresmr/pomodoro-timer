@@ -15,6 +15,7 @@ interface EditTaskProps extends React.HTMLAttributes<HTMLDivElement> {
   timerState: TimerState;
   handleCancelEdit: (e: React.MouseEvent) => void;
   setIsEditing: (value: boolean) => void;
+  showAlert: (message: string) => void;
 }
 
 const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
@@ -24,6 +25,7 @@ const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
     taskAction,
     timerState,
     setIsEditing,
+    showAlert,
     ...motionProps
   } = props;
 
@@ -51,6 +53,8 @@ const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
     taskAction({ type: 'UPDATE', payload: newTask });
 
     setIsEditing(false);
+
+    showAlert(`${newTask.name} saved.`);
 
     if (!timerState.activeTaskId) return;
   }
