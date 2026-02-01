@@ -5,19 +5,18 @@ import timerReducer, { initialTimerState } from '../reducers/timer.reducer';
 import { type TaskAction } from '../models/task.actions';
 import { useReducer } from 'react';
 import { getActiveTask } from '../util/task.utils';
+import { useAlert } from '../contexts/AlertContext';
 
 interface TimerPageProps {
   tasksState: TaskState[];
   taskAction: React.ActionDispatch<[action: TaskAction]>;
-  showAlert: (message: string) => void;
 }
 
-export default function TimerPage({
-  tasksState,
-  taskAction,
-  showAlert,
-}: TimerPageProps) {
+export default function TimerPage({ tasksState, taskAction }: TimerPageProps) {
   const [timerState, timerAction] = useReducer(timerReducer, initialTimerState);
+
+  const alertCtx = useAlert();
+  const { showAlert } = alertCtx;
 
   function handleCompletion() {
     timerAction({ type: 'COMPLETE_POMODORO' });
@@ -57,7 +56,6 @@ export default function TimerPage({
         taskAction={taskAction}
         tasksState={tasksState}
         timerAction={timerAction}
-        showAlert={showAlert}
       />
     </div>
   );

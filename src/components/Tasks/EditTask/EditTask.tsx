@@ -8,6 +8,7 @@ import Modal from '../../Modal';
 import type { TaskState } from '../../../models/task.model';
 import type { TaskAction } from '../../../models/task.actions';
 import type { TimerState } from '../../../models/timer.model';
+import { useAlert } from '../../../contexts/AlertContext';
 
 interface EditTaskProps extends React.HTMLAttributes<HTMLDivElement> {
   task: TaskState;
@@ -15,7 +16,6 @@ interface EditTaskProps extends React.HTMLAttributes<HTMLDivElement> {
   timerState: TimerState;
   handleCancelEdit: (e: React.MouseEvent) => void;
   setIsEditing: (value: boolean) => void;
-  showAlert: (message: string) => void;
 }
 
 const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
@@ -25,7 +25,6 @@ const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
     taskAction,
     timerState,
     setIsEditing,
-    showAlert,
     ...motionProps
   } = props;
 
@@ -37,6 +36,9 @@ const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const taskNameInput = useRef<HTMLInputElement | null>(null);
 
+  const alertCtx = useAlert();
+  const { showAlert } = alertCtx;
+
   useEffect(() => {
     if (!taskNameInput.current) return;
     taskNameInput.current.focus();
@@ -44,6 +46,8 @@ const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
 
   function handleDeleteTask() {
     taskAction({ type: 'DELETE', payload: task });
+
+    showAlert(`${task.name} deleted successfully.`);
   }
 
   function handleSaveTask() {

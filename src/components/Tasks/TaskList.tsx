@@ -10,19 +10,17 @@ interface TaskListProps {
   timerState: TimerState;
   taskAction: React.ActionDispatch<[action: TaskAction]>;
   timerAction: React.ActionDispatch<[action: TimerAction]>;
-  showAlert: (message: string) => void;
 }
 export default function TaskList({
   timerAction,
   tasksState,
   taskAction,
   timerState,
-  showAlert,
 }: TaskListProps) {
   return (
     <div className="flex flex-col gap-2 w-full pb-10">
       <p className="font-bold text-xl">Active Tasks</p>
-      <TaskInput taskAction={taskAction} showAlert={showAlert} />
+      <TaskInput taskAction={taskAction} />
       <div className="tasks-con flex justify-center items-center gap-2 flex-col">
         {tasksState.map((t) => (
           <TaskItem
@@ -32,7 +30,6 @@ export default function TaskList({
             tasksState={tasksState}
             taskAction={taskAction}
             timerAction={timerAction}
-            showAlert={showAlert}
           />
         ))}
       </div>

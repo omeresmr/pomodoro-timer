@@ -1,6 +1,9 @@
 import { Check } from 'lucide-react';
-import Card from './Card/Card';
 import { motion } from 'motion/react';
+
+import Card from './Card/Card';
+import { useAlert } from '../contexts/AlertContext';
+import { useEffect } from 'react';
 
 interface AlertProps {
   message: string;
@@ -9,6 +12,15 @@ interface AlertProps {
 const MotionCard = motion.create(Card);
 
 export default function Alert({ message }: AlertProps) {
+  const alertCtx = useAlert();
+  const { hideAlert } = alertCtx;
+
+  useEffect(() => {
+    const timer = setTimeout(() => hideAlert(), 1500);
+
+    return () => clearTimeout(timer);
+  }, [hideAlert]);
+
   return (
     <MotionCard
       className="absolute bottom-6 right-6 gap-2"

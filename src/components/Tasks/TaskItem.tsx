@@ -12,13 +12,13 @@ import type { TaskState } from '../../models/task.model';
 import type { TimerAction } from '../../models/timer.actions';
 import type { TaskAction } from '../../models/task.actions';
 import type { TimerState } from '../../models/timer.model';
+import { useAlert } from '../../contexts/AlertContext';
 
 interface TaskItemProps {
   task: TaskState;
   timerState: TimerState;
   taskAction: React.ActionDispatch<[action: TaskAction]>;
   timerAction: React.ActionDispatch<[action: TimerAction]>;
-  showAlert: (message: string) => void;
   tasksState: TaskState[];
 }
 
@@ -30,9 +30,11 @@ export default function TaskItem({
   taskAction,
   timerAction,
   timerState,
-  showAlert,
 }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
+
+  const alertCtx = useAlert();
+  const { showAlert } = alertCtx;
 
   function handleStartTask() {
     timerAction({ type: 'RESET' });
@@ -82,7 +84,6 @@ export default function TaskItem({
           taskAction={taskAction}
           setIsEditing={setIsEditing}
           handleCancelEdit={() => setIsEditing(false)}
-          showAlert={showAlert}
           // Animation
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}

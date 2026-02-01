@@ -1,4 +1,4 @@
-import { useReducer, useState } from 'react';
+import { useReducer } from 'react';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import { AnimatePresence } from 'motion/react';
 
@@ -10,18 +10,13 @@ import SettingsPage from './pages/SettingsPage';
 import ToggleDarkMode from './components/Header/ToggleDarkMode';
 import Navigation from './components/Navigation/Navigation';
 import { SettingsProvider } from './contexts/SettingsContext';
+import { useAlert } from './contexts/AlertContext';
 import taskReducer from './reducers/task.reducer';
 import Alert from './components/Alert';
 
 function App() {
   const [tasksState, taskAction] = useReducer(taskReducer, []);
-  const [alertMsg, setAlertMsg] = useState('');
-
-  function showAlert(message: string) {
-    setAlertMsg(message);
-
-    setTimeout(() => setAlertMsg(''), 2500);
-  }
+  const alertCtx = useAlert();
 
   return (
     <>
@@ -40,7 +35,6 @@ function App() {
                     <TimerPage
                       tasksState={tasksState}
                       taskAction={taskAction}
-                      showAlert={showAlert}
                     />
                   }
                 />
@@ -49,7 +43,9 @@ function App() {
                 <Route path="/settings" element={<SettingsPage />} />
               </Routes>
               <AnimatePresence>
-                {alertMsg && <Alert message={alertMsg} />}
+                {alertCtx.currentAlert && (
+                  <Alert message={alertCtx.currentAlert} />
+                )}
               </AnimatePresence>
             </section>
           </main>
