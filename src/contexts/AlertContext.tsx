@@ -1,5 +1,44 @@
 import { createContext, useContext, useReducer } from 'react';
-import { alertReducer } from '../reducers/alert.reducer';
+
+///////////////////////////////
+// REDUCER
+///////////////////////////////
+
+// 1) action type
+type AlertAction =
+  | { type: 'ADD_ALERT'; payload: string }
+  | { type: 'REMOVE_CUR_ALERT' };
+
+// 2) state type
+type AlertState = { currentAlert: string | null; alertQueue: string[] };
+
+// 3) reducer function
+function alertReducer(state: AlertState, action: AlertAction) {
+  const { alertQueue } = state;
+
+  switch (action.type) {
+    case 'ADD_ALERT':
+      // enqueue alert
+      if (state.currentAlert)
+        return { ...state, alertQueue: [...alertQueue, action.payload] };
+      else return { ...state, currentAlert: action.payload };
+    case 'REMOVE_CUR_ALERT':
+      // dequeue next alert (or clear currentAlert)
+      if (state.alertQueue.length === 0)
+        return { ...state, currentAlert: null };
+
+      return {
+        currentAlert: state.alertQueue[0],
+        alertQueue: alertQueue.slice(1),
+      };
+    default:
+      throw new Error('Unknown alert action');
+  }
+}
+
+///////////////////////////////
+// CONTEXT
+///////////////////////////////
 
 // 1) context value interface
 interface AlertContextValue {
