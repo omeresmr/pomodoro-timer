@@ -5,6 +5,7 @@ import timerReducer, { initialTimerState } from '../reducers/timer.reducer';
 import { type TaskAction } from '../models/task.actions';
 import { useReducer } from 'react';
 import { getActiveTask } from '../util/task.utils';
+import { useAlert } from '../contexts/AlertContext';
 
 interface TimerPageProps {
   tasksState: TaskState[];
@@ -14,9 +15,16 @@ interface TimerPageProps {
 export default function TimerPage({ tasksState, taskAction }: TimerPageProps) {
   const [timerState, timerAction] = useReducer(timerReducer, initialTimerState);
 
+  const alertCtx = useAlert();
+  const { showAlert } = alertCtx;
+
   function handleCompletion() {
     timerAction({ type: 'COMPLETE_POMODORO' });
+
     const { onBreak, activeTaskId } = timerState;
+
+    if (onBreak) showAlert('Break cycle ended.');
+    else showAlert('Pomodoro cycle ended.');
 
     if (!activeTaskId) return;
 

@@ -1,5 +1,7 @@
 import { useReducer } from 'react';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { AnimatePresence } from 'motion/react';
+
 import Header from './components/Header/Header';
 import TimerPage from './pages/TimerPage';
 import TasksPage from './pages/TasksPage';
@@ -8,10 +10,13 @@ import SettingsPage from './pages/SettingsPage';
 import ToggleDarkMode from './components/Header/ToggleDarkMode';
 import Navigation from './components/Navigation/Navigation';
 import { SettingsProvider } from './contexts/SettingsContext';
+import { useAlert } from './contexts/AlertContext';
 import taskReducer from './reducers/task.reducer';
+import Alert from './components/Alert';
 
 function App() {
   const [tasksState, taskAction] = useReducer(taskReducer, []);
+  const alertCtx = useAlert();
 
   return (
     <>
@@ -37,6 +42,11 @@ function App() {
                 <Route path="/stats" element={<StatsPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
               </Routes>
+              <AnimatePresence>
+                {alertCtx.currentAlert && (
+                  <Alert message={alertCtx.currentAlert} />
+                )}
+              </AnimatePresence>
             </section>
           </main>
         </BrowserRouter>

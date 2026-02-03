@@ -12,6 +12,7 @@ import type { TaskState } from '../../models/task.model';
 import type { TimerAction } from '../../models/timer.actions';
 import type { TaskAction } from '../../models/task.actions';
 import type { TimerState } from '../../models/timer.model';
+import { useAlert } from '../../contexts/AlertContext';
 
 interface TaskItemProps {
   task: TaskState;
@@ -21,8 +22,8 @@ interface TaskItemProps {
   tasksState: TaskState[];
 }
 
-const MotionEdit = motion(EditTask);
-const MotionCard = motion(TaskCard);
+const MotionEdit = motion.create(EditTask);
+const MotionCard = motion.create(TaskCard);
 
 export default function TaskItem({
   task,
@@ -31,6 +32,9 @@ export default function TaskItem({
   timerState,
 }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
+
+  const alertCtx = useAlert();
+  const { showAlert } = alertCtx;
 
   function handleStartTask() {
     timerAction({ type: 'RESET' });
@@ -41,6 +45,9 @@ export default function TaskItem({
 
     // change task status to active
     taskAction({ type: 'SET_ACTIVE', payload: task });
+
+    // show alert
+    showAlert(`${task.name} started.`);
   }
 
   function handleStopTask() {
@@ -49,13 +56,22 @@ export default function TaskItem({
 
     timerAction({ type: 'SET_ACTIVE_TASK', payload: null });
     taskAction({ type: 'UPDATE', payload: task });
+
+    showAlert(`${task.name} paused.`);
   }
 
   function handleCheckTask(e: React.ChangeEvent<HTMLInputElement>) {
     const isChecked = e.target.checked;
 
-    if (isChecked) taskAction({ type: 'COMPLETE_TASK', payload: task });
-    else taskAction({ type: 'UNCOMPLETE_TASK', payload: task });
+    if (isChecked) {
+      taskAction({ type: 'COMPLETE_TASK', payload: task });
+
+      showAlert(`${task.name} finished.`);
+    } else {
+      taskAction({ type: 'UNCOMPLETE_TASK', payload: task });
+
+      showAlert(`${task.name} unfinished.`);
+    }
   }
 
   return (

@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { Plus } from 'lucide-react';
+
 import PrimaryButton from '../Buttons/PrimaryButton';
 import AddTaskInput from './shared/AddTaskInput';
-import { Plus } from 'lucide-react';
 import { createTask, type TaskState } from '../../models/task.model';
 import type { TaskAction } from '../../models/task.actions';
+import { useAlert } from '../../contexts/AlertContext';
 
 interface TaskInputProps {
   taskAction: React.ActionDispatch<[action: TaskAction]>;
@@ -12,11 +14,17 @@ interface TaskInputProps {
 export default function TaskInput({ taskAction }: TaskInputProps) {
   const [taskName, setTaskName] = useState('');
 
+  const alertCtx = useAlert();
+  const { showAlert } = alertCtx;
+
   function addTask() {
     if (!taskName) return;
 
     const newTask: TaskState = createTask(taskName);
     taskAction({ type: 'CREATE', payload: newTask });
+
+    showAlert(`${taskName} created.`);
+
     setTaskName('');
   }
 
