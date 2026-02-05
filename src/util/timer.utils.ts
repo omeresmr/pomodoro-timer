@@ -1,6 +1,5 @@
 import { type TimerState } from '../models/timer.model';
 import { type SettingsState } from '../models/settings.model';
-import { getActiveTask } from './task.utils';
 import type { TaskState } from '../models/task.model';
 
 const SECOND_MS = 1000;
@@ -26,7 +25,7 @@ export function getCurrentSession(
 ): number {
   const { onBreak, completedPomodoros, activeTaskId } = timerState;
 
-  const activeTask = getActiveTask(tasksState, activeTaskId);
+  const activeTask = tasksState.find((t) => t.id === activeTaskId);
 
   if (activeTask) return activeTask.pomodorosDone + 1;
 

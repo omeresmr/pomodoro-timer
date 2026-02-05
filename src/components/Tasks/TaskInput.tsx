@@ -3,28 +3,26 @@ import { Plus } from 'lucide-react';
 
 import PrimaryButton from '../Buttons/PrimaryButton';
 import AddTaskInput from './shared/AddTaskInput';
-import { createTask, type TaskState } from '../../models/task.model';
-import type { TaskAction } from '../../models/task.actions';
 import { useAlert } from '../../contexts/AlertContext';
+import { useTasks } from '../../contexts/TasksContext';
 
-interface TaskInputProps {
-  taskAction: React.ActionDispatch<[action: TaskAction]>;
-}
-
-export default function TaskInput({ taskAction }: TaskInputProps) {
+export default function TaskInput() {
   const [taskName, setTaskName] = useState('');
 
-  const alertCtx = useAlert();
-  const { showAlert } = alertCtx;
+  const { showAlert } = useAlert();
+  const { createTask } = useTasks();
 
   function addTask() {
+    // If user didn't type anything, return
     if (!taskName) return;
 
-    const newTask: TaskState = createTask(taskName);
-    taskAction({ type: 'CREATE', payload: newTask });
+    // Create task
+    createTask(taskName);
 
+    // Show alert
     showAlert(`${taskName} created.`);
 
+    // Reset input value
     setTaskName('');
   }
 

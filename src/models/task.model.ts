@@ -5,13 +5,6 @@ export interface TaskState {
   name: string;
   estimatedPomodoros: number;
   pomodorosDone: number;
-  status: TaskStatus;
+  isActive: boolean;
+  isCompleted: boolean;
 }
-
-export const createTask = (name: string): TaskState => ({
-  id: Date.now(),
-  name,
-  estimatedPomodoros: 4,
-  pomodorosDone: 0,
-  status: 'pending',
-});

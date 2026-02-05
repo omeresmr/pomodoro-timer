@@ -10,16 +10,14 @@ import TaskActions from './TaskItem/TaskActions';
 import EditTask from './EditTask/EditTask';
 import type { TaskState } from '../../models/task.model';
 import type { TimerAction } from '../../models/timer.actions';
-import type { TaskAction } from '../../models/task.actions';
 import type { TimerState } from '../../models/timer.model';
 import { useAlert } from '../../contexts/AlertContext';
+import { useTasks } from '../../contexts/TasksContext';
 
 interface TaskItemProps {
   task: TaskState;
   timerState: TimerState;
-  taskAction: React.ActionDispatch<[action: TaskAction]>;
   timerAction: React.ActionDispatch<[action: TimerAction]>;
-  tasksState: TaskState[];
 }
 
 const MotionEdit = motion.create(EditTask);
@@ -27,26 +25,25 @@ const MotionCard = motion.create(TaskCard);
 
 export default function TaskItem({
   task,
-  taskAction,
   timerAction,
   timerState,
 }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
 
-  const alertCtx = useAlert();
-  const { showAlert } = alertCtx;
+  const { showAlert } = useAlert();
+  const { pauseTask, completeTask, uncompleteTask, getTaskStatus, runTask } =
+    useTasks();
 
   function handleStartTask() {
+    // Reset timer when a task gets started (Maybe change this later)
     timerAction({ type: 'RESET' });
     timerAction({ type: 'START' });
 
-    // initialize activeTask
+    // Initialize activeTask
     timerAction({ type: 'SET_ACTIVE_TASK', payload: task });
 
-    // change task status to active
-    taskAction({ type: 'SET_ACTIVE', payload: task });
+    runTask(task);
 
-    // show alert
     showAlert(`${task.name} started.`);
   }
 
@@ -55,7 +52,7 @@ export default function TaskItem({
     timerAction({ type: 'PAUSE' });
 
     timerAction({ type: 'SET_ACTIVE_TASK', payload: null });
-    taskAction({ type: 'UPDATE', payload: task });
+    pauseTask(task);
 
     showAlert(`${task.name} paused.`);
   }
@@ -64,13 +61,13 @@ export default function TaskItem({
     const isChecked = e.target.checked;
 
     if (isChecked) {
-      taskAction({ type: 'COMPLETE_TASK', payload: task });
+      completeTask(task);
 
-      showAlert(`${task.name} finished.`);
+      showAlert(`${task.name} completed.`);
     } else {
-      taskAction({ type: 'UNCOMPLETE_TASK', payload: task });
+      uncompleteTask(task);
 
-      showAlert(`${task.name} unfinished.`);
+      showAlert(`${task.name} uncompleted.`);
     }
   }
 
@@ -81,7 +78,6 @@ export default function TaskItem({
           key="edit-mode"
           task={task}
           timerState={timerState}
-          taskAction={taskAction}
           setIsEditing={setIsEditing}
           handleCancelEdit={() => setIsEditing(false)}
           // Animation
@@ -100,13 +96,10 @@ export default function TaskItem({
           exit={{ opacity: 0 }}
           layout
         >
-          <CheckBox
-            checked={task.status === 'completed'}
-            onChange={handleCheckTask}
-          />
+          <CheckBox checked={task.isCompleted} onChange={handleCheckTask} />
 
           <p
-            className={`font-bold text-base ${task.status === 'completed' ? 'line-through' : ''}`}
+            className={`font-bold text-base ${task.isCompleted ? 'line-through' : ''}`}
           >
             {task.name}
           </p>
@@ -121,7 +114,7 @@ export default function TaskItem({
           />
 
           <div className="absolute flex flex-col items-end gap-2 right-4 top-4">
-            <TaskStatus status={task.status} />
+            <TaskStatus status={getTaskStatus(task)} />
             <TaskActions
               task={task}
               handleEdit={() => setIsEditing(true)}

@@ -1,62 +1,77 @@
 import { type TaskState } from '../models/task.model';
-import { type TaskAction } from '../models/task.actions';
 
-export default function taskReducer(
-  tasksState: TaskState[],
-  action: TaskAction
-) {
+// 1) action type
+export type TaskAction =
+  | { type: 'task/created'; payload: TaskState }
+  | { type: 'task/updated'; payload: TaskState }
+  | { type: 'task/started'; payload: TaskState }
+  | { type: 'task/paused'; payload: TaskState }
+  | { type: 'task/session_ended'; payload: TaskState }
+  | { type: 'task/completed'; payload: TaskState }
+  | { type: 'task/uncompleted'; payload: TaskState }
+  | { type: 'task/deleted'; payload: TaskState }
+  | { type: 'task/resetted'; payload: TaskState };
+
+// 2) reducer function
+
+function reducer(tasksState: TaskState[], action: TaskAction) {
   const { payload: enteredTask } = action;
 
   switch (action.type) {
-    case 'CREATE':
+    case 'task/created':
       return [...tasksState, enteredTask];
-    case 'UPDATE':
+
+    case 'task/updated':
       return tasksState.map((t) =>
         t.id === enteredTask.id
           ? {
               ...enteredTask,
-              status:
-                enteredTask.pomodorosDone < enteredTask.estimatedPomodoros
-                  ? 'pending'
-                  : enteredTask.status,
+              isCompleted: t.pomodorosDone >= t.estimatedPomodoros,
             }
           : t
       );
-    case 'SET_ACTIVE':
+
+    case 'task/started':
       return tasksState.map((t) =>
-        t.id === enteredTask.id
-          ? { ...t, status: 'active' }
-          : { ...t, status: 'pending' }
+        t.id === enteredTask.id ? { ...t, isActive: true } : t
       );
-    case 'INCREMENT_POMODORO': {
+
+    case 'task/paused':
+      return tasksState.map((t) =>
+        t.id === enteredTask.id ? { ...t, isActive: false } : t
+      );
+
+    case 'task/session_ended': {
       return tasksState.map((t) =>
         t.id === enteredTask.id
           ? {
               ...t,
               pomodorosDone: t.pomodorosDone + 1,
-              status:
+              isCompleted:
                 t.pomodorosDone + 1 >= t.estimatedPomodoros
-                  ? 'completed'
-                  : t.status,
+                  ? true
+                  : t.isCompleted,
             }
           : t
       );
     }
-    case 'COMPLETE_TASK':
+
+    case 'task/completed':
       return tasksState.map((t) =>
-        t.id === enteredTask.id ? { ...t, status: 'completed' } : t
+        t.id === enteredTask.id ? { ...t, isCompleted: true } : t
       );
-    case 'UNCOMPLETE_TASK':
+
+    case 'task/uncompleted':
       return tasksState.map((t) =>
-        t.id === enteredTask.id ? { ...t, status: 'pending' } : t
+        t.id === enteredTask.id ? { ...t, isCompleted: false } : t
       );
-    case 'DELETE':
+
+    case 'task/deleted':
       return tasksState.filter((t) => t.id !== enteredTask.id);
-    case 'RESET':
-      return tasksState.map((t) =>
-        t.id === enteredTask.id ? { ...t, status: 'pending' } : { ...t }
-      );
+
     default:
       throw new Error('Unknown task action');
   }
 }
+
+export default reducer;

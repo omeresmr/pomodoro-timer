@@ -9,30 +9,25 @@ import { useSettings } from '../../contexts/SettingsContext';
 import { getCurrentDuration, getCurrentSession } from '../../util/timer.utils';
 import type { TimerState } from '../../models/timer.model';
 import type { TimerAction } from '../../models/timer.actions';
-import type { TaskAction } from '../../models/task.actions';
-import { getActiveTask } from '../../util/task.utils';
-import type { TaskState } from '../../models/task.model';
+import { useTasks } from '../../contexts/TasksContext';
 
 interface TimerContentProps {
   timerState: TimerState;
-  tasksState: TaskState[];
   handleCompletion: () => void;
-  taskAction: React.ActionDispatch<[action: TaskAction]>;
   timerAction: React.ActionDispatch<[action: TimerAction]>;
 }
 
 export default function TimerContent({
   timerState,
-  tasksState,
   handleCompletion,
   timerAction,
-  taskAction,
 }: TimerContentProps) {
   const settings = useSettings();
-  const activeTask = getActiveTask(tasksState, timerState.activeTaskId);
+  const { tasks, pauseTask } = useTasks();
+  const activeTask = tasks.find((t) => t.id === timerState.activeTaskId);
 
   const totalMilliseconds = getCurrentDuration(timerState, settings);
-  const currentSession = getCurrentSession(timerState, tasksState);
+  const currentSession = getCurrentSession(timerState, tasks);
   const remainingMilliseconds =
     totalMilliseconds - timerState.millisecondsPassed;
 
@@ -66,7 +61,7 @@ export default function TimerContent({
     if (!activeTask) return;
 
     // reset the status of activeTask
-    taskAction({ type: 'RESET', payload: activeTask });
+    pauseTask(activeTask);
   }
 
   return (

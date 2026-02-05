@@ -1,6 +1,7 @@
 import { Play, Pencil, Pause } from 'lucide-react';
 import TaskActionButton from '../../Buttons/TaskActionButton';
 import type { TaskState } from '../../../models/task.model';
+import { useTasks } from '../../../contexts/TasksContext';
 
 interface TaskActionProps {
   handleEdit: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -15,7 +16,9 @@ export default function TaskActions({
   handleStopTask,
   task,
 }: TaskActionProps) {
-  const { status } = task;
+  const { getTaskStatus } = useTasks();
+
+  const status = getTaskStatus(task);
 
   if (status === 'completed') {
     return (

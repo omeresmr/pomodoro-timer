@@ -1,7 +1,7 @@
 import type { TaskState } from '../../models/task.model';
 
 interface CurrentTaskProps {
-  task: TaskState | null;
+  task: TaskState | undefined;
 }
 
 export default function CurrentTask({ task }: CurrentTaskProps) {

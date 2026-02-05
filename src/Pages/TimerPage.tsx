@@ -1,22 +1,17 @@
+import { useReducer } from 'react';
+
 import TimerContent from '../components/Timer/TimerContent';
 import TaskList from '../components/Tasks/TaskList';
-import { type TaskState } from '../models/task.model';
 import timerReducer, { initialTimerState } from '../reducers/timer.reducer';
-import { type TaskAction } from '../models/task.actions';
-import { useReducer } from 'react';
-import { getActiveTask } from '../util/task.utils';
 import { useAlert } from '../contexts/AlertContext';
+import { useTasks } from '../contexts/TasksContext';
 
-interface TimerPageProps {
-  tasksState: TaskState[];
-  taskAction: React.ActionDispatch<[action: TaskAction]>;
-}
-
-export default function TimerPage({ tasksState, taskAction }: TimerPageProps) {
+export default function TimerPage() {
   const [timerState, timerAction] = useReducer(timerReducer, initialTimerState);
 
   const alertCtx = useAlert();
   const { showAlert } = alertCtx;
+  const { tasks, completeTaskPomodoro } = useTasks();
 
   function handleCompletion() {
     timerAction({ type: 'COMPLETE_POMODORO' });
@@ -28,14 +23,15 @@ export default function TimerPage({ tasksState, taskAction }: TimerPageProps) {
 
     if (!activeTaskId) return;
 
-    const activeTask = getActiveTask(tasksState, activeTaskId);
+    const activeTask = tasks.find((t) => t.id === timerState.activeTaskId);
 
     if (!activeTask) return;
 
     if (!onBreak) {
-      taskAction({ type: 'INCREMENT_POMODORO', payload: activeTask });
+      completeTaskPomodoro(activeTask);
 
-      // check if the next value would be greater then est. pomos.
+      // Check if the task would end after incrementing finished pomodoros
+      // If yes, reset timer
       if (activeTask?.pomodorosDone + 1 >= activeTask?.estimatedPomodoros) {
         timerAction({ type: 'RESET' });
       }
@@ -46,17 +42,10 @@ export default function TimerPage({ tasksState, taskAction }: TimerPageProps) {
     <div className="timer-wrapper">
       <TimerContent
         timerState={timerState}
-        tasksState={tasksState}
-        taskAction={taskAction}
         timerAction={timerAction}
         handleCompletion={handleCompletion}
       />
-      <TaskList
-        timerState={timerState}
-        taskAction={taskAction}
-        tasksState={tasksState}
-        timerAction={timerAction}
-      />
+      <TaskList timerState={timerState} timerAction={timerAction} />
     </div>
   );
 }

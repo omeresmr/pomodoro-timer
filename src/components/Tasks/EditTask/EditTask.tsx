@@ -6,27 +6,20 @@ import FormActions from './FormActions';
 import DeleteButton from '../../Buttons/DeleteButton';
 import Modal from '../../Modal';
 import type { TaskState } from '../../../models/task.model';
-import type { TaskAction } from '../../../models/task.actions';
 import type { TimerState } from '../../../models/timer.model';
 import { useAlert } from '../../../contexts/AlertContext';
+import { useTasks } from '../../../contexts/TasksContext';
 
 interface EditTaskProps extends React.HTMLAttributes<HTMLDivElement> {
   task: TaskState;
-  taskAction: React.ActionDispatch<[TaskAction]>;
   timerState: TimerState;
   handleCancelEdit: (e: React.MouseEvent) => void;
   setIsEditing: (value: boolean) => void;
 }
 
 const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
-  const {
-    task,
-    handleCancelEdit,
-    taskAction,
-    timerState,
-    setIsEditing,
-    ...motionProps
-  } = props;
+  const { task, handleCancelEdit, timerState, setIsEditing, ...motionProps } =
+    props;
 
   const [updatedTask, setUpdatedTask] = useState({
     name: task.name,
@@ -36,8 +29,8 @@ const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const taskNameInput = useRef<HTMLInputElement | null>(null);
 
-  const alertCtx = useAlert();
-  const { showAlert } = alertCtx;
+  const { showAlert } = useAlert();
+  const { updateTask, deleteTask } = useTasks();
 
   useEffect(() => {
     if (!taskNameInput.current) return;
@@ -45,20 +38,17 @@ const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
   }, []);
 
   function handleDeleteTask() {
-    taskAction({ type: 'DELETE', payload: task });
-
+    deleteTask(task);
     showAlert(`${task.name} deleted successfully.`);
   }
 
   function handleSaveTask() {
     const newTask = { ...task, ...updatedTask };
 
-    // update tasks state
-    taskAction({ type: 'UPDATE', payload: newTask });
+    updateTask(newTask);
+    showAlert(`${newTask.name} saved.`);
 
     setIsEditing(false);
-
-    showAlert(`${newTask.name} saved.`);
 
     if (!timerState.activeTaskId) return;
   }
