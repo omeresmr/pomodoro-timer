@@ -1,51 +1,39 @@
-import { useReducer } from 'react';
-
 import TimerContent from '../components/Timer/TimerContent';
 import TaskList from '../components/Tasks/TaskList';
-import timerReducer, { initialTimerState } from '../reducers/timer.reducer';
 import { useAlert } from '../contexts/AlertContext';
 import { useTasks } from '../contexts/TasksContext';
+import { useTimer } from '../contexts/TimerContext';
 
 export default function TimerPage() {
-  const [timerState, timerAction] = useReducer(timerReducer, initialTimerState);
-
-  const alertCtx = useAlert();
-  const { showAlert } = alertCtx;
+  const { showAlert } = useAlert();
+  const { timerState, completeTimerPomodoro, resetTimer } = useTimer();
   const { tasks, completeTaskPomodoro } = useTasks();
 
   function handleCompletion() {
-    timerAction({ type: 'COMPLETE_POMODORO' });
+    completeTimerPomodoro();
 
-    const { onBreak, activeTaskId } = timerState;
-
-    if (onBreak) showAlert('Break cycle ended.');
+    if (timerState.onBreak) showAlert('Break cycle ended.');
     else showAlert('Pomodoro cycle ended.');
-
-    if (!activeTaskId) return;
 
     const activeTask = tasks.find((t) => t.id === timerState.activeTaskId);
 
     if (!activeTask) return;
 
-    if (!onBreak) {
+    if (!timerState.onBreak) {
       completeTaskPomodoro(activeTask);
 
       // Check if the task would end after incrementing finished pomodoros
       // If yes, reset timer
       if (activeTask?.pomodorosDone + 1 >= activeTask?.estimatedPomodoros) {
-        timerAction({ type: 'RESET' });
+        resetTimer();
       }
     }
   }
 
   return (
     <div className="timer-wrapper">
-      <TimerContent
-        timerState={timerState}
-        timerAction={timerAction}
-        handleCompletion={handleCompletion}
-      />
-      <TaskList timerState={timerState} timerAction={timerAction} />
+      <TimerContent handleCompletion={handleCompletion} />
+      <TaskList />
     </div>
   );
 }

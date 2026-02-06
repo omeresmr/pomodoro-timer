@@ -9,49 +9,41 @@ import TaskStatus from './TaskItem/TaskStatus';
 import TaskActions from './TaskItem/TaskActions';
 import EditTask from './EditTask/EditTask';
 import type { TaskState } from '../../models/task.model';
-import type { TimerAction } from '../../models/timer.actions';
-import type { TimerState } from '../../models/timer.model';
 import { useAlert } from '../../contexts/AlertContext';
 import { useTasks } from '../../contexts/TasksContext';
+import { useTimer } from '../../contexts/TimerContext';
 
 interface TaskItemProps {
   task: TaskState;
-  timerState: TimerState;
-  timerAction: React.ActionDispatch<[action: TimerAction]>;
 }
 
 const MotionEdit = motion.create(EditTask);
 const MotionCard = motion.create(TaskCard);
 
-export default function TaskItem({
-  task,
-  timerAction,
-  timerState,
-}: TaskItemProps) {
+export default function TaskItem({ task }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
 
   const { showAlert } = useAlert();
   const { pauseTask, completeTask, uncompleteTask, getTaskStatus, runTask } =
     useTasks();
+  const { startTimer, pauseTimer, initActiveTask, resetTimer } = useTimer();
 
   function handleStartTask() {
     // Reset timer when a task gets started (Maybe change this later)
-    timerAction({ type: 'RESET' });
-    timerAction({ type: 'START' });
+    resetTimer();
+    startTimer();
 
-    // Initialize activeTask
-    timerAction({ type: 'SET_ACTIVE_TASK', payload: task });
-
+    initActiveTask(task);
     runTask(task);
 
     showAlert(`${task.name} started.`);
   }
 
   function handleStopTask() {
-    timerAction({ type: 'RESET' });
-    timerAction({ type: 'PAUSE' });
+    resetTimer();
+    pauseTimer();
 
-    timerAction({ type: 'SET_ACTIVE_TASK', payload: null });
+    initActiveTask(null);
     pauseTask(task);
 
     showAlert(`${task.name} paused.`);
@@ -77,7 +69,6 @@ export default function TaskItem({
         <MotionEdit
           key="edit-mode"
           task={task}
-          timerState={timerState}
           setIsEditing={setIsEditing}
           handleCancelEdit={() => setIsEditing(false)}
           // Animation

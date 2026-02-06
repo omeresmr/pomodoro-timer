@@ -1,45 +1,63 @@
 import { type TimerState } from '../models/timer.model';
-import { type TimerAction } from '../models/timer.actions';
-import { createInitialTimerState } from '../models/timer.model';
+import type { TaskState } from '../models/task.model';
 
-export const initialTimerState = createInitialTimerState();
+// 1) action type
+export type TimerAction =
+  | { type: 'timer/started' }
+  | { type: 'timer/paused' }
+  | { type: 'timer/ticked' }
+  | { type: 'timer/reseted' }
+  | { type: 'timer/pomodoro_completed' }
+  | { type: 'timer/active_task_changed'; payload: TaskState | null };
 
-export default function timerReducer(
-  timerState: TimerState,
-  action: TimerAction
-) {
-  const { onBreak, completedPomodoros, millisecondsPassed, activeTaskId } =
-    timerState;
+// 2) initialState
+export const initialTimerState = {
+  millisecondsPassed: 0,
+  completedPomodoros: 0,
+  onBreak: false,
+  isRunning: false,
+  activeTaskId: null,
+};
 
+// 3) reducer function
+export default function reducer(state: TimerState, action: TimerAction) {
   switch (action.type) {
-    case 'START':
-      return { ...timerState, isRunning: true };
-    case 'PAUSE':
-      return { ...timerState, isRunning: false };
-    case 'TICK':
+    case 'timer/started':
+      return { ...state, isRunning: true };
+
+    case 'timer/paused':
+      return { ...state, isRunning: false };
+
+    case 'timer/ticked':
       return {
-        ...timerState,
-        millisecondsPassed: millisecondsPassed + 100,
+        ...state,
+        millisecondsPassed: state.millisecondsPassed + 100,
       };
-    case 'RESET':
+
+    case 'timer/reseted':
       return initialTimerState;
-    case 'COMPLETE_POMODORO': {
+
+    case 'timer/pomodoro_completed': {
       // only increase counter after a pomodoro
-      const newCount = !onBreak ? completedPomodoros + 1 : completedPomodoros;
+      const newCount = !state.onBreak
+        ? state.completedPomodoros + 1
+        : state.completedPomodoros;
 
       return {
+        ...state,
         completedPomodoros: newCount,
-        onBreak: !onBreak,
+        onBreak: !state.onBreak,
         millisecondsPassed: 0,
         isRunning: false,
-        activeTaskId: activeTaskId,
       };
     }
-    case 'SET_ACTIVE_TASK':
+
+    case 'timer/active_task_changed':
       return {
-        ...timerState,
+        ...state,
         activeTaskId: action.payload ? action.payload.id : null,
       };
+
     default:
       throw new Error('Unknown timer action');
   }

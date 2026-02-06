@@ -1,29 +1,26 @@
+import { ArrowRight } from 'lucide-react';
 import { useEffect } from 'react';
+
+import Card from '../Card/Card';
 import IconButton from '../Buttons/IconButton';
 import TimerDisplay from './TimerDisplay';
 import TimerControls from './TimerControls';
 import CurrentTask from './CurrentTask';
-import Card from '../Card/Card';
-import { ArrowRight } from 'lucide-react';
 import { useSettings } from '../../contexts/SettingsContext';
 import { getCurrentDuration, getCurrentSession } from '../../util/timer.utils';
-import type { TimerState } from '../../models/timer.model';
-import type { TimerAction } from '../../models/timer.actions';
+
 import { useTasks } from '../../contexts/TasksContext';
+import { useTimer } from '../../contexts/TimerContext';
 
 interface TimerContentProps {
-  timerState: TimerState;
   handleCompletion: () => void;
-  timerAction: React.ActionDispatch<[action: TimerAction]>;
 }
 
-export default function TimerContent({
-  timerState,
-  handleCompletion,
-  timerAction,
-}: TimerContentProps) {
+export default function TimerContent({ handleCompletion }: TimerContentProps) {
   const settings = useSettings();
-  const { tasks, pauseTask } = useTasks();
+  const { tasks } = useTasks();
+  const { timerState, timerTick } = useTimer();
+
   const activeTask = tasks.find((t) => t.id === timerState.activeTaskId);
 
   const totalMilliseconds = getCurrentDuration(timerState, settings);
@@ -31,37 +28,24 @@ export default function TimerContent({
   const remainingMilliseconds =
     totalMilliseconds - timerState.millisecondsPassed;
 
+  // React to timerTick
   useEffect(() => {
     if (!timerState.isRunning) return;
     const id = setInterval(() => {
-      timerAction({ type: 'TICK' });
+      timerTick();
       if (remainingMilliseconds <= 0) handleCompletion();
     }, 100);
 
     return () => clearInterval(id);
   }, [
-    timerAction,
     timerState.isRunning,
     remainingMilliseconds,
     handleCompletion,
+    timerTick,
   ]);
-
-  function handleToggleTimer() {
-    if (timerState.isRunning) timerAction({ type: 'PAUSE' });
-    else timerAction({ type: 'START' });
-  }
 
   function handleSkipPhase() {
     handleCompletion();
-  }
-
-  function handleReset() {
-    timerAction({ type: 'RESET' });
-
-    if (!activeTask) return;
-
-    // reset the status of activeTask
-    pauseTask(activeTask);
   }
 
   return (
@@ -79,14 +63,8 @@ export default function TimerContent({
       >
         <ArrowRight className="w-4 h-4" />
       </IconButton>
-
-      <TimerControls
-        isTimerRunning={timerState.isRunning}
-        handleToggleTimer={handleToggleTimer}
-        handleReset={handleReset}
-      />
-
-      <CurrentTask task={activeTask} />
+      <TimerControls />
+      <CurrentTask />
     </Card>
   );
 }

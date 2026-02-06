@@ -6,20 +6,18 @@ import FormActions from './FormActions';
 import DeleteButton from '../../Buttons/DeleteButton';
 import Modal from '../../Modal';
 import type { TaskState } from '../../../models/task.model';
-import type { TimerState } from '../../../models/timer.model';
 import { useAlert } from '../../../contexts/AlertContext';
 import { useTasks } from '../../../contexts/TasksContext';
+import { useTimer } from '../../../contexts/TimerContext';
 
 interface EditTaskProps extends React.HTMLAttributes<HTMLDivElement> {
   task: TaskState;
-  timerState: TimerState;
   handleCancelEdit: (e: React.MouseEvent) => void;
   setIsEditing: (value: boolean) => void;
 }
 
 const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
-  const { task, handleCancelEdit, timerState, setIsEditing, ...motionProps } =
-    props;
+  const { task, handleCancelEdit, setIsEditing, ...motionProps } = props;
 
   const [updatedTask, setUpdatedTask] = useState({
     name: task.name,
@@ -31,6 +29,7 @@ const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
 
   const { showAlert } = useAlert();
   const { updateTask, deleteTask } = useTasks();
+  const { timerState } = useTimer();
 
   useEffect(() => {
     if (!taskNameInput.current) return;
@@ -46,9 +45,9 @@ const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
     const newTask = { ...task, ...updatedTask };
 
     updateTask(newTask);
-    showAlert(`${newTask.name} saved.`);
-
     setIsEditing(false);
+
+    showAlert(`${newTask.name} saved.`);
 
     if (!timerState.activeTaskId) return;
   }

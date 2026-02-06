@@ -1,15 +1,16 @@
-import type { TaskState } from '../../models/task.model';
+import { useTasks } from '../../contexts/TasksContext';
+import { useTimer } from '../../contexts/TimerContext';
 
-interface CurrentTaskProps {
-  task: TaskState | undefined;
-}
+export default function CurrentTask() {
+  const { tasks } = useTasks();
+  const { timerState } = useTimer();
+  const activeTask = tasks.find((t) => t.id === timerState.activeTaskId);
 
-export default function CurrentTask({ task }: CurrentTaskProps) {
   return (
     <div className="flex items-center justify-center flex-col text-center gap-1">
       <p className="text-muted-foreground text-sm">Current task</p>
-      {task ? (
-        <p className="font-bold">{task.name}</p>
+      {activeTask ? (
+        <p className="font-bold">{activeTask.name}</p>
       ) : (
         <p className="text-muted-foreground/60 italic text-sm">
           No task selected.
