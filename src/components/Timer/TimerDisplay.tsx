@@ -1,5 +1,5 @@
 import ProgressCircle from './ProgressCircle';
-import formatMilliseconds from '../../util/formatMilliSeconds';
+import formatMilliseconds from '../../lib/formatMilliSeconds';
 
 interface TimerDisplayProps {
   remainingMilliseconds: number;

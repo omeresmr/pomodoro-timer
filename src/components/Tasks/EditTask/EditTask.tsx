@@ -6,9 +6,9 @@ import FormActions from './FormActions';
 import DeleteButton from '../../Buttons/DeleteButton';
 import Modal from '../../Modal';
 import type { TaskState } from '../../../models/task.model';
-import { useAlert } from '../../../contexts/AlertContext';
 import { useTasks } from '../../../contexts/TasksContext';
 import { useTimer } from '../../../contexts/TimerContext';
+import { toast } from 'sonner';
 
 interface EditTaskProps extends React.HTMLAttributes<HTMLDivElement> {
   task: TaskState;
@@ -27,7 +27,6 @@ const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const taskNameInput = useRef<HTMLInputElement | null>(null);
 
-  const { showAlert } = useAlert();
   const { updateTask, deleteTask } = useTasks();
   const { timerState } = useTimer();
 
@@ -38,7 +37,7 @@ const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
 
   function handleDeleteTask() {
     deleteTask(task);
-    showAlert(`${task.name} deleted successfully.`);
+    toast.success(`${task.name} deleted successfully.`);
   }
 
   function handleSaveTask() {
@@ -47,7 +46,7 @@ const EditTask = forwardRef<HTMLDivElement, EditTaskProps>((props, ref) => {
     updateTask(newTask);
     setIsEditing(false);
 
-    showAlert(`${newTask.name} saved.`);
+    toast.success(`${newTask.name} saved.`);
 
     if (!timerState.activeTaskId) return;
   }

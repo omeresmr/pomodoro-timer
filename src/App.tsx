@@ -1,5 +1,5 @@
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import { AnimatePresence } from 'motion/react';
+import { Toaster } from './components/ui/sonner';
 
 import Header from './components/Header/Header';
 import TimerPage from './pages/TimerPage';
@@ -8,15 +8,12 @@ import StatsPage from './pages/StatsPage';
 import SettingsPage from './pages/SettingsPage';
 import ToggleDarkMode from './components/Header/ToggleDarkMode';
 import Navigation from './components/Navigation/Navigation';
-import Alert from './components/Alert';
+
 import { SettingsProvider } from './contexts/SettingsContext';
-import { useAlert } from './contexts/AlertContext';
 import { TasksProvider } from './contexts/TasksContext';
 import { TimerProvider } from './contexts/TimerContext';
 
 function App() {
-  const alertCtx = useAlert();
-
   return (
     <>
       <SettingsProvider>
@@ -35,11 +32,7 @@ function App() {
                     <Route path="/stats" element={<StatsPage />} />
                     <Route path="/settings" element={<SettingsPage />} />
                   </Routes>
-                  <AnimatePresence>
-                    {alertCtx.currentAlert && (
-                      <Alert message={alertCtx.currentAlert} />
-                    )}
-                  </AnimatePresence>
+                  <Toaster />
                 </section>
               </main>
             </BrowserRouter>

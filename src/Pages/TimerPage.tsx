@@ -1,19 +1,18 @@
 import TimerContent from '../components/Timer/TimerContent';
 import TaskList from '../components/Tasks/TaskList';
-import { useAlert } from '../contexts/AlertContext';
 import { useTasks } from '../contexts/TasksContext';
 import { useTimer } from '../contexts/TimerContext';
+import { toast } from 'sonner';
 
 export default function TimerPage() {
-  const { showAlert } = useAlert();
   const { timerState, completeTimerPomodoro, resetTimer } = useTimer();
   const { tasks, completeTaskPomodoro } = useTasks();
 
   function handleCompletion() {
     completeTimerPomodoro();
 
-    if (timerState.onBreak) showAlert('Break cycle ended.');
-    else showAlert('Pomodoro cycle ended.');
+    if (timerState.onBreak) toast.success('Break cycle ended.');
+    else toast.success('Pomodoro cycle ended.');
 
     const activeTask = tasks.find((t) => t.id === timerState.activeTaskId);
 

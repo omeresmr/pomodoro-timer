@@ -9,9 +9,9 @@ import TaskStatus from './TaskItem/TaskStatus';
 import TaskActions from './TaskItem/TaskActions';
 import EditTask from './EditTask/EditTask';
 import type { TaskState } from '../../models/task.model';
-import { useAlert } from '../../contexts/AlertContext';
 import { useTasks } from '../../contexts/TasksContext';
 import { useTimer } from '../../contexts/TimerContext';
+import { toast } from 'sonner';
 
 interface TaskItemProps {
   task: TaskState;
@@ -23,7 +23,6 @@ const MotionCard = motion.create(TaskCard);
 export default function TaskItem({ task }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
 
-  const { showAlert } = useAlert();
   const { pauseTask, completeTask, uncompleteTask, getTaskStatus, runTask } =
     useTasks();
   const { startTimer, pauseTimer, initActiveTask, resetTimer } = useTimer();
@@ -36,7 +35,7 @@ export default function TaskItem({ task }: TaskItemProps) {
     initActiveTask(task);
     runTask(task);
 
-    showAlert(`${task.name} started.`);
+    toast.success(`${task.name} started.`);
   }
 
   function handleStopTask() {
@@ -46,7 +45,7 @@ export default function TaskItem({ task }: TaskItemProps) {
     initActiveTask(null);
     pauseTask(task);
 
-    showAlert(`${task.name} paused.`);
+    toast.success(`${task.name} paused.`);
   }
 
   function handleCheckTask(e: React.ChangeEvent<HTMLInputElement>) {
@@ -55,11 +54,11 @@ export default function TaskItem({ task }: TaskItemProps) {
     if (isChecked) {
       completeTask(task);
 
-      showAlert(`${task.name} completed.`);
+      toast.success(`${task.name} completed.`);
     } else {
       uncompleteTask(task);
 
-      showAlert(`${task.name} uncompleted.`);
+      toast.success(`${task.name} uncompleted.`);
     }
   }
 

@@ -3,13 +3,12 @@ import { Plus } from 'lucide-react';
 
 import PrimaryButton from '../Buttons/PrimaryButton';
 import AddTaskInput from './shared/AddTaskInput';
-import { useAlert } from '../../contexts/AlertContext';
 import { useTasks } from '../../contexts/TasksContext';
+import { toast } from 'sonner';
 
 export default function TaskInput() {
   const [taskName, setTaskName] = useState('');
 
-  const { showAlert } = useAlert();
   const { createTask } = useTasks();
 
   function addTask() {
@@ -20,7 +19,7 @@ export default function TaskInput() {
     createTask(taskName);
 
     // Show alert
-    showAlert(`${taskName} created.`);
+    toast.success(`${taskName} created.`);
 
     // Reset input value
     setTaskName('');

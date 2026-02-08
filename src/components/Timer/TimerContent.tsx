@@ -7,7 +7,7 @@ import TimerDisplay from './TimerDisplay';
 import TimerControls from './TimerControls';
 import CurrentTask from './CurrentTask';
 import { useSettings } from '../../contexts/SettingsContext';
-import { getCurrentDuration, getCurrentSession } from '../../util/timer.utils';
+import { getCurrentDuration, getCurrentSession } from '../../lib/timer.utils';
 
 import { useTasks } from '../../contexts/TasksContext';
 import { useTimer } from '../../contexts/TimerContext';
