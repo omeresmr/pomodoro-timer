@@ -2,7 +2,13 @@ import TaskInput from './TaskInput';
 import TaskItem from './TaskItem';
 import { useTasks } from '../../contexts/TasksContext';
 
-export default function TaskList() {
+interface TaskListProps {
+  showCompletedTasks?: boolean;
+}
+
+export default function TaskList({
+  showCompletedTasks = false,
+}: TaskListProps) {
   const { tasks } = useTasks();
 
   const sortedTasks = tasks.toSorted((a, b) => {
@@ -13,12 +19,16 @@ export default function TaskList() {
     return statusB - statusA;
   });
 
+  const tasksToRender = showCompletedTasks
+    ? sortedTasks
+    : sortedTasks.filter((t) => !t.isCompleted);
+
   return (
     <div className="flex flex-col gap-2 w-full pb-10">
       <p className="font-bold text-xl">Active Tasks</p>
       <TaskInput />
       <div className="tasks-con flex justify-center items-center gap-2 flex-col">
-        {sortedTasks.map((t) => (
+        {tasksToRender.map((t) => (
           <TaskItem key={t.id} task={t} />
         ))}
       </div>
