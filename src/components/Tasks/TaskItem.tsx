@@ -23,9 +23,16 @@ const MotionCard = motion.create(TaskCard);
 export default function TaskItem({ task }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
 
-  const { pauseTask, completeTask, uncompleteTask, getTaskStatus, runTask } =
-    useTasks();
-  const { startTimer, pauseTimer, initActiveTask, resetTimer } = useTimer();
+  const {
+    pauseTask,
+    completeTask,
+    uncompleteTask,
+    getTaskStatus,
+    runTask,
+    tasks,
+  } = useTasks();
+  const { startTimer, pauseTimer, initActiveTask, resetTimer, timerState } =
+    useTimer();
 
   function handleStartTask() {
     // Reset timer when a task gets started (Maybe change this later)
@@ -52,9 +59,14 @@ export default function TaskItem({ task }: TaskItemProps) {
     const isChecked = e.target.checked;
 
     if (isChecked) {
-      completeTask(task);
+      const activeTask = tasks.find((t) => t.id === timerState.activeTaskId);
 
+      completeTask(task);
       toast.success(`${task.name} completed.`);
+
+      // Reset active task
+      if (activeTask !== task || !activeTask) return;
+      initActiveTask(null);
     } else {
       uncompleteTask(task);
 
