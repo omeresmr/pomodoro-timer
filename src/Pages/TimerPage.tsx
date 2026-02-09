@@ -1,7 +1,7 @@
-import TimerContent from '../components/Timer/TimerContent';
-import TaskList from '../components/Tasks/TaskList';
-import { useTasks } from '../contexts/TasksContext';
-import { useTimer } from '../contexts/TimerContext';
+import TimerContent from '../features/timer/components/TimerContent';
+import TaskList from '../features/tasks/components/list/TaskList';
+import { useTasks } from '../features/tasks/contexts/TasksContext';
+import { useTimer } from '../features/timer/contexts/TimerContext';
 import { toast } from 'sonner';
 
 export default function TimerPage() {

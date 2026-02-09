@@ -1,17 +1,17 @@
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import { Toaster } from './components/ui/sonner';
+import { Toaster } from './shared/ui/sonner';
 
-import Header from './components/Header/Header';
+import Header from './shared/layout/header/Header';
 import TimerPage from './pages/TimerPage';
 import TasksPage from './pages/TasksPage';
 import StatsPage from './pages/StatsPage';
 import SettingsPage from './pages/SettingsPage';
-import ToggleDarkMode from './components/Header/ToggleDarkMode';
-import Navigation from './components/Navigation/Navigation';
+import ToggleDarkMode from './shared/layout/header/ToggleDarkMode';
+import Navigation from './shared/layout/navigation/Navigation';
 
-import { SettingsProvider } from './contexts/SettingsContext';
-import { TasksProvider } from './contexts/TasksContext';
-import { TimerProvider } from './contexts/TimerContext';
+import { SettingsProvider } from './features/settings/contexts/SettingsContext';
+import { TasksProvider } from './features/tasks/contexts/TasksContext';
+import { TimerProvider } from './features/timer/contexts/TimerContext';
 
 function App() {
   return (
