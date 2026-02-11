@@ -15,14 +15,10 @@ import {
   getCurrentSession,
 } from '../../../shared/utils/timer.utils';
 
-interface TimerContentProps {
-  handleCompletion: () => void;
-}
-
-export default function TimerContent({ handleCompletion }: TimerContentProps) {
+export default function TimerContent() {
   const settings = useSettings();
-  const { tasks } = useTasks();
-  const { timerState, timerTick } = useTimer();
+  const { tasks, completeTaskPomodoro } = useTasks();
+  const { timerState, timerTick, handleSessionCompletion } = useTimer();
 
   const activeTask = tasks.find((t) => t.id === timerState.activeTaskId);
 
@@ -36,19 +32,22 @@ export default function TimerContent({ handleCompletion }: TimerContentProps) {
     if (!timerState.isRunning) return;
     const id = setInterval(() => {
       timerTick();
-      if (remainingMilliseconds <= 0) handleCompletion();
+      if (remainingMilliseconds <= 0)
+        handleSessionCompletion(tasks, completeTaskPomodoro);
     }, 100);
 
     return () => clearInterval(id);
   }, [
     timerState.isRunning,
     remainingMilliseconds,
-    handleCompletion,
+    handleSessionCompletion,
     timerTick,
+    completeTaskPomodoro,
+    tasks,
   ]);
 
   function handleSkipPhase() {
-    handleCompletion();
+    handleSessionCompletion(tasks, completeTaskPomodoro);
   }
 
   return (

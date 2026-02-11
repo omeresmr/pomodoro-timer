@@ -3,6 +3,7 @@ import { createContext, useContext, useReducer } from 'react';
 import reducer, { initialTimerState } from '../reducers/timer.reducer';
 import { type TimerState } from '../models/timer.model';
 import { type TaskState } from '../../tasks/models/task.model';
+import { toast } from 'sonner';
 
 // 1) provider value type
 type TimerProviderValue = {
@@ -11,6 +12,10 @@ type TimerProviderValue = {
   pauseTimer: () => void;
   timerTick: () => void;
   completeTimerPomodoro: () => void;
+  handleSessionCompletion: (
+    tasks: TaskState[],
+    completeTaskPomodoro: (t: TaskState) => void
+  ) => void;
   initActiveTask: (task: TaskState | null) => void;
   resetTimer: () => void;
 };
@@ -52,6 +57,30 @@ export function TimerProvider({ children }: TimerProviderProps) {
     dispatch({ type: 'timer/reseted' });
   }
 
+  function handleSessionCompletion(
+    tasks: TaskState[],
+    completeTaskPomodoro: (task: TaskState) => void
+  ) {
+    completeTimerPomodoro();
+
+    if (state.onBreak) toast.success('Break cycle ended.');
+    else toast.success('Pomodoro cycle ended.');
+
+    const activeTask = tasks.find((t) => t.id === state.activeTaskId);
+
+    if (!activeTask) return;
+
+    if (!state.onBreak) {
+      completeTaskPomodoro(activeTask);
+
+      // Check if the task would end after incrementing finished pomodoros
+      // If yes, reset timer
+      if (activeTask?.pomodorosDone + 1 >= activeTask?.estimatedPomodoros) {
+        resetTimer();
+      }
+    }
+  }
+
   return (
     <TimerContext.Provider
       value={{
@@ -60,6 +89,7 @@ export function TimerProvider({ children }: TimerProviderProps) {
         pauseTimer,
         timerTick,
         completeTimerPomodoro,
+        handleSessionCompletion,
         initActiveTask,
         resetTimer,
       }}
