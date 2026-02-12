@@ -6,7 +6,7 @@ import { useTasks } from '../../contexts/TasksContext';
 import PrimaryButton from '../../../../shared/ui/buttons/PrimaryButton';
 import AddTaskInput from '../../../../shared/ui/inputs/AddTaskInput';
 
-export default function TaskInput() {
+export default function CreateTaskForm() {
   const [taskName, setTaskName] = useState('');
 
   const { createTask } = useTasks();

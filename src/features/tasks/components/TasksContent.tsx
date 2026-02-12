@@ -1,12 +1,13 @@
-import TaskInput from './forms/CreateTaskForm';
-import TaskList from './list/TaskList';
+interface TasksContentProps {
+  children: React.ReactNode;
+  className?: string;
+}
 
-export default function TasksContent() {
+export default function TasksContent({
+  children,
+  className,
+}: TasksContentProps) {
   return (
-    <div className="flex flex-col gap-2 w-full pb-10">
-      <p className="font-bold text-xl">Active Tasks</p>
-      <TaskInput />
-      <TaskList />
-    </div>
+    <div className={`flex flex-col w-full pb-10 ${className}`}>{children}</div>
   );
 }
