@@ -17,7 +17,7 @@ interface TaskItemProps {
   task: TaskState;
 }
 
-const MotionEdit = motion.create(EditTask);
+const MotionEditForm = motion.create(EditTask);
 const MotionCard = motion.create(TaskCard);
 
 export default function TaskItem({ task }: TaskItemProps) {
@@ -77,7 +77,7 @@ export default function TaskItem({ task }: TaskItemProps) {
   return (
     <AnimatePresence mode="wait">
       {isEditing ? (
-        <MotionEdit
+        <MotionEditForm
           key="edit-mode"
           task={task}
           setIsEditing={setIsEditing}

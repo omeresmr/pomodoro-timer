@@ -1,7 +1,7 @@
 import CreateTaskForm from '../features/tasks/components/forms/CreateTaskForm';
 import TaskList from '../features/tasks/components/list/TaskList';
 import TasksContent from '../features/tasks/components/TasksContent';
-import Description from '../shared/ui/Description';
+import Description from '../shared/ui/description/Description';
 
 export default function TasksPage() {
   return (

@@ -495,13 +495,13 @@
   }
 
   .modal {
-    @apply bg-card w-83.25 max-w-[90vw]
+    @apply bg-card w-120 max-w-[90vw]
      border-brand-accent/70 shadow-card
-      rounded-md border text-center duration-200 p-3 m-auto;
+      rounded-lg border duration-200 p-6 m-auto text-center;
   }
 
   .modal-layout {
-    @apply flex flex-col gap-4;
+    @apply flex flex-col gap-2.5;
   }
 
   .modal::backdrop {
