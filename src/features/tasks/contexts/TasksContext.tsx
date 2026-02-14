@@ -1,4 +1,10 @@
-import { createContext, useContext, useReducer } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useReducer,
+} from 'react';
 
 import { type TaskState, type TaskStatus } from '../models/task.model';
 import reducer from '../reducers/task.reducer';
@@ -29,10 +35,10 @@ const TasksContext = createContext<TasksProviderValue | null>(null);
 const initialState: TaskState[] = [];
 
 // 5) provider component
-function TasksProvider({ children }: TasksProviderProps) {
+export function TasksProvider({ children }: TasksProviderProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  function createTask(name: string) {
+  const createTask = useCallback((name: string) => {
     const newTask = {
       id: Date.now(),
       name,
@@ -43,73 +49,82 @@ function TasksProvider({ children }: TasksProviderProps) {
     };
 
     dispatch({ type: 'task/created', payload: newTask });
-  }
+  }, []);
 
-  function updateTask(task: TaskState) {
+  const updateTask = useCallback((task: TaskState) => {
     dispatch({ type: 'task/updated', payload: task });
-  }
+  }, []);
 
-  function deleteTask(task: TaskState) {
+  const deleteTask = useCallback((task: TaskState) => {
     dispatch({ type: 'task/deleted', payload: task });
-  }
+  }, []);
 
-  function runTask(task: TaskState) {
+  const runTask = useCallback((task: TaskState) => {
     dispatch({ type: 'task/started', payload: task });
-  }
+  }, []);
 
-  function pauseTask(task: TaskState) {
+  const pauseTask = useCallback((task: TaskState) => {
     dispatch({ type: 'task/paused', payload: task });
-  }
+  }, []);
 
   // Complete task manually (via checkbox)
-  function completeTask(task: TaskState) {
+  const completeTask = useCallback((task: TaskState) => {
     dispatch({ type: 'task/completed', payload: task });
-  }
+  }, []);
 
   // Uncomplete task manually (via checkbox)
-  function uncompleteTask(task: TaskState) {
+  const uncompleteTask = useCallback((task: TaskState) => {
     dispatch({ type: 'task/uncompleted', payload: task });
-  }
+  }, []);
 
   // Increment pomodorosDone
-  function completeTaskPomodoro(task: TaskState) {
+  const completeTaskPomodoro = useCallback((task: TaskState) => {
     dispatch({ type: 'task/session_ended', payload: task });
-  }
+  }, []);
 
   // Derive task status (pending, completed, active)
-  function getTaskStatus(task: TaskState): TaskStatus {
+  const getTaskStatus = useCallback((task: TaskState): TaskStatus => {
     const { isActive, isCompleted } = task;
 
     if (isCompleted) return 'completed';
     if (isActive) return 'active';
 
     return 'pending';
-  }
+  }, []);
+
+  const tasksValue = useMemo(() => {
+    return {
+      tasks: state,
+      createTask,
+      updateTask,
+      deleteTask,
+      runTask,
+      pauseTask,
+      completeTask,
+      uncompleteTask,
+      completeTaskPomodoro,
+      getTaskStatus,
+    };
+  }, [
+    state,
+    createTask,
+    updateTask,
+    deleteTask,
+    runTask,
+    pauseTask,
+    completeTask,
+    uncompleteTask,
+    completeTaskPomodoro,
+    getTaskStatus,
+  ]);
 
   return (
-    <TasksContext.Provider
-      value={{
-        tasks: state,
-        createTask,
-        updateTask,
-        deleteTask,
-        runTask,
-        pauseTask,
-        completeTask,
-        uncompleteTask,
-        completeTaskPomodoro,
-        getTaskStatus,
-      }}
-    >
-      {children}
-    </TasksContext.Provider>
+    <TasksContext.Provider value={tasksValue}>{children}</TasksContext.Provider>
   );
 }
 
-const useTasks = () => {
+export const useTasks = () => {
   const ctx = useContext(TasksContext);
-  if (!ctx) throw new Error('useTasks can only be used in its provider.');
+  if (!ctx) throw new Error('useTasks must be used inside TasksProvider');
   return ctx;
 };
-
-export { TasksProvider, useTasks };
